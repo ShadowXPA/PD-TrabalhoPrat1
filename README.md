@@ -56,4 +56,10 @@ as esclarecerem.
 
 ## 2. Requisitos Arquiteturais
 
+A aquiterura geral do sistema aqui descrito é apresentada na Figura 1, sendo constituída pelos
+seguintes elementos:
+
+- Múltiplos (*n*) servidores, cada um com acesso a uma base de dados independente;
+- Múltiplos (*n*) clientes, sendo que cada um comunica com um único servidor via UDP e TCP.
+
 
