@@ -62,4 +62,6 @@ seguintes elementos:
 - Múltiplos (*n*) servidores, cada um com acesso a uma base de dados independente;
 - Múltiplos (*n*) clientes, sendo que cada um comunica com um único servidor via UDP e TCP.
 
-![Arquitetura geral do sistema!](Screenshot_1.png)
+![Arquitetura geral do sistema](Screenshot_1.png)
+
+
