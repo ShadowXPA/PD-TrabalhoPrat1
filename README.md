@@ -54,6 +54,7 @@ Isto significa que os alunos têm total liberdade para lidar com esses aspetos e
 soluções de forma que melhor entenderem. Em caso de dúvidas, devem contactar um dos docentes para
 as esclarecerem.
 
+
 ## 2. Requisitos Arquiteturais
 
 A aquiterura geral do sistema aqui descrito é apresentada na Figura 1, sendo constituída pelos
@@ -153,6 +154,37 @@ causa não é o primeiro a ficar ativo. Caso seja o primeiro, o seu estado atual
 como sendo o mais atualizado no sistema, servindo a informação que detém de referência para os
 restantes.
 
+
 ## 3. Extras
 
+A interface do utilizador da aplicação cliente descrita neste enunciado pode ser implementada
+em modo consola (i.e., texto). Os aspetos fundamentais considerados na avaliação base são se
+cumpre as funcionalidades pretendidas e se apresenta toda a informação necessária de forma
+adequada aos utilizadores. No entanto, os alunos que apresentem uma aplicação que cumpra
+minimamente os requisitos essenciais e que tenha uma interface do utilizador gráfica (GUI)
+funcional e completa, terão uma bonificação extra que poderá ir até aos 7.5% da nota atribuída.
+Ou seja, um trabalho avaliado em 80% que tenha a totalidade deste extra passa a valer 86%
+(80% + 80% * 7.5%). Note-se que indexar esta bonificação à parte fundamental do trabalho
+(i.e., funcionalidades) tem como objetivo evitar que se dê prioridade ao desenvolvimento da
+GUI em detrimento do essencial. Caso a nota final com bonificação ultrapasse os 100%, esta
+será truncada neste valor.
 
+
+## 4. Considerações Gerais
+
+Os alunos devem ter em consideração os seguintes aspetos para a realização do trabalho:
+
+- As opções tomadas durante o projeto (e.g., aspetos não especificados no enunciado,
+tratamento de erros, etc.), os aspetos relevantes do sistema desenvolvido (promenores
+de implementação, diagrama de entidade relacionamento e modelo físico das bases de dados,
+diagramas temporais, etc.) e o manual de utilizador devem ser devidamente documentados de
+um modo sintético num documento do tipo PowerPoint;
+- No documento referido na alínea anterior, é aconselhável a utilização de figuras e
+capturas de ecrã;
+- Esta 1ª fase do trabalho prático **deverá ser entregue até ao dia 11 de dezembro de 2020**,
+através da plataforma InforEstudante, num ficheiro com a designação *PD-2021-F1-TP-Gx.zip*,
+sendo *x* o número do grupo;
+- O ficheiro referido no ponto anterior deve incluir o código fonte (ficheiros ".java") e
+a documentação produzida, assim como os ficheiros auxiliares necessários à execução e teste
+das aplicações sem necessidade de recorrer a qualquer IDE (e.g., o *byte code* gerado e
+respetivas *batch files* e/ou ficheiros do tipo *jar* executáveis);
