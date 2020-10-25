@@ -23,3 +23,37 @@ conversar entre si. Cada canal é caraterizado pelas seguintes informações: no
 *password* de acesso e identificação do utilizador que o criou. Para aceder a um canal e
 conversar com os restantes membros, um utilizador precisa de inserir a *password* de acesso.
 Após ter sido criado, um canal só pode ser editado ou eliminado pelo utilizador que o criou;
+- **Troca direta de mensagens entre utilizadores**, onde um utilizador apenas necessita de
+saber o *username* do destinatário para conseguir enviar-lhe uma mensagem;
+- **Partilha de ficheiros**, tanto de forma direta entre utilizadores como através de canais.
+Neste último caso, após ter sido enviado para o sistema, o ficheiro fica disponível para
+*download* por todos os membros do canal de destino. Podem ser partilhados ficheiros de
+qualquer tipo. Após ser enviado, um ficheiro fica para sempre disponível para *download*
+pelo(s) destinatário(s) (i.e., um utilizador específico ou um canal);
+- **Listar todos os canais e utilizadores existentes** no sistema, sendo possível realizar
+pesquisas e filtragens através dos atributos definidos para ambos. Todos os atributos devem
+ser apresentados nas listagens obtidas;
+- **Listar as *n* últimas mensagens trocadas** diretamente com um utilizador ou no contexto
+de um canal;
+- **Apresentar** os seguintes **dados estatísticos para cada canal**: número de utilizadores,
+número de mensagens enviadas e número de ficheiros partilhados.
+
+Ao implementar as funcionalidades descritas, tenha em consideração os seguintes aspetos:
+
+- As funcionalidades só estão disponíveis para utilizadores autenticados, o que significa que
+sem autenticação não se tem acesso ao sistema;
+- Não podem ser criados utilizadores e canais com nomes iguais. Por outro lado, os nomes dos
+ficheiros partilhados podem ser repetidos, sendo por isso necessário implementar estratégias
+que permitam este aspeto;
+- As operações de *upload* e *download* de ficheiros podem ser morosas e, em consequência,
+bloquear a aplicação cliente durante um tempo exagerado na perspetiva do utilizador.
+Desta forma, ambas as operações devem ser feitas em *background*, sendo o utilizador notificado
+aquando do seu término;
+- Existem aspetos relacionados com as funcionalidades descritas que estão omissos neste enunciado.
+Isto significa que os alunos têm total liberdade para lidar com esses aspetos e implementarem
+soluções de forma que melhor entenderem. Em caso de dúvidas, devem contactar um dos docentes para
+as esclarecerem.
+
+## 2. Requisitos Arquiteturais
+
+
