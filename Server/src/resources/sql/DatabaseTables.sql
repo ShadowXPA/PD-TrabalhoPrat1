@@ -14,7 +14,8 @@ drop table if exists pd_trab.TUser;
 	UID = User ID
     UName = User Name
     UUsername = User Username
-    ...
+    UPassword = User Password (encrypted password)
+    UPhoto = User Photo (path to photo on the server)
 */
 create table if not exists pd_trab.TUser (
 	UID int auto_increment PRIMARY KEY,
@@ -24,6 +25,11 @@ create table if not exists pd_trab.TUser (
     UPhoto varchar(512) UNIQUE NOT NULL
 );
 
+/*
+	CID = Channel ID
+    CUID = Channel User ID (User who created the channel)
+    
+*/
 create table if not exists pd_trab.TChannel (
 	CID int auto_increment PRIMARY KEY,
     CUID int,
