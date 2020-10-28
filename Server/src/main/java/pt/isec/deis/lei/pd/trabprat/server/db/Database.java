@@ -23,13 +23,15 @@ public class Database {
         } catch (Exception ex) {
             System.out.println("Error: " + ex.getMessage());
             ex.printStackTrace();
+            this.Disconnect();
             return false;
         }
     }
 
     private void Disconnect() {
         try {
-            con.close();
+            if (!con.isClosed())
+                con.close();
             con = null;
         } catch (Exception ex) {
             System.out.println("Error: " + ex.getMessage());
@@ -47,24 +49,29 @@ public class Database {
         if (Columns != null) {
             for (int i = 0; i < Columns.size(); i++) {
                 var col = Columns.get(i);
-                if (col == null || col.isBlank())
+                if (col == null || col.isBlank()) {
                     return null;
-                
+                }
+
                 Query.append(col);
-                if (i != Columns.size() - 1)
+                if (i != Columns.size() - 1) {
                     Query.append(",");
+                }
             }
         } else {
             Query.append("*");
         }
 
         Query.append(" FROM ").append(Table);
-        if (!(Where == null || Where.isBlank()))
+        if (!(Where == null || Where.isBlank())) {
             Query.append(" WHERE ").append(Where);
-        if (!(OrderBy == null || OrderBy.isBlank()))
+        }
+        if (!(OrderBy == null || OrderBy.isBlank())) {
             Query.append(" ORDER BY ").append(OrderBy);
-        if (!(Limit == null || Limit.isBlank()))
+        }
+        if (!(Limit == null || Limit.isBlank())) {
             Query.append(" LIMIT ").append(Limit);
+        }
 
         return this.Select(Query.toString());
     }
@@ -174,6 +181,7 @@ public class Database {
                         Result.add(temp);
                     }
                 }
+                this.Disconnect();
                 return Result;
             } catch (Exception ex) {
                 System.out.println("Error: " + ex.getMessage());
