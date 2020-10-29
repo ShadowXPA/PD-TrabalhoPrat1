@@ -9,7 +9,6 @@ package pt.isec.deis.lei.pd.trabprat.communication;
  *
  * @author ShadowXPA
  */
-public class Command {
-    public ECommand Cmd;
-    public Object Body;
+public enum ECommand {
+    
 }
