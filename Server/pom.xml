@@ -45,4 +45,11 @@
     </build>
     <name>Server</name>
     <description>Server description.</description>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>CommonLibrary</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

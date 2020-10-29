@@ -21,6 +21,11 @@
             <artifactId>javafx-fxml</artifactId>
             <version>11</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>CommonLibrary</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
