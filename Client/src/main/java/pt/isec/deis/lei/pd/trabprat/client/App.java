@@ -12,7 +12,7 @@ import pt.isec.deis.lei.pd.trabprat.client.config.ClientConfig;
 public class App extends Application {
 
     private static Scene scene;
-    private static ClientConfig CL_CFG;
+    public static ClientConfig CL_CFG;
 
     @Override
     public void start(Stage stage) throws IOException {
