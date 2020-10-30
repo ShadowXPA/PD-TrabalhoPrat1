@@ -12,30 +12,33 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-
 import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import pt.isec.deis.lei.pd.trabprat.client.config.DefaultWindowSizes;
+
 /**
  * FXML Controller class
  *
- * @author leandro
+ * @author 
  */
-public class LoginController implements Initializable {
+public class RegisterController implements Initializable {
 
-
+    @FXML
+    private TextField TFName;
     @FXML
     private TextField TFUsername;
     @FXML
     private PasswordField PFPassword;
     @FXML
-    private Button BtnLogin;
+    private PasswordField PFConfirmPassword;
     @FXML
-    private Hyperlink HypRegister;
-    
-    private static Scene scene;
+    private Button BtnPhoto;
+    @FXML
+    private Button BtnCancel;
+    @FXML
+    private Button BtnLogin;
+
     /**
      * Initializes the controller class.
      */
@@ -43,18 +46,20 @@ public class LoginController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
     }    
+
+    @FXML
+    private void BrowsePhoto(ActionEvent event) {
+    }
+
+    @FXML
+    private void CancelCreateAccount(ActionEvent event) throws IOException { 
+        App.CL_CFG.Stage.setWidth(DefaultWindowSizes.DEFAULT_LOGIN_WIDTH);
+        App.CL_CFG.Stage.setHeight(DefaultWindowSizes.DEFAULT_LOGIN_HEIGHT);
+        App.setRoot("Login");
+    }
+
+    @FXML
+    private void RegisterAccount(ActionEvent event) {
+    }
     
-    @FXML
-    private void LoginAccount(ActionEvent event) throws IOException {
-        
-    }
-
-    @FXML
-    private void RegisterAccount(ActionEvent event) throws IOException {
-        App.CL_CFG.Stage.setWidth(DefaultWindowSizes.DEFAULT_REGISTER_WIDTH);
-        App.CL_CFG.Stage.setHeight(DefaultWindowSizes.DEFAULT_REGISTER_HEIGHT);
-        App.setRoot("Register");
-        
-    }
-
 }

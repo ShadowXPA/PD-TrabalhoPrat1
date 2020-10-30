@@ -5,6 +5,7 @@ import javafx.stage.Stage;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 
 public class ClientConfig {
-    private ArrayList<Server> ServerList;
+    public ArrayList<Server> ServerList;
     public Stage Stage;
+    public Server server;
 }
