@@ -1,23 +1,36 @@
 package pt.isec.deis.lei.pd.trabprat.client;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.SocketException;
+import java.util.ArrayList;
 import pt.isec.deis.lei.pd.trabprat.client.config.ClientConfig;
+import pt.isec.deis.lei.pd.trabprat.client.config.DefaultWindowSizes;
+import pt.isec.deis.lei.pd.trabprat.communication.Command;
+import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
+import pt.isec.deis.lei.pd.trabprat.model.Server;
 
 public class App extends Application {
 
     private static Scene scene;
-    private static ClientConfig CL_CFG;
+    public static ClientConfig CL_CFG;
 
     @Override
     public void start(Stage stage) throws IOException {
         CL_CFG.Stage = stage;
-        scene = new Scene(loadFXML("Login"), 400, 350);
+        scene = new Scene(loadFXML("Login"), DefaultWindowSizes.DEFAULT_LOGIN_WIDTH, DefaultWindowSizes.DEFAULT_LOGIN_HEIGHT);
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
@@ -34,10 +47,106 @@ public class App extends Application {
 
     public static void main(String[] args) {
         CL_CFG = new ClientConfig();
+        Command command = new Command();
+
         // Connect to server
+        CL_CFG.server = InitializeServerConection(args);
+        SendPacketUDPToServer(CL_CFG.server);
+        command = ReceivePacketUDPFromServer();
+        if (command != null) {
+            CL_CFG.ServerList = (ArrayList<Server>) command.Body;
+        } else {
+            System.exit(1);
+        }
+
+        //ConnectToTCP();
         
         // Do last
         launch();
+    }
+
+    public static Server InitializeServerConection(String[] args) {
+        Server server;
+        int port_server;
+        InetAddress ip_server;
+        try {
+            ip_server = InetAddress.getByName(args[0]);
+            port_server = Integer.parseInt(args[1]);
+        } catch (Exception ex) {
+            System.out.println("The port has been with errors: \n" + ex.getMessage());
+            return null;
+        }
+        server = new Server(ip_server, port_server, 0);
+        return server;
+    }
+
+    public static void SendPacketUDPToServer(Server server) {
+        Command command = new Command();
+        command.CMD = ECommand.CMD_CONNECT;
+
+        try {
+            DatagramSocket socket = new DatagramSocket();
+
+            ByteArrayOutputStream bAOS = new ByteArrayOutputStream();
+            ObjectOutputStream oOS = new ObjectOutputStream(bAOS);
+            oOS.writeObject(command);
+
+            byte[] buff = bAOS.toByteArray();
+            DatagramPacket packet = new DatagramPacket(buff, buff.length, server.getAddress(), server.getPort());
+
+            socket.send(packet);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static Command ReceivePacketUDPFromServer() {
+        byte[] buff;
+        Command command = new Command();
+        ArrayList<Server> aux;
+
+        try {
+            DatagramSocket socket = new DatagramSocket();
+            DatagramPacket packet = new DatagramPacket(new byte[1024], 1024);
+
+            socket.receive(packet);
+
+            buff = packet.getData();
+            ByteArrayInputStream bAIS = new ByteArrayInputStream(buff);
+            ObjectInputStream oIS = new ObjectInputStream(bAIS);
+
+            command = (Command) oIS.readObject();
+            switch (command.CMD) {
+                case ECommand.CMD_ACCEPTED:
+                    return command;
+                case ECommand.CMD_MOVED_PERMANENTLY:
+                    Server server;
+                    aux = (ArrayList<Server>) command.Body;
+                    server = aux.get(0);
+                    SendPacketUDPToServer(server);
+                    return ReceivePacketUDPFromServer();
+                default:
+                    return null;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void ConnectToTCP() {
+
+        try {
+            Socket socket = new Socket(CL_CFG.server.getAddress(), CL_CFG.server.getPort());
+            //ObjectOutputStream oOS = new ObjectOutputStream(socket.getOutputStream());
+            //ObjectInputStream oIS = new ObjectInputStream(socket.getInputStream());
+
+            //oOS.writeObject();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
     }
 
 }
