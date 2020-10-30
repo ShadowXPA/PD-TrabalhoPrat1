@@ -1,15 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pt.isec.deis.lei.pd.trabprat.communication;
 
-/**
- *
- * @author ShadowXPA
- */
-public class Command {
-    public ECommand Cmd;
+import java.io.Serializable;
+
+public class Command implements Serializable {
+    public int CMD;
     public Object Body;
 }

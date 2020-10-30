@@ -7,15 +7,19 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import pt.isec.deis.lei.pd.trabprat.client.config.ClientConfig;
 
 public class App extends Application {
 
     private static Scene scene;
+    private static ClientConfig CL_CFG;
 
     @Override
     public void start(Stage stage) throws IOException {
+        CL_CFG.Stage = stage;
         scene = new Scene(loadFXML("Login"), 400, 350);
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
     }
 
@@ -29,6 +33,10 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
+        CL_CFG = new ClientConfig();
+        // Connect to server
+        
+        // Do last
         launch();
     }
 
