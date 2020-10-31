@@ -5,9 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
+import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 
 public class TCPHandler implements Runnable {
@@ -32,7 +31,7 @@ public class TCPHandler implements Runnable {
                 // Send via Multicast every info necessary
             }
         } catch (Exception ex) {
-            Logger.getLogger(TCPHandler.class.getName()).log(Level.SEVERE, null, ex);
+            ExceptionHandler.ShowException(ex);
         }
     }
 

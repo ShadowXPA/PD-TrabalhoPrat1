@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 
 public class Database {
 
@@ -21,8 +22,7 @@ public class Database {
             con = DriverManager.getConnection(this.ConnectionString, this.Username, this.Password);
             return true;
         } catch (Exception ex) {
-            System.out.println("Error: " + ex.getMessage());
-            ex.printStackTrace();
+            ExceptionHandler.ShowException(ex);
             this.Disconnect();
             return false;
         }
@@ -34,8 +34,7 @@ public class Database {
                 con.close();
             con = null;
         } catch (Exception ex) {
-            System.out.println("Error: " + ex.getMessage());
-            ex.printStackTrace();
+            ExceptionHandler.ShowException(ex);
         }
     }
 
@@ -184,8 +183,7 @@ public class Database {
                 this.Disconnect();
                 return Result;
             } catch (Exception ex) {
-                System.out.println("Error: " + ex.getMessage());
-                ex.printStackTrace();
+                ExceptionHandler.ShowException(ex);
             }
         }
         return null;
@@ -202,8 +200,7 @@ public class Database {
                 con.commit();
                 this.Disconnect();
             } catch (Exception ex) {
-                System.out.println("Error: " + ex.getMessage());
-                ex.printStackTrace();
+                ExceptionHandler.ShowException(ex);
             }
         }
         return i;

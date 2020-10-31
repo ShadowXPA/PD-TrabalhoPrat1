@@ -1,7 +1,6 @@
 package pt.isec.deis.lei.pd.trabprat.server;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.db.Database;
 import pt.isec.deis.lei.pd.trabprat.server.thread.tcp.TCPListener;
@@ -30,7 +29,7 @@ public class Main {
             Database db = new Database(DBConnectionString, DBUser, DBPassword);
             SV_CFG = new ServerConfig(db);
         } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            ExceptionHandler.ShowException(ex);
         }
 
         // Create threads
@@ -50,7 +49,7 @@ public class Main {
             // Handle Admin Commands
             new CommandLineHandler(System.in, System.out).Initialize();
         } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            ExceptionHandler.ShowException(ex);
         }
     }
 

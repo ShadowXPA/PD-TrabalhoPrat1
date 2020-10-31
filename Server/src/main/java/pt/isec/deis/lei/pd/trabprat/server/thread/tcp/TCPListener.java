@@ -2,11 +2,9 @@ package pt.isec.deis.lei.pd.trabprat.server.thread.tcp;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
+import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
-import pt.isec.deis.lei.pd.trabprat.server.thread.udp.UDPListener;
 
 public class TCPListener implements Runnable {
 
@@ -26,7 +24,7 @@ public class TCPListener implements Runnable {
                     td.start();
                 }
             } catch (Exception ex) {
-                Logger.getLogger(UDPListener.class.getName()).log(Level.SEVERE, null, ex);
+                ExceptionHandler.ShowException(ex);
             }
         }
     }

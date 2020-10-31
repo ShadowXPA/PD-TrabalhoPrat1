@@ -3,10 +3,9 @@ package pt.isec.deis.lei.pd.trabprat.server.thread.udp;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
+import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 
 public class UDPHandler implements Runnable {
@@ -35,7 +34,7 @@ public class UDPHandler implements Runnable {
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(UDPHandler.class.getName()).log(Level.SEVERE, null, ex);
+            ExceptionHandler.ShowException(ex);
         }
     }
 

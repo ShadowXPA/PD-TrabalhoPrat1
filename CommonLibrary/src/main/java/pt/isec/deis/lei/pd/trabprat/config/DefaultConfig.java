@@ -1,16 +1,23 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pt.isec.deis.lei.pd.trabprat.config;
 
-/**
- *
- * @author ShadowXPA
- */
-public class DefaultConfig {
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
+
+public final class DefaultConfig {
     private DefaultConfig() {}
+
+    public static final String getExternalIP() {
+        try {
+            URL ExtIP = new URL("https://checkip.amazonaws.com/");
+            BufferedReader br = new BufferedReader(new InputStreamReader(ExtIP.openStream()));
+            return br.readLine();
+        } catch (Exception ex) {
+            ExceptionHandler.ShowException(ex);
+        }
+        return "Unknown";
+    }
 
     // Default Packet Sizes
     public static final int DEFAULT_UDP_PACKET_SIZE = 2048;

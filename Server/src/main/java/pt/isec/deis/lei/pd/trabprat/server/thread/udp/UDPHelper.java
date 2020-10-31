@@ -8,9 +8,8 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
+import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 
 public final class UDPHelper {
 
@@ -23,7 +22,7 @@ public final class UDPHelper {
         try {
             oOS = new ObjectOutputStream(baOS);
         } catch (Exception ex) {
-            Logger.getLogger(UDPHelper.class.getName()).log(Level.SEVERE, null, ex);
+            ExceptionHandler.ShowException(ex);
         }
     }
 
