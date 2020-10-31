@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="500.0" spacing="20.0" style="-fx-background-color: #004c91;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pt.isec.deis.lei.pd.trabprat.client.RegisterController">
+   <children>
+      <Label text="Create your account" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Label>
+      <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="320.0" spacing="5.0" style="-fx-background-color: white; -fx-background-radius: 5px;">
+         <children>
+            <Label text="Name">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <TextField fx:id="TFName" prefHeight="25.0" prefWidth="360.0" promptText="Enter your name" style="-fx-background-color: #f0f0f0;" />
+            <Label text="Username">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <TextField fx:id="TFUsername" prefHeight="25.0" prefWidth="360.0" promptText="Enter your username" style="-fx-background-color: #f0f0f0;" />
+            <Label text="Password">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <PasswordField fx:id="PFPassword" promptText="Enter your password" style="-fx-background-color: #f0f0f0;" />
+            <Label text="Confirm Password">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <PasswordField fx:id="PFConfirmPassword" promptText="Confirm password" style="-fx-background-color: #f0f0f0;" />
+            <Label text="Photo">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Button fx:id="BtnPhoto" mnemonicParsing="false" onAction="#BrowsePhoto" style="-fx-background-color: #f0f0f0;" text="Browse..." />
+            <ButtonBar prefHeight="40.0" prefWidth="200.0">
+              <buttons>
+                  <Button fx:id="BtnCancel" mnemonicParsing="false" onAction="#CancelCreateAccount" style="-fx-background-color: red;" text="Cancel" textFill="WHITE">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="BtnLogin" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#RegisterAccount" style="-fx-background-color: #2d9216;" text="Register" textFill="#f8f8f8">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+              </buttons>
+               <VBox.margin>
+                  <Insets top="15.0" />
+               </VBox.margin>
+            </ButtonBar>
+         </children>
+         <padding>
+            <Insets bottom="20.0" left="40.0" right="40.0" top="20.0" />
+         </padding>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="40.0" left="50.0" right="50.0" top="40.0" />
+   </padding>
+</VBox>
