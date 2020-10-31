@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.db.Database;
+import pt.isec.deis.lei.pd.trabprat.server.thread.tcp.TCPListener;
 import pt.isec.deis.lei.pd.trabprat.server.thread.udp.UDPListener;
 
 public class Main {
@@ -38,7 +39,7 @@ public class Main {
         tdUDP.setDaemon(true);
         tdUDP.start();
         // Thread Listen TCP
-        Thread tdTCP = new Thread();
+        Thread tdTCP = new Thread(new TCPListener(), "TCPListener");
         tdTCP.setDaemon(true);
         tdTCP.start();
         // Thread Multicast
