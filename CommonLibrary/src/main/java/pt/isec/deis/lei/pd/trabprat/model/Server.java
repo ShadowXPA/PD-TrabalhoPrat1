@@ -5,19 +5,23 @@ import java.net.InetAddress;
 
 public class Server implements Serializable {
     private final InetAddress Address;
-    private final int Port;
+    private final int UDPPort, TCPPort;
     private int UserCount;
 
     public final InetAddress getAddress() {
         return Address;
     }
 
-    public final int getPort() {
-        return Port;
-    }
-
     public final int getUserCount() {
         return UserCount;
+    }
+
+    public int getUDPPort() {
+        return UDPPort;
+    }
+
+    public int getTCPPort() {
+        return TCPPort;
     }
 
     public final void setUserCount(int UserCount) {
@@ -28,9 +32,10 @@ public class Server implements Serializable {
         }
     }
 
-    public Server(InetAddress Address, int Port, int UserCount) {
+    public Server(InetAddress Address, int UDPPort, int TCPPort, int UserCount) {
         this.Address = Address;
-        this.Port = Port;
+        this.UDPPort = UDPPort;
+        this.TCPPort = TCPPort;
         this.setUserCount(UserCount);
     }
 }

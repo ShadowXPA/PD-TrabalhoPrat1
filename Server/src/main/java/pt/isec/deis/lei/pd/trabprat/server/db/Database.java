@@ -209,7 +209,8 @@ public class Database {
         return i;
     }
 
-    public Database(String ConnectionString, String Username, String Password) throws SQLException {
+    public Database(String ConnectionString, String Username, String Password) throws SQLException, ClassNotFoundException {
+//        Class.forName("com.mysql.cj.jdbc.Driver");
         this.ConnectionString = ConnectionString;
         this.Username = Username;
         this.Password = Password;
