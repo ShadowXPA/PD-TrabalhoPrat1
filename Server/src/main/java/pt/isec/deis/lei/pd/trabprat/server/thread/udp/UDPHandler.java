@@ -30,7 +30,7 @@ public class UDPHandler implements Runnable {
                 }
                 default: {
                     // Send CMD_FORBIDDEN command
-                    UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket, new Command(ECommand.CMD_FORBIDDEN));
+                    UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket.getAddress(), ReceivedPacket.getPort(), new Command(ECommand.CMD_FORBIDDEN));
                     break;
                 }
             }
@@ -46,11 +46,11 @@ public class UDPHandler implements Runnable {
         if (Accept == null) {
             // Accepted
             cmd = new Command(ECommand.CMD_ACCEPTED);
-            UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket, cmd);
+            UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket.getAddress(), ReceivedPacket.getPort(), cmd);
         } else {
             // Rejected
             cmd = new Command(ECommand.CMD_MOVED_PERMANENTLY, Accept);
-            UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket, cmd);
+            UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket.getAddress(), ReceivedPacket.getPort(), cmd);
         }
         Main.Log("[Server] to " + IP, "" + cmd.CMD);
     }

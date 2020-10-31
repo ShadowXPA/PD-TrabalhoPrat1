@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
@@ -32,11 +33,11 @@ public final class UDPHelper {
         return (Command) oIS.readUnshared();
     }
 
-    public static void SendUDPCommand(DatagramSocket Socket, DatagramPacket ReceivedPacket, Command CMD) throws IOException {
+    public static void SendUDPCommand(DatagramSocket Socket, InetAddress Address, int Port, Command CMD) throws IOException {
         oOS.writeUnshared(CMD);
         oOS.flush();
         byte[] buffer = baOS.toByteArray();
-        DatagramPacket SendPacket = new DatagramPacket(buffer, buffer.length, ReceivedPacket.getAddress(), ReceivedPacket.getPort());
+        DatagramPacket SendPacket = new DatagramPacket(buffer, buffer.length, Address, Port);
         Socket.send(SendPacket);
     }
 

@@ -33,7 +33,7 @@ public class UDPListener implements Runnable {
                     } catch (Exception ex) {
                         // Send internal server error
                         Command cmd = new Command(ECommand.CMD_SERVICE_UNAVAILABLE);
-                        UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket, cmd);
+                        UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket.getAddress(), ReceivedPacket.getPort(), cmd);
                         Main.Log("[Server] to " + IP, "" + cmd.CMD);
                     }
                 }
