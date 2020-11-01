@@ -12,16 +12,21 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.client.config.DefaultWindowSizes;
+import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
+import pt.isec.deis.lei.pd.trabprat.model.TUser;
+import pt.isec.deis.lei.pd.trabprat.validation.Validator;
 
 /**
  * FXML Controller class
  *
- * @author 
+ * @author
  */
 public class RegisterController implements Initializable {
 
@@ -46,14 +51,14 @@ public class RegisterController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }    
+    }
 
     @FXML
     private void BrowsePhoto(ActionEvent event) {
     }
 
     @FXML
-    private void CancelCreateAccount(ActionEvent event) throws IOException { 
+    private void CancelCreateAccount(ActionEvent event) throws IOException {
         App.CL_CFG.Stage.setWidth(DefaultWindowSizes.DEFAULT_LOGIN_WIDTH);
         App.CL_CFG.Stage.setHeight(DefaultWindowSizes.DEFAULT_LOGIN_HEIGHT);
         App.setRoot("Login");
@@ -61,6 +66,19 @@ public class RegisterController implements Initializable {
 
     @FXML
     private void RegisterAccount(ActionEvent event) {
+        String name = TFName.getText();
+        String Username = TFUsername.getText();
+        String Password = PFPassword.getText();
+        String ConfirmPassword = PFConfirmPassword.getText();
+        
+        //Validator.PasswordEquals(Password, ConfirmPassword);
+        //ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Password Error", "The passwords are not equal!");
+
+        try {
+            ServerController.Register(new TUser(0, name, Username, Password, null, 0));
+        } catch (IOException ex) {
+            ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", null, ex.getMessage());
+        }
     }
-    
+
 }
