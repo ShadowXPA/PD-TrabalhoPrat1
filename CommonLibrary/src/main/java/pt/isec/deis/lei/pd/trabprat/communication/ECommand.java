@@ -53,4 +53,7 @@ public final class ECommand {
 
     // The client wants to register an account to the server
     public static final int CMD_REGISTER = 601;
+
+    // The client wants to login to an account
+    public static final int CMD_LOGIN = 602;
 }

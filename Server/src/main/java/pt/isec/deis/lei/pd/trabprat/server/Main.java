@@ -1,5 +1,6 @@
 package pt.isec.deis.lei.pd.trabprat.server;
 
+import java.sql.SQLException;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.db.Database;
@@ -20,14 +21,7 @@ public class Main {
                 System.exit(-1);
             }
 
-            String DBHost = args[0];
-            String DBPort = args[1];
-            String DBSchema = args[2];
-            String DBUser = args[3];
-            String DBPassword = args[4];
-            String DBConnectionString = "jdbc:mysql://" + DBHost + ":" + DBPort + "/" + DBSchema;
-            Database db = new Database(DBConnectionString, DBUser, DBPassword);
-            SV_CFG = new ServerConfig(db);
+            SV_CFG = new ServerConfig(InitDatabase(args));
         } catch (Exception ex) {
             ExceptionHandler.ShowException(ex);
         }
@@ -51,6 +45,16 @@ public class Main {
         } catch (Exception ex) {
             ExceptionHandler.ShowException(ex);
         }
+    }
+
+    private static Database InitDatabase(String[] args) throws SQLException, ClassNotFoundException {
+        String DBHost = args[0];
+        String DBPort = args[1];
+        String DBSchema = args[2];
+        String DBUser = args[3];
+        String DBPassword = args[4];
+        String DBConnectionString = "jdbc:mysql://" + DBHost + ":" + DBPort + "/" + DBSchema;
+        return new Database(DBConnectionString, DBUser, DBPassword);
     }
 
     public static void Log(String Prefix, String Message) {

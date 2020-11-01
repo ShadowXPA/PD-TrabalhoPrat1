@@ -1,5 +1,6 @@
 package pt.isec.deis.lei.pd.trabprat.server.thread.udp;
 
+import pt.isec.deis.lei.pd.trabprat.thread.udp.UDPHelper;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;

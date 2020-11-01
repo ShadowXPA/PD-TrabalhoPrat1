@@ -6,8 +6,10 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
+import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
+import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
 public class TCPHandler implements Runnable {
 
@@ -27,8 +29,17 @@ public class TCPHandler implements Runnable {
                 // Wait for a read (while (true) keep reading)
                 Command cmd = (Command) oIS.readUnshared();
                 Main.Log(IP + " to [Server]", "" + cmd.CMD);
-                // React accordingly
-                // Send via Multicast every info necessary
+
+                try {
+                    Thread td = new Thread(new TCPUserHandler(ClientSocket, cmd));
+                    td.setDaemon(true);
+                    td.start();
+                } catch (Exception ex) {
+                    // Send internal server error
+                    Command cmdErr = new Command(ECommand.CMD_SERVICE_UNAVAILABLE);
+                    TCPHelper.SendTCPCommand(oOS, cmd);
+                    Main.Log("[Server] to " + IP, "" + cmdErr.CMD);
+                }
             }
         } catch (Exception ex) {
             ExceptionHandler.ShowException(ex);

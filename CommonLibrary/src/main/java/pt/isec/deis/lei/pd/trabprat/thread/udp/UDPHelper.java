@@ -1,4 +1,4 @@
-package pt.isec.deis.lei.pd.trabprat.server.thread.udp;
+package pt.isec.deis.lei.pd.trabprat.thread.udp;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -32,8 +32,8 @@ public final class UDPHelper {
         return (Command) oIS.readUnshared();
     }
 
-    public static void SendUDPCommand(DatagramSocket Socket, InetAddress Address, int Port, Command CMD) throws IOException {
-        oOS.writeUnshared(CMD);
+    public static void SendUDPCommand(DatagramSocket Socket, InetAddress Address, int Port, Command cmd) throws IOException {
+        oOS.writeUnshared(cmd);
         oOS.flush();
         byte[] buffer = baOS.toByteArray();
         DatagramPacket SendPacket = new DatagramPacket(buffer, buffer.length, Address, Port);
