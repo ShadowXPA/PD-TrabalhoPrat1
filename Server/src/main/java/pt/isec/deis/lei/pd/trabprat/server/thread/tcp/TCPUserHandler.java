@@ -3,8 +3,6 @@ package pt.isec.deis.lei.pd.trabprat.server.thread.tcp;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
@@ -19,6 +17,7 @@ public class TCPUserHandler implements Runnable {
     private final Socket UserSocket;
     private final ObjectOutputStream oOS;
     private final Command Cmd;
+    private final String IP;
 
     @Override
     public void run() {
@@ -85,8 +84,9 @@ public class TCPUserHandler implements Runnable {
                     TCPHelper.SendTCPCommand(oOS, sendCmd);
                 } else {
                     // Send OK to the client
-                    sendCmd = new Command(ECommand.CMD_CREATED);
+                    sendCmd = new Command(ECommand.CMD_CREATED, user);
                     TCPHelper.SendTCPCommand(oOS, sendCmd);
+                    Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
                     // After created, the client should send the photo asynchronously
                     // Announce to other servers via multicast
                 }
@@ -94,9 +94,10 @@ public class TCPUserHandler implements Runnable {
         }
     }
 
-    public TCPUserHandler(Socket UserSocket, Command Cmd) throws IOException {
+    public TCPUserHandler(Socket UserSocket, Command Cmd, String IP) throws IOException {
         this.UserSocket = UserSocket;
         this.oOS = new ObjectOutputStream(this.UserSocket.getOutputStream());
         this.Cmd = Cmd;
+        this.IP = IP;
     }
 }
