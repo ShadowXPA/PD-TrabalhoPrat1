@@ -12,6 +12,6 @@ public final class ServerController {
     
     public static void Register(TUser User) throws IOException{
         Command command = new Command(ECommand.CMD_REGISTER, User);
-        TCPHelper.SendTCPCommand(App.CL_CFG.OOS ,command);
+        TCPHelper.SendTCPCommand(App.CL_CFG.getOOS() ,command);
     }
 }

@@ -1,35 +1,52 @@
 package pt.isec.deis.lei.pd.trabprat.client.thread.tcp;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
+import pt.isec.deis.lei.pd.trabprat.model.Server;
 
-public class TCPListener implements Runnable{
+public class TCPListener implements Runnable {
+
     private final Socket socket;
-    private final ObjectOutputStream OOS; //ObjectOutputStream para o TCP
-    private final ObjectInputStream OIS;  //ObjectInputStream para o TCP
-    
-    public TCPListener(Socket socket, ObjectOutputStream OOS, ObjectInputStream OIS){
-        this.socket = socket;
-        this.OOS = OOS;
-        this.OIS = OIS;
+    private final ObjectOutputStream oOS; //ObjectOutputStream para o TCP
+    private final ObjectInputStream oIS;  //ObjectInputStream para o TCP
+
+    public TCPListener(Server server) throws IOException {
+        this.socket = new Socket(server.getAddress(), server.getTCPPort());
+        //App.CL_CFG.setSocket(this.socket);
+        this.oOS = new ObjectOutputStream(this.socket.getOutputStream());
+        this.oIS = new ObjectInputStream(this.socket.getInputStream());
     }
-    
+
+    public TCPListener(Socket socket, ObjectOutputStream oOS, ObjectInputStream oIS) throws IOException {
+        this.socket = socket;
+        this.oOS = oOS;
+        this.oIS = oIS;
+    }
+
     @Override
     public void run() {
-        Command command;
-        while (true) {
-            try{
-                command = (Command) OIS.readUnshared();
-                Thread thread = new Thread(new TCPHandler(socket, OOS, OIS, command));
-                thread.setDaemon(true);
-                thread.start();
-            }catch(Exception ex){
-                ExceptionHandler.ShowException(ex);
+        Command cmd;
+        try {
+            boolean Continue = true;
+            while (Continue) {
+                cmd = (Command) oIS.readUnshared();
+
+                try {
+                    Thread td = new Thread(new TCPHandler(socket, oOS, oIS, cmd));
+                    td.setDaemon(true);
+                    td.start();
+                } catch (Exception ex) {
+                    ExceptionHandler.ShowException(ex);
+                }
             }
+        } catch (Exception ex) {
+            ExceptionHandler.ShowException(ex);
         }
     }
-    
+
 }

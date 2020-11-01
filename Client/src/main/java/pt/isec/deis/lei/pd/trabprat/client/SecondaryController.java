@@ -1,4 +1,4 @@
-package pt.isec.deis.lei.pd.trabprat.client.controller;
+package pt.isec.deis.lei.pd.trabprat.client;
 
 import java.io.IOException;
 import javafx.fxml.FXML;

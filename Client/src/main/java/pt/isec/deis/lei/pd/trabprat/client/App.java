@@ -1,26 +1,19 @@
 package pt.isec.deis.lei.pd.trabprat.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import pt.isec.deis.lei.pd.trabprat.client.config.ClientConfig;
 import pt.isec.deis.lei.pd.trabprat.client.config.DefaultWindowSizes;
 import pt.isec.deis.lei.pd.trabprat.client.thread.tcp.TCPListener;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
-import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
-import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 
 public class App extends Application {
@@ -37,6 +30,12 @@ public class App extends Application {
         stage.show();
     }
 
+    @Override
+    public void stop() throws Exception {
+        super.stop(); //To change body of generated methods, choose Tools | Templates.
+        CL_CFG.getSocket().close();
+    }
+
     public static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
@@ -48,11 +47,14 @@ public class App extends Application {
 
     public static void main(String[] args) {
         CL_CFG = new ClientConfig();
-        Command command = new Command();
+        Command command;
         DatagramSocket socket;
-        System.out.println("Estou aqui");
-        // Connect to server
-        CL_CFG.server = Initialize.InitializeServerConection(args);
+        try {
+            // Connect to server
+            CL_CFG.server = Initialize.InitializeServerConection(args);
+        } catch (UnknownHostException ex) {
+            ex.printStackTrace();
+        }
         socket = Initialize.SendPacketUDPToServer(CL_CFG.server);
         command = Initialize.ReceivePacketUDPFromServer(socket);
         if (command != null) {
@@ -60,18 +62,24 @@ public class App extends Application {
         } else {
             System.exit(1);
         }
-        
+
         Initialize.ConnectToTCP();
-        Thread thread = new Thread(new TCPListener(CL_CFG.socket, CL_CFG.OOS, CL_CFG.OIS));
-        thread.setDaemon(true);
-        thread.start();
-        
+        try {
+            //CL_CFG.setSocket(tcpSoc);
+//            Thread thread = new Thread(new TCPListener(CL_CFG.server), "TCPListener");
+            Thread thread = new Thread(new TCPListener(CL_CFG.getSocket(), CL_CFG.getOOS(), CL_CFG.getOIS()));
+            thread.setDaemon(true);
+            thread.start();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
         // Do last
-        launch();
-        
-        
+        try {
+            launch();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
-    
-    
 }

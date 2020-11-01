@@ -8,6 +8,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import static pt.isec.deis.lei.pd.trabprat.client.App.CL_CFG;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
@@ -20,17 +21,17 @@ public final class Initialize {
     private Initialize() {
     }
 
-    public static Server InitializeServerConection(String[] args) {
+    public static Server InitializeServerConection(String[] args) throws UnknownHostException {
         Server server;
         int port_server;
         InetAddress ip_server;
         try {
             ip_server = InetAddress.getByName(args[0]);
             port_server = Integer.parseInt(args[1]);
-            System.out.println("Passei aqui!");
         } catch (Exception ex) {
             System.out.println("The port has been with errors: \n" + ex.getMessage());
-            return null;
+            ip_server = InetAddress.getByName("127.0.0.1");
+            port_server = DefaultConfig.DEFAULT_UDP_PORT;
         }
         server = new Server(ip_server, port_server, 0, 0);
         return server;
@@ -51,7 +52,6 @@ public final class Initialize {
             DatagramPacket packet = new DatagramPacket(buff, buff.length, server.getAddress(), server.getUDPPort());
 
             socket.send(packet);
-            System.out.println("Passei aqui!");
             return socket;
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -116,10 +116,8 @@ public final class Initialize {
 
     public static void ConnectToTCP() {
         try {
-            CL_CFG.socket = new Socket(CL_CFG.server.getAddress(), CL_CFG.server.getTCPPort());
-            CL_CFG.OOS = new ObjectOutputStream(CL_CFG.socket.getOutputStream());
-            CL_CFG.OIS = new ObjectInputStream(CL_CFG.socket.getInputStream());
-
+            Socket socket = new Socket(CL_CFG.server.getAddress(), CL_CFG.server.getTCPPort());
+            CL_CFG.setSocket(socket);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

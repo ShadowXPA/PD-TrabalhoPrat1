@@ -44,6 +44,7 @@ public class TCPHandler implements Runnable {
         } catch (Exception ex) {
             ExceptionHandler.ShowException(ex);
         }
+        Main.Log("Closed connection with", IP);
     }
 
     public TCPHandler(Socket ClientSocket, String IP) {
