@@ -15,15 +15,15 @@ public final class DatabaseWrapper {
     }
 
     public TUser getUserByName(String UName) {
-        return getUserBy("uname", UName);
+        return getUserBy("uname", "'" + UName + "'");
     }
 
     public TUser getUserByUsername(String UUsername) {
-        return getUserBy("uusername", UUsername);
+        return getUserBy("uusername", "'" + UUsername + "'");
     }
 
     private TUser getUserBy(String by, String what) {
-        var info = db.Select("select * from tuser where " + by + "=" + what);
+        var info = db.Select("select * from tuser where " + by + "=" + what + "");
         if (info == null || info.isEmpty()) {
             return null;
         }

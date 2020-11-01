@@ -59,6 +59,9 @@ public class CommandLineHandler {
                 WriteLine(HandleUsers(cmd));
                 break;
             }
+            default: {
+                break;
+            }
         }
     }
 
@@ -71,7 +74,7 @@ public class CommandLineHandler {
         }
         for (int i = 0; i < info.size(); i++) {
             str.append(info.get(i).toString());
-            str.append("--------------------------------------\n");
+            str.append("\n");
         }
         str.append("End ").append(cmd).append(".");
         return str.toString();

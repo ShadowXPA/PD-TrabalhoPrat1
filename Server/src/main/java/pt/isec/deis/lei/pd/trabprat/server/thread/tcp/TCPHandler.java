@@ -31,7 +31,7 @@ public class TCPHandler implements Runnable {
                 Main.Log(IP + " to [Server]", "" + cmd.CMD);
 
                 try {
-                    Thread td = new Thread(new TCPUserHandler(ClientSocket, cmd));
+                    Thread td = new Thread(new TCPUserHandler(ClientSocket, cmd, IP));
                     td.setDaemon(true);
                     td.start();
                 } catch (Exception ex) {

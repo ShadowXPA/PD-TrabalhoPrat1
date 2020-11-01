@@ -4,9 +4,13 @@ import pt.isec.deis.lei.pd.trabprat.thread.udp.UDPHelper;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.ArrayList;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
+import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
+import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 
 public class UDPHandler implements Runnable {
@@ -45,7 +49,9 @@ public class UDPHandler implements Runnable {
         Object Accept = null; // Get response via multicast
         if (Accept == null) {
             // Accepted
-            cmd = new Command(ECommand.CMD_ACCEPTED);
+            ArrayList<Server> body = new ArrayList<>();
+            body.add(new Server(InetAddress.getByName(DefaultConfig.getExternalIP()), DefaultConfig.DEFAULT_UDP_PORT, DefaultConfig.DEFAULT_TCP_PORT, 0));
+            cmd = new Command(ECommand.CMD_ACCEPTED, body);
             UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket.getAddress(), ReceivedPacket.getPort(), cmd);
         } else {
             // Rejected
