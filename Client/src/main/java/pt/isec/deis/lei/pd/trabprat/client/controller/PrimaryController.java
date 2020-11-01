@@ -1,0 +1,13 @@
+package pt.isec.deis.lei.pd.trabprat.client.controller;
+
+import java.io.IOException;
+import javafx.fxml.FXML;
+import pt.isec.deis.lei.pd.trabprat.client.App;
+
+public class PrimaryController {
+
+    @FXML
+    private void switchToSecondary() throws IOException {
+        App.setRoot("secondary");
+    }
+}

@@ -20,6 +20,8 @@ import pt.isec.deis.lei.pd.trabprat.client.config.ClientConfig;
 import pt.isec.deis.lei.pd.trabprat.client.config.DefaultWindowSizes;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
+import pt.isec.deis.lei.pd.trabprat.communication.UDPHelper;
+import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 
 public class App extends Application {
@@ -36,7 +38,7 @@ public class App extends Application {
         stage.show();
     }
 
-    static void setRoot(String fxml) throws IOException {
+    public static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
 
@@ -48,19 +50,20 @@ public class App extends Application {
     public static void main(String[] args) {
         CL_CFG = new ClientConfig();
         Command command = new Command();
-
+        DatagramSocket socket;
+        System.out.println("Estou aqui");
         // Connect to server
         CL_CFG.server = InitializeServerConection(args);
-        SendPacketUDPToServer(CL_CFG.server);
-        command = ReceivePacketUDPFromServer();
+        socket = SendPacketUDPToServer(CL_CFG.server);
+        command = ReceivePacketUDPFromServer(socket);
         if (command != null) {
             CL_CFG.ServerList = (ArrayList<Server>) command.Body;
         } else {
             System.exit(1);
         }
-
-        //ConnectToTCP();
         
+        ConnectToTCP();
+        LoginUser();
         // Do last
         launch();
     }
@@ -72,74 +75,88 @@ public class App extends Application {
         try {
             ip_server = InetAddress.getByName(args[0]);
             port_server = Integer.parseInt(args[1]);
+            System.out.println("Passei aqui!");
         } catch (Exception ex) {
             System.out.println("The port has been with errors: \n" + ex.getMessage());
             return null;
         }
-        server = new Server(ip_server, port_server, 0);
+        server = new Server(ip_server, port_server, 0, 0);
         return server;
     }
 
-    public static void SendPacketUDPToServer(Server server) {
+    public static DatagramSocket SendPacketUDPToServer(Server server) {
         Command command = new Command();
         command.CMD = ECommand.CMD_CONNECT;
 
         try {
             DatagramSocket socket = new DatagramSocket();
-
+            //UDPHelper.SendUDPCommand(socket, server.getAddress(), server.getUDPPort(), command);
             ByteArrayOutputStream bAOS = new ByteArrayOutputStream();
             ObjectOutputStream oOS = new ObjectOutputStream(bAOS);
             oOS.writeObject(command);
-
+            
             byte[] buff = bAOS.toByteArray();
-            DatagramPacket packet = new DatagramPacket(buff, buff.length, server.getAddress(), server.getPort());
+            DatagramPacket packet = new DatagramPacket(buff, buff.length, server.getAddress(), server.getUDPPort());
 
-            socket.send(packet);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public static Command ReceivePacketUDPFromServer() {
-        byte[] buff;
-        Command command = new Command();
-        ArrayList<Server> aux;
-
-        try {
-            DatagramSocket socket = new DatagramSocket();
-            DatagramPacket packet = new DatagramPacket(new byte[1024], 1024);
-
-            socket.receive(packet);
-
-            buff = packet.getData();
-            ByteArrayInputStream bAIS = new ByteArrayInputStream(buff);
-            ObjectInputStream oIS = new ObjectInputStream(bAIS);
-
-            command = (Command) oIS.readObject();
-            switch (command.CMD) {
-                case ECommand.CMD_ACCEPTED:
-                    return command;
-                case ECommand.CMD_MOVED_PERMANENTLY:
-                    Server server;
-                    aux = (ArrayList<Server>) command.Body;
-                    server = aux.get(0);
-                    SendPacketUDPToServer(server);
-                    return ReceivePacketUDPFromServer();
-                default:
-                    return null;
-            }
+            socket.send(packet);System.out.println("Passei aqui!");
+            return socket;
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         return null;
     }
 
+    public static Command ReceivePacketUDPFromServer(DatagramSocket socket) {
+        byte[] buff;
+        Command command = new Command();
+        ArrayList<Server> aux;
+
+        try {
+            //DatagramSocket socket = new DatagramSocket();
+            
+            DatagramPacket packet = new DatagramPacket(new byte[DefaultConfig.DEFAULT_UDP_PACKET_SIZE], DefaultConfig.DEFAULT_UDP_PACKET_SIZE);
+            socket.setSoTimeout(1000);
+            socket.receive(packet);
+            //command = UDPHelper.ReadUDPCommand(packet);
+            buff = packet.getData();
+            ByteArrayInputStream bAIS = new ByteArrayInputStream(buff);
+            //new ObjectOutputStream(new ByteArrayOutputStream());
+            ObjectInputStream oIS = new ObjectInputStream(bAIS);
+
+            command = (Command) oIS.readObject();
+            System.out.println("Comando: " + command.CMD);
+            switch (command.CMD) {
+                case ECommand.CMD_ACCEPTED:
+                    socket.close();
+                    return command;
+                case ECommand.CMD_MOVED_PERMANENTLY:
+                    Server server;
+                    aux = (ArrayList<Server>) command.Body;
+                    if(aux == null){
+                        System.out.println("Não existem mais servidores disponiveis para se conectar!\n");
+                        System.exit(1);
+                    }
+                    server = aux.get(0);
+                    socket.close();
+                    socket = SendPacketUDPToServer(server);
+                    return ReceivePacketUDPFromServer(socket);
+                default:
+                    socket.close();
+                    return null;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        socket.close();
+        return null;
+    }
+
     public static void ConnectToTCP() {
 
         try {
-            Socket socket = new Socket(CL_CFG.server.getAddress(), CL_CFG.server.getPort());
-            //ObjectOutputStream oOS = new ObjectOutputStream(socket.getOutputStream());
-            //ObjectInputStream oIS = new ObjectInputStream(socket.getInputStream());
+            Socket socket = new Socket(CL_CFG.server.getAddress(), CL_CFG.server.getTCPPort());
+            ObjectOutputStream oOS = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream oIS = new ObjectInputStream(socket.getInputStream());
 
             //oOS.writeObject();
 
@@ -149,4 +166,8 @@ public class App extends Application {
 
     }
 
+    public static void LoginUser(){
+        
+    }
+    
 }
