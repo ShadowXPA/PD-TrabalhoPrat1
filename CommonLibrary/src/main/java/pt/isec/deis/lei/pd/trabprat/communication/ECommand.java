@@ -27,7 +27,7 @@ public final class ECommand {
     // This and all future requests should be directed to the given IP/Port
     public static final int CMD_MOVED_PERMANENTLY = 301;
 
-    // The server cannot or will not process the request due to an apparent client error (if UDP fails)
+    // The server cannot or will not process the request due to an apparent client error (if UDP fails, etc.)
     public static final int CMD_BAD_REQUEST = 400;
 
     // Similar to 403 Forbidden, but specifically for use when authentication is required and has failed or has not yet been provided

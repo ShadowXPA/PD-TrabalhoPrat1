@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import pt.isec.deis.lei.pd.trabprat.model.TUser;
 
 public class CommandLineHandler {
 
@@ -64,18 +65,12 @@ public class CommandLineHandler {
     private String HandleUsers(String cmd) {
         StringBuilder str = new StringBuilder();
         str.append(cmd).append(":\n");
-        ArrayList<HashMap<String, String>> info;
+        ArrayList<TUser> info;
         synchronized (Main.SV_LOCK) {
-            info = Main.SV_CFG.getDBConnection().Select("tuser", null, null, null, null);
+            info = Main.SV_CFG.DB.getAllUsers();
         }
         for (int i = 0; i < info.size(); i++) {
-            var hm = info.get(i);
-            var keys = hm.keySet();
-            for (var key : keys) {
-                str.append("Column: ").append(key);
-                str.append("\nValue: ").append(hm.get(key));
-                str.append("\n");
-            }
+            str.append(info.get(i).toString());
             str.append("--------------------------------------\n");
         }
         str.append("End ").append(cmd).append(".");

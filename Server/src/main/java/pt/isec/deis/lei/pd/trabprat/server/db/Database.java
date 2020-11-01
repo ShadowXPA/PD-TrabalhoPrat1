@@ -172,7 +172,7 @@ public class Database {
                     int ColumnCount = RSMD.getColumnCount();
                     while (RSet.next()) {
                         HashMap<String, String> temp = new HashMap<>();
-                        for (int i = 1; i < ColumnCount; i++) {
+                        for (int i = 1; i <= ColumnCount; i++) {
                             String Key = RSMD.getColumnLabel(i);
                             String Value = RSet.getString(i);
                             temp.put(Key, Value);
