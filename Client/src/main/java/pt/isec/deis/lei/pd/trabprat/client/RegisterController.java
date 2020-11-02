@@ -21,6 +21,7 @@ import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
+import pt.isec.deis.lei.pd.trabprat.validation.Validator;
 
 /**
  * FXML Controller class
@@ -69,15 +70,26 @@ public class RegisterController implements Initializable {
         String Username = TFUsername.getText();
         String Password = PFPassword.getText();
         String ConfirmPassword = PFConfirmPassword.getText();
-        
-        //Validator.PasswordEquals(Password, ConfirmPassword);
-        //ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Password Error", "The passwords are not equal!");
+        boolean bool = true;
+        if (!Validator.Name(name)) {
+            bool = false;
+            ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Name Error", "The name is invalid!");
+        }
+        if (!Validator.Username(Username)) {
+            bool = false;
+            ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Username Error", "The username is invalid!");
+        }
+        if (!Validator.PasswordEquals(Password, ConfirmPassword)) {
+            bool = false;
+            ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Password Error", "The passwords are not equal!");
+        }
 
-        try {
-            ServerController.Register(new TUser(0, name, Username, Password, null, 0));
-        } catch (IOException ex) {
-            ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", null, ex.getMessage());
+        if (bool) {
+            try {
+                ServerController.Register(new TUser(0, name, Username, Password, null, 0));
+            } catch (IOException ex) {
+                ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", null, ex.getMessage());
+            }
         }
     }
-
 }
