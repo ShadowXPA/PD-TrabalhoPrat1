@@ -94,9 +94,9 @@ public class TCPUserHandler implements Runnable {
         }
     }
 
-    public TCPUserHandler(Socket UserSocket, Command Cmd, String IP) throws IOException {
+    public TCPUserHandler(Socket UserSocket, ObjectOutputStream oOS, Command Cmd, String IP) throws IOException {
         this.UserSocket = UserSocket;
-        this.oOS = new ObjectOutputStream(this.UserSocket.getOutputStream());
+        this.oOS = oOS;
         this.Cmd = Cmd;
         this.IP = IP;
     }

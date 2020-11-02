@@ -15,13 +15,6 @@ public class TCPListener implements Runnable {
     private final ObjectOutputStream oOS; //ObjectOutputStream para o TCP
     private final ObjectInputStream oIS;  //ObjectInputStream para o TCP
 
-    public TCPListener(Server server) throws IOException {
-        this.socket = new Socket(server.getAddress(), server.getTCPPort());
-        //App.CL_CFG.setSocket(this.socket);
-        this.oOS = new ObjectOutputStream(this.socket.getOutputStream());
-        this.oIS = new ObjectInputStream(this.socket.getInputStream());
-    }
-
     public TCPListener(Socket socket, ObjectOutputStream oOS, ObjectInputStream oIS) throws IOException {
         this.socket = socket;
         this.oOS = oOS;
