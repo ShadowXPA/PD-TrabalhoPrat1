@@ -15,6 +15,7 @@ public final class Validator {
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Name);
         //m.find();
+        //TO DO - tamanho das strings
         return Name.equals(m.group(0));
     }
 
