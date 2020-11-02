@@ -9,9 +9,9 @@ public final class Validator {
     // Create Static functions
     private Validator() {
     }
-    //TO DO
+
     public static boolean Name(String Name) {
-        String pattern = "[a-zA-ZáàÁÀãí ]+";
+        String pattern = "[a-zA-ZáàÁÀãíìóú ]+/m";
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Name);
         //m.find();
@@ -19,11 +19,19 @@ public final class Validator {
     }
 
     public static boolean Username(String Username) {
-        String pattern = "[a-zA-Z0-9áàÀÁ]+";
+        String pattern = "[a-zA-Z0-9áàÀÁíìóú]+";
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Username);
         //m.find();
         return Username.equals(m.group(0));
+    }
+
+    public static boolean Passowrd(String Password) {
+        String pattern = "[A-Z]+[a-z]+[0-9]+.+";
+        Pattern p = Pattern.compile(pattern);
+        Matcher m = p.matcher(Password);
+        //m.find();
+        return Password.equals(m.group(0));
     }
 
     public static boolean PasswordEquals(String Password, String ConfirmPassword) {

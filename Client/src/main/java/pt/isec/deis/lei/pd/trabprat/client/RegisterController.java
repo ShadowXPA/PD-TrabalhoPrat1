@@ -15,9 +15,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.client.config.DefaultWindowSizes;
-import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
@@ -74,16 +72,23 @@ public class RegisterController implements Initializable {
         if (!Validator.Name(name)) {
             bool = false;
             ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Name Error", "The name is invalid!");
+            TFName.setStyle("-fx-border-color: red");
         }
         if (!Validator.Username(Username)) {
             bool = false;
             ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Username Error", "The username is invalid!");
+            TFName.setStyle("-fx-border-color: red");
         }
         if (!Validator.PasswordEquals(Password, ConfirmPassword)) {
             bool = false;
             ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Password Error", "The passwords are not equal!");
+            TFName.setStyle("-fx-border-color: red");
         }
-
+        if (!Validator.Passowrd(Password)) {
+            bool = false;
+            ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Password Error", "The passwords need to have one upper case letter, one small case letter and one number!");
+            TFName.setStyle("-fx-border-color: red");
+        }
         if (bool) {
             try {
                 ServerController.Register(new TUser(0, name, Username, Password, null, 0));
