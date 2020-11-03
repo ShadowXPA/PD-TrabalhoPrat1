@@ -60,12 +60,12 @@ public class RegisterController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select photo");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("JPG", "*.jpg, *.jpeg"),
+                new FileChooser.ExtensionFilter("JPG", "*.jpg","*.jpeg"),
                 new FileChooser.ExtensionFilter("PNG", "*.png")
         );
         
         File file = fileChooser.showOpenDialog(App.CL_CFG.Stage);
-        //TFPhoto.setText(file.getAbsolutePath());
+        TFPhoto.setText(file.getAbsolutePath());
     }
 
     @FXML
@@ -112,7 +112,10 @@ public class RegisterController implements Initializable {
         }else{
             PFPassword.setStyle("-fx-border-color: none");
         }
-         //if (TFPhoto.)
+        if (TFPhoto.getText().isEmpty()){
+            bool = false;
+            ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Photo Error", "The photo is incorrect!");
+        }
         if (bool) {
             try {
                 //Thread
