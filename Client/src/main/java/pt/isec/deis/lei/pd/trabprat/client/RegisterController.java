@@ -17,7 +17,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
-import javafx.stage.Window;
 import pt.isec.deis.lei.pd.trabprat.client.config.DefaultWindowSizes;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
@@ -45,6 +44,8 @@ public class RegisterController implements Initializable {
     private Button BtnCancel;
     @FXML
     private Button BtnLogin;
+    @FXML
+    private TextField TFPhoto;
 
     /**
      * Initializes the controller class.
