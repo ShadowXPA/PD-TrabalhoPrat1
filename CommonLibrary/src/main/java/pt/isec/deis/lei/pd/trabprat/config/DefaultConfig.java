@@ -13,9 +13,9 @@ public final class DefaultConfig {
 
     public static final String getExternalIP() {
         String[] Urls = {
+            "https://api-ipv4.ip.sb/ip",
             "https://checkip.amazonaws.com/",
-            "https://api.ipify.org",
-            "https://api-ipv4.ip.sb/ip"
+            "https://api.ipify.org"
         };
         for (int i = 0; i < Urls.length; i++) {
             try {
