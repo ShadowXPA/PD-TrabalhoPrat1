@@ -5,6 +5,7 @@
  */
 package pt.isec.deis.lei.pd.trabprat.client;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -15,6 +16,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 import pt.isec.deis.lei.pd.trabprat.client.config.DefaultWindowSizes;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
@@ -53,6 +56,15 @@ public class RegisterController implements Initializable {
 
     @FXML
     private void BrowsePhoto(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select photo");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("JPG", "*.jpg, *.jpeg"),
+                new FileChooser.ExtensionFilter("PNG", "*.png")
+        );
+        
+        File file = fileChooser.showOpenDialog(App.CL_CFG.Stage);
+        //TFPhoto.setText(file.getAbsolutePath());
     }
 
     @FXML
@@ -73,24 +85,36 @@ public class RegisterController implements Initializable {
             bool = false;
             ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Name Error", "The name is invalid!");
             TFName.setStyle("-fx-border-color: red");
+        }else{
+            TFName.setStyle("-fx-border-color: none");
         }
         if (!Validator.Username(Username)) {
             bool = false;
             ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Username Error", "The username is invalid!");
-            TFName.setStyle("-fx-border-color: red");
+            TFUsername.setStyle("-fx-border-color: red");
+        }else{
+            TFUsername.setStyle("-fx-border-color: none");
         }
         if (!Validator.PasswordEquals(Password, ConfirmPassword)) {
             bool = false;
             ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Password Error", "The passwords are not equal!");
-            TFName.setStyle("-fx-border-color: red");
+            PFPassword.setStyle("-fx-border-color: red");
+            PFConfirmPassword.setStyle("-fx-border-color: red");
+        }else{
+            PFPassword.setStyle("-fx-border-color: none");
+            PFConfirmPassword.setStyle("-fx-border-color: none");
         }
         if (!Validator.Passowrd(Password)) {
             bool = false;
             ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Password Error", "The passwords need to have one upper case letter, one small case letter and one number!");
-            TFName.setStyle("-fx-border-color: red");
+            PFPassword.setStyle("-fx-border-color: red");
+        }else{
+            PFPassword.setStyle("-fx-border-color: none");
         }
+         //if (TFPhoto.)
         if (bool) {
             try {
+                //Thread
                 ServerController.Register(new TUser(0, name, Username, Password, null, 0));
             } catch (IOException ex) {
                 ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", null, ex.getMessage());

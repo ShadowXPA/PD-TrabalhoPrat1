@@ -47,6 +47,7 @@
                   <Font size="16.0" />
                </font>
             </Label>
+            <TextField fx:id="TFPhoto" editable="false" prefHeight="25.0" prefWidth="360.0" style="-fx-background-color: #f0f0f0;" />
             <Button fx:id="BtnPhoto" mnemonicParsing="false" onAction="#BrowsePhoto" style="-fx-background-color: #f0f0f0;" text="Browse..." />
             <ButtonBar prefHeight="40.0" prefWidth="200.0">
               <buttons>

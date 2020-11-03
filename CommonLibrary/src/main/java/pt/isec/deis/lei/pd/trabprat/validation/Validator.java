@@ -11,31 +11,50 @@ public final class Validator {
     }
 
     public static boolean Name(String Name) {
-        String pattern = "[a-zA-ZáàÁÀãíìóú ]+/m";
+        if(!(Name.length()> 1 && Name.length() < 51)){
+            return false;
+        }
+        String pattern = "([a-zA-ZáàÁÀãíìÍÌÓÒÚÙîÎóú ]+)";
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Name);
-        //m.find();
-        //TO DO - tamanho das strings
-        return Name.equals(m.group(0));
+        if(m.find()){
+            return Name.equals(m.group(0));
+        }else{
+            return false;
+        }
     }
 
     public static boolean Username(String Username) {
-        String pattern = "[a-zA-Z0-9áàÀÁíìóú]+";
+        if(!(Username.length()> 3 && Username.length() < 26)){
+            return false;
+        }
+        String pattern = "[a-zA-Z0-9]+";
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Username);
-        //m.find();
-        return Username.equals(m.group(0));
+        if(m.find()){
+            return Username.equals(m.group(0));
+        }else{
+            return false;
+        }
     }
 
     public static boolean Passowrd(String Password) {
-        String pattern = "[A-Z]+[a-z]+[0-9]+.+";
+        if(!(Password.length()> 5 && Password.length() < 256)){
+            return false;
+        }
+        String pattern = "[A-Z]+[a-z]+[0-9]+.+"; // mal
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Password);
-        //m.find();
-        return Password.equals(m.group(0));
+        if(m.find()){
+            return Password.equals(m.group(0));
+        }else{
+            return false;
+        }
     }
 
     public static boolean PasswordEquals(String Password, String ConfirmPassword) {
         return Password.equals(ConfirmPassword);
     }
+    
+    
 }
