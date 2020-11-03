@@ -1,47 +1,47 @@
 package pt.isec.deis.lei.pd.trabprat.server;
 
 import java.sql.SQLException;
+import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.db.Database;
+import pt.isec.deis.lei.pd.trabprat.server.thread.multicast.MulticasListener;
 import pt.isec.deis.lei.pd.trabprat.server.thread.tcp.TCPListener;
 import pt.isec.deis.lei.pd.trabprat.server.thread.udp.UDPListener;
 
 public class Main {
 
-    public static ServerConfig SV_CFG;
-    public static final Object SV_LOCK = new Object();
-
     public static void main(String[] args) {
+        ServerConfig SV_CFG;
         // Catch arguments
         // Initialize database connection
-        // Check for other servers, ask for information if there are other servers already online
         try {
             if (args.length <= 4) {
                 System.exit(-1);
             }
 
-            SV_CFG = new ServerConfig(InitDatabase(args));
-        } catch (Exception ex) {
-            ExceptionHandler.ShowException(ex);
-        }
+            SV_CFG = new ServerConfig(InitDatabase(args), DefaultConfig.getExternalIP());
+            // Check for other servers, ask for information if there are other servers already online
 
-        // Create threads
-        // Thread Listen UDP
-        Thread tdUDP = new Thread(new UDPListener(), "UDPListener");
-        tdUDP.setDaemon(true);
-        tdUDP.start();
-        // Thread Listen TCP
-        Thread tdTCP = new Thread(new TCPListener(), "TCPListener");
-        tdTCP.setDaemon(true);
-        tdTCP.start();
-        // Thread Multicast
-//        Thread tdMC = new Thread();
-//        tdMC.setDaemon(true);
-//        tdMC.start();
-        try {
-            // Handle Admin Commands
-            new CommandLineHandler(System.in, System.out).Initialize();
+            // Create threads
+            // Thread Listen UDP
+            Thread tdUDP = new Thread(new UDPListener(SV_CFG), "UDPListener");
+            tdUDP.setDaemon(true);
+            tdUDP.start();
+            // Thread Listen TCP
+            Thread tdTCP = new Thread(new TCPListener(SV_CFG), "TCPListener");
+            tdTCP.setDaemon(true);
+            tdTCP.start();
+            // Thread Multicast
+//            Thread tdMC = new Thread(new MulticasListener(SV_CFG), "MulticastListener");
+//            tdMC.setDaemon(true);
+//            tdMC.start();
+            try {
+                // Handle Admin Commands
+                new CommandLineHandler(System.in, System.out, SV_CFG).Initialize();
+            } catch (Exception ex) {
+                ExceptionHandler.ShowException(ex);
+            }
         } catch (Exception ex) {
             ExceptionHandler.ShowException(ex);
         }

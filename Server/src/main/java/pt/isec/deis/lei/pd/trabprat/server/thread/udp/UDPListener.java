@@ -8,8 +8,15 @@ import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
+import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 
 public class UDPListener implements Runnable {
+
+    private final ServerConfig SV_CFG;
+
+    public UDPListener(ServerConfig SV_CFG) {
+        this.SV_CFG = SV_CFG;
+    }
 
     @Override
     public void run() {
@@ -27,7 +34,7 @@ public class UDPListener implements Runnable {
                     Main.Log("Received UDP Packet from", IP);
 
                     try {
-                        Thread td = new Thread(new UDPHandler(ServerSocket, ReceivedPacket, IP));
+                        Thread td = new Thread(new UDPHandler(ServerSocket, ReceivedPacket, IP, SV_CFG));
                         td.setDaemon(true);
                         td.start();
                     } catch (Exception ex) {

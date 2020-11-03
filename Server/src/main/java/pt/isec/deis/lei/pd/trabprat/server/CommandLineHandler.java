@@ -8,13 +8,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
+import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 
 public class CommandLineHandler {
 
     private final BufferedReader Reader;
     private final BufferedWriter Writer;
+    private final ServerConfig SV_CFG;
 
     public void Initialize() throws IOException {
         boolean Continue = true;
@@ -69,8 +70,8 @@ public class CommandLineHandler {
         StringBuilder str = new StringBuilder();
         str.append(cmd).append(":\n");
         ArrayList<TUser> info;
-        synchronized (Main.SV_LOCK) {
-            info = Main.SV_CFG.DB.getAllUsers();
+        synchronized (SV_CFG) {
+            info = SV_CFG.DB.getAllUsers();
         }
         for (int i = 0; i < info.size(); i++) {
             str.append(info.get(i).toString());
@@ -80,9 +81,9 @@ public class CommandLineHandler {
         return str.toString();
     }
 
-    public CommandLineHandler(InputStream Reader, OutputStream Writer) {
+    public CommandLineHandler(InputStream Reader, OutputStream Writer, ServerConfig SV_CFG) {
         this.Reader = new BufferedReader(new InputStreamReader(Reader));
         this.Writer = new BufferedWriter(new OutputStreamWriter(Writer));
-
+        this.SV_CFG = SV_CFG;
     }
 }

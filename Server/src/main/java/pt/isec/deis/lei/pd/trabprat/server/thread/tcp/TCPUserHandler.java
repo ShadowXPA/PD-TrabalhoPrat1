@@ -9,6 +9,7 @@ import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.DefaultSvMsg;
+import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.db.DatabaseWrapper;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
@@ -18,6 +19,7 @@ public class TCPUserHandler implements Runnable {
     private final ObjectOutputStream oOS;
     private final Command Cmd;
     private final String IP;
+    private final ServerConfig SV_CFG;
 
     @Override
     public void run() {
@@ -55,8 +57,8 @@ public class TCPUserHandler implements Runnable {
         Command sendCmd;
         TUser user = (TUser) Cmd.Body;
         TUser info;
-        synchronized (Main.SV_LOCK) {
-            con = Main.SV_CFG.DB;
+        synchronized (SV_CFG) {
+            con = SV_CFG.DB;
             info = con.getUserByName(user.getUName());
         }
         if (info != null) {
@@ -64,7 +66,7 @@ public class TCPUserHandler implements Runnable {
             sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_USER_EXISTS);
             TCPHelper.SendTCPCommand(oOS, sendCmd);
         } else {
-            synchronized (Main.SV_LOCK) {
+            synchronized (SV_CFG) {
                 info = con.getUserByUsername(user.getUUsername());
             }
             if (info != null) {
@@ -75,7 +77,7 @@ public class TCPUserHandler implements Runnable {
                 // Encrypt password
                 // Store information
                 int inserted;
-                synchronized (Main.SV_LOCK) {
+                synchronized (SV_CFG) {
                     inserted = con.insertUser(user);
                 }
                 if (inserted <= 0) {
@@ -94,10 +96,11 @@ public class TCPUserHandler implements Runnable {
         }
     }
 
-    public TCPUserHandler(Socket UserSocket, ObjectOutputStream oOS, Command Cmd, String IP) throws IOException {
+    public TCPUserHandler(Socket UserSocket, ObjectOutputStream oOS, Command Cmd, String IP, ServerConfig SV_CFG) throws IOException {
         this.UserSocket = UserSocket;
         this.oOS = oOS;
         this.Cmd = Cmd;
         this.IP = IP;
+        this.SV_CFG = SV_CFG;
     }
 }

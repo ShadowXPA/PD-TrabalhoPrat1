@@ -4,7 +4,6 @@ import pt.isec.deis.lei.pd.trabprat.thread.udp.UDPHelper;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
@@ -12,12 +11,14 @@ import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
+import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 
 public class UDPHandler implements Runnable {
 
     private final DatagramSocket ServerSocket;
     private final DatagramPacket ReceivedPacket;
     private final String IP;
+    private final ServerConfig SV_CFG;
 
     @Override
     public void run() {
@@ -47,10 +48,12 @@ public class UDPHandler implements Runnable {
         // Ask other servers via multicast if they have less than 50% of the load (use lock)
         Command cmd;
         Object Accept = null; // Get response via multicast
+        ArrayList<Server> body = new ArrayList<>();
+        synchronized (SV_CFG) {
+            body.add(new Server(SV_CFG.ExternalIP, DefaultConfig.DEFAULT_UDP_PORT, DefaultConfig.DEFAULT_TCP_PORT, SV_CFG.ClientList.size()));
+        }
         if (Accept == null) {
             // Accepted
-            ArrayList<Server> body = new ArrayList<>();
-            body.add(new Server(InetAddress.getByName(DefaultConfig.getExternalIP()), DefaultConfig.DEFAULT_UDP_PORT, DefaultConfig.DEFAULT_TCP_PORT, 0));
             cmd = new Command(ECommand.CMD_ACCEPTED, body);
             UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket.getAddress(), ReceivedPacket.getPort(), cmd);
         } else {
@@ -61,11 +64,12 @@ public class UDPHandler implements Runnable {
         Main.Log("[Server] to " + IP, "" + cmd.CMD);
     }
 
-    public UDPHandler(DatagramSocket ServerSocket, DatagramPacket ReceivedPacket, String IP) throws IOException {
+    public UDPHandler(DatagramSocket ServerSocket, DatagramPacket ReceivedPacket, String IP, ServerConfig SV_CFG) throws IOException {
         this.ServerSocket = ServerSocket;
         this.ReceivedPacket = new DatagramPacket(ReceivedPacket.getData(),
                 ReceivedPacket.getOffset(), ReceivedPacket.getLength(),
                 ReceivedPacket.getAddress(), ReceivedPacket.getPort());
         this.IP = IP;
+        this.SV_CFG = SV_CFG;
     }
 }

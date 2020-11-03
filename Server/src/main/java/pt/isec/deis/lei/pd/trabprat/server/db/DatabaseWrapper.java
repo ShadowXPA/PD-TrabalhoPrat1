@@ -27,7 +27,7 @@ public final class DatabaseWrapper {
         if (info == null || info.isEmpty()) {
             return null;
         }
-        return parseUserInfo(info.get(0));
+        return parseUser(info.get(0));
     }
 
     public ArrayList<TUser> getAllUsers() {
@@ -37,12 +37,12 @@ public final class DatabaseWrapper {
         }
         ArrayList<TUser> Users = new ArrayList<>();
         for (int i = 0; i < info.size(); i++) {
-            Users.add(parseUserInfo(info.get(i)));
+            Users.add(parseUser(info.get(i)));
         }
         return Users;
     }
 
-    private TUser parseUserInfo(HashMap<String, String> Set) {
+    private TUser parseUser(HashMap<String, String> Set) {
         int uid = Integer.parseInt(Set.get("UID"));
         String uname = Set.get("UName");
         String uusername = Set.get("UUsername");

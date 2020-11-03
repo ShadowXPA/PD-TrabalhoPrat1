@@ -9,12 +9,14 @@ import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
+import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
 public class TCPHandler implements Runnable {
 
     private final Socket ClientSocket;
     private final String IP;
+    private final ServerConfig SV_CFG;
 
     @Override
     public void run() {
@@ -31,7 +33,7 @@ public class TCPHandler implements Runnable {
                 Main.Log(IP + " to [Server]", "" + cmd.CMD);
 
                 try {
-                    Thread td = new Thread(new TCPUserHandler(ClientSocket, oOS, cmd, IP));
+                    Thread td = new Thread(new TCPUserHandler(ClientSocket, oOS, cmd, IP, SV_CFG));
                     td.setDaemon(true);
                     td.start();
                 } catch (Exception ex) {
@@ -47,8 +49,9 @@ public class TCPHandler implements Runnable {
         Main.Log("Closed connection with", IP);
     }
 
-    public TCPHandler(Socket ClientSocket, String IP) {
+    public TCPHandler(Socket ClientSocket, String IP, ServerConfig SV_CFG) {
         this.ClientSocket = ClientSocket;
         this.IP = IP;
+        this.SV_CFG = SV_CFG;
     }
 }

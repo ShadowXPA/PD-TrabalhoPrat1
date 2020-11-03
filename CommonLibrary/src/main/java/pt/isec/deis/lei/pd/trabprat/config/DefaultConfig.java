@@ -2,21 +2,31 @@ package pt.isec.deis.lei.pd.trabprat.config;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 
 public final class DefaultConfig {
-    private DefaultConfig() {}
+
+    private DefaultConfig() {
+    }
 
     public static final String getExternalIP() {
-        try {
-            URL ExtIP = new URL("https://checkip.amazonaws.com/");
-            BufferedReader br = new BufferedReader(new InputStreamReader(ExtIP.openStream()));
-            return br.readLine();
-        } catch (Exception ex) {
-            ExceptionHandler.ShowException(ex);
+        String[] Urls = {
+            "https://checkip.amazonaws.com/",
+            "https://api.ipify.org",
+            "https://api-ipv4.ip.sb/ip"
+        };
+        for (int i = 0; i < Urls.length; i++) {
+            try {
+                URL ExtIP = new URL(Urls[i]);
+                BufferedReader br = new BufferedReader(new InputStreamReader(ExtIP.openStream()));
+                return br.readLine();
+            } catch (Exception ex) {
+                ExceptionHandler.ShowException(ex);
+            }
         }
-        return "Unknown";
+        return "127.0.0.1";
     }
 
     // Default Packet Sizes
