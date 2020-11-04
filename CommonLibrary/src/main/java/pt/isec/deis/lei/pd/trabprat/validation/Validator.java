@@ -11,10 +11,10 @@ public final class Validator {
     }
 
     public static boolean Name(String Name) {
-        if(!(Name.length()> 1 && Name.length() < 51)){
+        /*if(!(Name.length()> 1 && Name.length() < 51)){
             return false;
-        }
-        String pattern = "([a-zA-ZáàÁÀãíìÍÌÓÒÚÙîÎóú ]+)";
+        }*/
+        String pattern = "^([a-zA-ZáàÁÀãíìÍÌÓÒÚÙîÎóú ]+){2,50}$";
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Name);
         if(m.find()){
@@ -25,10 +25,10 @@ public final class Validator {
     }
 
     public static boolean Username(String Username) {
-        if(!(Username.length()> 3 && Username.length() < 26)){
+        /*if(!(Username.length()> 3 && Username.length() < 26)){
             return false;
-        }
-        String pattern = "[a-zA-Z0-9]+";
+        }*/
+        String pattern = "^[a-zA-Z0-9]+{4,25}$";
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Username);
         if(m.find()){
@@ -39,10 +39,10 @@ public final class Validator {
     }
 
     public static boolean Passowrd(String Password) {
-        if(!(Password.length()> 5 && Password.length() < 256)){
+        /*if(!(Password.length()> 5 && Password.length() < 256)){
             return false;
-        }
-        String pattern = "[A-Z]+[a-z]+[0-9]+.+"; // mal
+        }*/
+        String pattern = "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])[a-zA-Z0-9|!\"#$%&\\/()=?»\\\\«@£§€{[\\]}*+´`çºª~^¨<>,;.:\\-_]{6,255}$"; 
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Password);
         if(m.find()){
@@ -55,6 +55,4 @@ public final class Validator {
     public static boolean PasswordEquals(String Password, String ConfirmPassword) {
         return Password.equals(ConfirmPassword);
     }
-    
-    
 }
