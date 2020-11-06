@@ -11,9 +11,6 @@ public final class Validator {
     }
 
     public static boolean Name(String Name) {
-        /*if(!(Name.length()> 1 && Name.length() < 51)){
-            return false;
-        }*/
         String pattern = "^([a-zA-ZáàÁÀãíìÍÌÓÒÚÙîÎóú ]{2,50})$";
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Name);
@@ -25,9 +22,6 @@ public final class Validator {
     }
 
     public static boolean Username(String Username) {
-        /*if(!(Username.length()> 3 && Username.length() < 26)){
-            return false;
-        }*/
         String pattern = "^[a-zA-Z0-9]{4,25}$";
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Username);
@@ -39,9 +33,6 @@ public final class Validator {
     }
 
     public static boolean Passowrd(String Password) {
-        /*if(!(Password.length()> 5 && Password.length() < 256)){
-            return false;
-        }*/
         String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,255}$"; 
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Password);
