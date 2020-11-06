@@ -10,6 +10,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
+import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
 
 public class CommandLineHandler {
 
@@ -20,6 +21,7 @@ public class CommandLineHandler {
     public void Initialize() throws IOException {
         boolean Continue = true;
         String Command;
+        ExplorerController.CreateBaseDirectories(SV_CFG.DBConnection.getSchema());
 
         while (Continue) {
             Write("Admin: ");

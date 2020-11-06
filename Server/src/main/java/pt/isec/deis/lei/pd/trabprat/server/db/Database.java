@@ -20,6 +20,10 @@ public class Database {
     private final String Password;
     private Connection con = null;
 
+    public String getSchema() {
+        return Schema;
+    }
+
     private boolean Connect() {
         try {
             con = DriverManager.getConnection(this.ConnectionString, this.Username, this.Password);

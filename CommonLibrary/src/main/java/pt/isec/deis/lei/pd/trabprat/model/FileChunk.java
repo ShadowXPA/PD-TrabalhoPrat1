@@ -6,7 +6,7 @@ import java.util.UUID;
 public class FileChunk implements Serializable {
 
     private final byte[] FilePart;
-    private final int Offset;
+    private final long Offset;
     private final int Length;
     private final String Username;
     private final UUID GUID;
@@ -15,7 +15,7 @@ public class FileChunk implements Serializable {
         return FilePart;
     }
 
-    public int getOffset() {
+    public long getOffset() {
         return Offset;
     }
 
@@ -31,7 +31,7 @@ public class FileChunk implements Serializable {
         return GUID;
     }
 
-    public FileChunk(byte[] FilePart, int Offset, int Length, String Username, UUID GUID) {
+    public FileChunk(byte[] FilePart, long Offset, int Length, String Username, UUID GUID) {
         this.FilePart = FilePart;
         this.Offset = Offset;
         this.Length = Length;

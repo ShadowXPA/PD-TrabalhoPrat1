@@ -3,14 +3,18 @@ package pt.isec.deis.lei.pd.trabprat.server.thread.tcp;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
+import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.DefaultSvMsg;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.db.DatabaseWrapper;
+import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
 public class TCPUserHandler implements Runnable {
@@ -41,6 +45,10 @@ public class TCPUserHandler implements Runnable {
                     // Announce to other servers via multicast
                     break;
                 }
+                case ECommand.CMD_UPLOAD: {
+                    HandleUpload();
+                    break;
+                }
                 default: {
                     sendCmd = new Command(ECommand.CMD_FORBIDDEN);
                     TCPHelper.SendTCPCommand(oOS, sendCmd);
@@ -53,13 +61,13 @@ public class TCPUserHandler implements Runnable {
 
     private void HandleRegister() throws IOException {
         // Check if user already exists in the database
-        DatabaseWrapper con;
+        DatabaseWrapper db;
         Command sendCmd;
         TUser user = (TUser) Cmd.Body;
         TUser info;
         synchronized (SV_CFG) {
-            con = SV_CFG.DB;
-            info = con.getUserByName(user.getUName());
+            db = SV_CFG.DB;
+            info = db.getUserByName(user.getUName());
         }
         if (info != null) {
             // Send internal error
@@ -67,7 +75,7 @@ public class TCPUserHandler implements Runnable {
             TCPHelper.SendTCPCommand(oOS, sendCmd);
         } else {
             synchronized (SV_CFG) {
-                info = con.getUserByUsername(user.getUUsername());
+                info = db.getUserByUsername(user.getUUsername());
             }
             if (info != null) {
                 sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_USERNAME_EXISTS);
@@ -78,7 +86,7 @@ public class TCPUserHandler implements Runnable {
                 // Store information
                 int inserted;
                 synchronized (SV_CFG) {
-                    inserted = con.insertUser(user);
+                    inserted = db.insertUser(user);
                 }
                 if (inserted <= 0) {
                     // Tell client, server couldn't register
@@ -92,6 +100,32 @@ public class TCPUserHandler implements Runnable {
                     // After created, the client should send the photo asynchronously
                     // Announce to other servers via multicast
                 }
+            }
+        }
+    }
+
+    private void HandleUpload() {
+        // Check if user is in database
+        DatabaseWrapper db;
+        FileChunk fc = (FileChunk) Cmd.Body;
+        TUser user;
+        synchronized (SV_CFG) {
+            db = SV_CFG.DB;
+            user = db.getUserByUsername(fc.getUsername());
+        }
+        if (user != null) {
+            try {
+                // Write File
+                boolean hasGUID = (fc.getGUID() != null);
+                ExplorerController.WriteFile(SV_CFG.DBConnection.getSchema(),
+                        !hasGUID ? ExplorerController.AVATAR_SUBDIR : ExplorerController.FILES_SUBDIR,
+                        !hasGUID ? fc.getUsername() : fc.getGUID().toString(),
+                        fc.getFilePart(),
+                        fc.getOffset(),
+                        fc.getLength());
+                // Send through multicast
+            } catch (Exception ex) {
+                ExceptionHandler.ShowException(ex);
             }
         }
     }
