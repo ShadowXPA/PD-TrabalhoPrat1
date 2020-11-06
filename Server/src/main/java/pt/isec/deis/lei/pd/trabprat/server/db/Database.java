@@ -13,6 +13,9 @@ import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 public class Database {
 
     private final String ConnectionString;
+    private final String Host;
+    private final String Port;
+    private final String Schema;
     private final String Username;
     private final String Password;
     private Connection con = null;
@@ -30,8 +33,9 @@ public class Database {
 
     private void Disconnect() {
         try {
-            if (!con.isClosed())
+            if (!con.isClosed()) {
                 con.close();
+            }
             con = null;
         } catch (Exception ex) {
             ExceptionHandler.ShowException(ex);
@@ -206,10 +210,15 @@ public class Database {
         return i;
     }
 
-    public Database(String ConnectionString, String Username, String Password) throws SQLException, ClassNotFoundException {
+    public Database(String Host, String Port, String Schema, String Username, String Password) throws SQLException, ClassNotFoundException {
 //        Class.forName("com.mysql.cj.jdbc.Driver");
-        this.ConnectionString = ConnectionString;
+        this.Host = Host;
+        this.Port = Port;
+        this.Schema = Schema;
         this.Username = Username;
         this.Password = Password;
+        this.ConnectionString = "jdbc:mysql://" + this.Host + ":" + this.Port + "/" + this.Schema +
+                "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" +
+                "&useSSL=false";
     }
 }

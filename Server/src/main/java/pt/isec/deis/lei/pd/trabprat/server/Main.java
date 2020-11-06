@@ -53,8 +53,7 @@ public class Main {
         String DBSchema = args[2];
         String DBUser = args[3];
         String DBPassword = args[4];
-        String DBConnectionString = "jdbc:mysql://" + DBHost + ":" + DBPort + "/" + DBSchema;
-        return new Database(DBConnectionString, DBUser, DBPassword);
+        return new Database(DBHost, DBPort, DBSchema, DBUser, DBPassword);
     }
 
     public static void Log(String Prefix, String Message) {
