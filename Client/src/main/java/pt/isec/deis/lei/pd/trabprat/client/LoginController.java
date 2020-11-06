@@ -54,7 +54,7 @@ public class LoginController implements Initializable {
             } else {
                 TFUsername.setStyle("-fx-border-color: none");
             }
-            if (!Validator.Passowrd(Password)) {
+            if (!Validator.Password(Password)) {
                 bool = false;
                 ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Password Error", "The passwords need to have one upper case letter, one small case letter, one number and a minimum of 6 characters!");
                 PFPassword.setStyle("-fx-border-color: red");
