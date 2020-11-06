@@ -39,14 +39,15 @@ public final class ExplorerController {
         _WriteFile(BaseDir + SubDir + "/" + FileName, Bytes, Offset, Length);
     }
 
-    private synchronized static void _WriteFile(String Path, byte[] Bytes, long Offset, int Length) throws FileNotFoundException, IOException, InterruptedException {
+    private static void _WriteFile(String Path, byte[] Bytes, long Offset, int Length) throws FileNotFoundException, IOException, InterruptedException {
         try ( FileOutputStream f = new FileOutputStream(Path, true)) {
             if (Length > 0) {
-                while (f.getChannel().position() < Offset) {
-                    f.wait();
+                synchronized (f.getChannel()) {
+                    while (f.getChannel().position() < Offset) {
+                        f.getChannel().wait(10);
+                    }
                 }
                 f.write(Bytes, 0, Length);
-                f.notifyAll();
             }
         }
     }
