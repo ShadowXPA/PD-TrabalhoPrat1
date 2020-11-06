@@ -30,13 +30,15 @@ public final class ServerController {
         ObjectOutputStream OOS = App.CL_CFG.getOOS();
         try ( FileInputStream FIS = new FileInputStream(Path)) {
             Command command;
-            while (true) {
+            for (int i = 0; true; i += DefaultConfig.DEFAULT_TCP_PACKET_SIZE) {
                 byte[] buffer = new byte[DefaultConfig.DEFAULT_TCP_PACKET_SIZE];
-                int nbytes = FIS.read(buffer);
-                command = new Command(ECommand.CMD_UPLOAD,new FileChunk(buffer, Username, GUID));
-                if (nbytes == -1) {
+                int read = FIS.readNBytes(buffer, 0, buffer.length);
+                if (read == 0) {
                     break;
                 }
+                byte[] temp = new byte[read];
+                System.arraycopy(buffer, 0, temp, 0, read);
+                command = new Command(ECommand.CMD_UPLOAD, new FileChunk(temp, i, temp.length, Username, GUID));
                 TCPHelper.SendTCPCommand(OOS, command);
             }
         } catch (Exception ex) {
