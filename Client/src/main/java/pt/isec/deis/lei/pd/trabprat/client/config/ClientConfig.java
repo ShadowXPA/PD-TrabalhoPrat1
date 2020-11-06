@@ -9,12 +9,26 @@ import javafx.stage.Stage;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 
 public class ClientConfig {
+
     public ArrayList<Server> ServerList;
     public Stage Stage;
     public Server server;
     private Socket socket; //socket TCP
     private ObjectOutputStream OOS; //ObjectOutputStream para o TCP
     private ObjectInputStream OIS;  //ObjectInputStream para o TCP
+    private String Username;
+    private boolean LoggedIn = false;
+
+    public String getUsername() {
+        return this.Username;
+    }
+
+    public synchronized void setUsername(String Username) {
+        if (!this.LoggedIn) {
+            this.LoggedIn = true;
+            this.Username = Username;
+        }
+    }
 
     public void setSocket(Socket socket) throws IOException {
         this.socket = socket;
