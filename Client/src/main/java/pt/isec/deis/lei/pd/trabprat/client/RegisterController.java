@@ -23,6 +23,7 @@ import javafx.stage.FileChooser;
 import pt.isec.deis.lei.pd.trabprat.client.config.DefaultWindowSizes;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
+import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.encryption.AES;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.validation.Validator;
@@ -85,6 +86,7 @@ public class RegisterController implements Initializable {
         String Username = TFUsername.getText();
         String Password = PFPassword.getText();
         String ConfirmPassword = PFConfirmPassword.getText();
+        String Path = TFPhoto.getText();
         boolean bool = true;
         if (!Validator.Name(name)) {
             bool = false;
@@ -116,7 +118,7 @@ public class RegisterController implements Initializable {
         } else {
             PFPassword.setStyle("-fx-border-color: none");
         }
-        if (TFPhoto.getText().isEmpty()) {
+        if (Path.isEmpty()) {
             bool = false;
             ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Photo Error", "The photo is incorrect!");
         }
@@ -130,24 +132,10 @@ public class RegisterController implements Initializable {
             //Thread
             new Thread(() -> {
                 try {
-                    // Send TUser here
-                    ServerController.Register(new TUser(0, name, Username, Password, null, 0));
-                    // Send File right after
-                    Socket socket = App.CL_CFG.getSocket();
-                    FileInputStream FIS = new FileInputStream(TFPhoto.getText());
-                    //Fazer com classe ou nao? adicionar ao ClientConfig o Outputstream e mandar por lá?
-                    OutputStream OS = socket.getOutputStream();
-                    while (true) {
-                        byte[] buffer = new byte[4098];
-                        int nbytes = FIS.read(buffer);
-
-                        if (nbytes == -1) {
-                            break;
-                        }
-                        OS.write(buffer, 0, nbytes);
-                    }
-                    FIS.close();
-                    socket.close();
+                    // Send TUser
+                    ServerController.Register(new TUser(0, name, Username, Password, Path, 0));
+                    // Send File
+                    ServerController.SendFile(TFPhoto.getText());
                 } catch (IOException ex) {
                     ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", null, ex.getMessage());
                 }
