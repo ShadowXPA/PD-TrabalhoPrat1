@@ -73,9 +73,11 @@ public class CommandLineHandler {
         synchronized (SV_CFG) {
             info = SV_CFG.DB.getAllUsers();
         }
-        for (int i = 0; i < info.size(); i++) {
-            str.append(info.get(i).toString());
-            str.append("\n");
+        if (info != null) {
+            for (int i = 0; i < info.size(); i++) {
+                str.append(info.get(i).toString());
+                str.append("\n");
+            }
         }
         str.append("End ").append(cmd).append(".");
         return str.toString();
