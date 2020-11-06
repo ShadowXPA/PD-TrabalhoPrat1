@@ -123,9 +123,6 @@ public class RegisterController implements Initializable {
             bool = false;
             ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Photo Error", "The photo is incorrect!");
         }
-        
-           
-        
 
         if (bool) {
             //Thread
@@ -133,7 +130,7 @@ public class RegisterController implements Initializable {
                 try {
                     //UUID GUID = UUID.randomUUID();
                     // Send TUser
-                     String PasswordEncripted = AES.Encrypt(Password);
+                    String PasswordEncripted = AES.Encrypt(Password);
                     ServerController.Register(new TUser(0, name, Username, PasswordEncripted, Path, 0));
                     // Send File
                     ServerController.SendFile(TFPhoto.getText(), Username, null);
@@ -142,5 +139,13 @@ public class RegisterController implements Initializable {
                 }
             }).start();
         }
+        try {
+            App.CL_CFG.Stage.setWidth(DefaultWindowSizes.DEFAULT_LOGIN_WIDTH);
+            App.CL_CFG.Stage.setHeight(DefaultWindowSizes.DEFAULT_LOGIN_HEIGHT);
+            App.setRoot("Login");
+        } catch (Exception ex) {
+            ex.getMessage();
+        }
+
     }
 }

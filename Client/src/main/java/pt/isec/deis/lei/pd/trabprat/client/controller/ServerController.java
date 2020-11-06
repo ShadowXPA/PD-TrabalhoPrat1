@@ -30,7 +30,7 @@ public final class ServerController {
         ObjectOutputStream OOS = App.CL_CFG.getOOS();
         try ( FileInputStream FIS = new FileInputStream(Path)) {
             Command command;
-            for (int i = 0; true; i += DefaultConfig.DEFAULT_TCP_PACKET_SIZE) {
+            for (long i = 0; true; i += DefaultConfig.DEFAULT_TCP_PACKET_SIZE) {
                 byte[] buffer = new byte[DefaultConfig.DEFAULT_TCP_PACKET_SIZE];
                 int read = FIS.readNBytes(buffer, 0, buffer.length);
                 if (read == 0) {
