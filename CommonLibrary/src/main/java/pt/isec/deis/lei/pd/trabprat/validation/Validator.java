@@ -14,7 +14,7 @@ public final class Validator {
         /*if(!(Name.length()> 1 && Name.length() < 51)){
             return false;
         }*/
-        String pattern = "^([a-zA-ZáàÁÀãíìÍÌÓÒÚÙîÎóú ]+){2,50}$";
+        String pattern = "^([a-zA-ZáàÁÀãíìÍÌÓÒÚÙîÎóú ]{2,50})$";
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Name);
         if(m.find()){
@@ -28,7 +28,7 @@ public final class Validator {
         /*if(!(Username.length()> 3 && Username.length() < 26)){
             return false;
         }*/
-        String pattern = "^[a-zA-Z0-9]+{4,25}$";
+        String pattern = "^[a-zA-Z0-9]{4,25}$";
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Username);
         if(m.find()){
@@ -42,7 +42,7 @@ public final class Validator {
         /*if(!(Password.length()> 5 && Password.length() < 256)){
             return false;
         }*/
-        String pattern = "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])[a-zA-Z0-9|!\"#$%&\\/()=?»\\\\«@£§€{[\\]}*+´`çºª~^¨<>,;.:\\-_]{6,255}$"; 
+        String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,255}$"; 
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Password);
         if(m.find()){
