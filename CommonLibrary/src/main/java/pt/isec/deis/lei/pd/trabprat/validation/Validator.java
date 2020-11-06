@@ -32,7 +32,7 @@ public final class Validator {
         }
     }
 
-    public static boolean Passowrd(String Password) {
+    public static boolean Password(String Password) {
         String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,255}$"; 
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(Password);

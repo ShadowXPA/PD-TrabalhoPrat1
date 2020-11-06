@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.UUID;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -111,7 +112,7 @@ public class RegisterController implements Initializable {
             PFPassword.setStyle("-fx-border-color: none");
             PFConfirmPassword.setStyle("-fx-border-color: none");
         }
-        if (!Validator.Passowrd(Password)) {
+        if (!Validator.Password(Password)) {
             bool = false;
             ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Password Error", "The passwords need to have one upper case letter, one small case letter, one number and a minimum of 6 characters!");
             PFPassword.setStyle("-fx-border-color: red");
@@ -122,21 +123,21 @@ public class RegisterController implements Initializable {
             bool = false;
             ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Photo Error", "The photo is incorrect!");
         }
-        try {
-            AES.Encrypt(Password);
-        } catch (Exception ex) {
-            ex.getMessage();
-        }
+        
+           
+        
 
         if (bool) {
             //Thread
             new Thread(() -> {
                 try {
+                    //UUID GUID = UUID.randomUUID();
                     // Send TUser
-                    ServerController.Register(new TUser(0, name, Username, Password, Path, 0));
+                     String PasswordEncripted = AES.Encrypt(Password);
+                    ServerController.Register(new TUser(0, name, Username, PasswordEncripted, Path, 0));
                     // Send File
-                    ServerController.SendFile(TFPhoto.getText());
-                } catch (IOException ex) {
+                    ServerController.SendFile(TFPhoto.getText(), Username, null);
+                } catch (Exception ex) {
                     ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", null, ex.getMessage());
                 }
             }).start();
