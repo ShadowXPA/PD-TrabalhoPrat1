@@ -1,5 +1,6 @@
 package pt.isec.deis.lei.pd.trabprat.server.thread.tcp;
 
+import java.io.EOFException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -10,6 +11,7 @@ import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
+import pt.isec.deis.lei.pd.trabprat.server.model.Client;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
 public class TCPHandler implements Runnable {
@@ -43,8 +45,17 @@ public class TCPHandler implements Runnable {
                     Main.Log("[Server] to " + IP, "" + cmdErr.CMD);
                 }
             }
+        } catch (EOFException ex) {
         } catch (Exception ex) {
             ExceptionHandler.ShowException(ex);
+        }
+        synchronized (SV_CFG) {
+            // Removes client if they were logged in
+            Client client = SV_CFG.ClientList.remove(ClientSocket);
+            if (client != null) {
+                Main.Log("[User: (" + client.User.getUID() + ") "
+                        + client.User.getUUsername() + "]", "has disconnected.");
+            }
         }
         Main.Log("Closed connection with", IP);
     }

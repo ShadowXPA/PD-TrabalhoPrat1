@@ -1,14 +1,19 @@
 package pt.isec.deis.lei.pd.trabprat.server.model;
 
-import java.net.Socket;
+import java.io.ObjectOutputStream;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 
 public class Client {
     public final TUser User;
-    public final Socket Socket;
+    public final ObjectOutputStream oOS;
 
-    public Client(TUser User, Socket Socket) {
+    @Override
+    public String toString() {
+        return User.toString();
+    }
+
+    public Client(TUser User, ObjectOutputStream oOS) {
         this.User = User;
-        this.Socket = Socket;
+        this.oOS = oOS;
     }
 }

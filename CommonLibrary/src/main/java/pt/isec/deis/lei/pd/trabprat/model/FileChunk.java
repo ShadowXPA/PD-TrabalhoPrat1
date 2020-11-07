@@ -10,6 +10,7 @@ public class FileChunk implements Serializable {
     private final int Length;
     private final String Username;
     private final UUID GUID;
+    private final String Extension;
 
     public byte[] getFilePart() {
         return FilePart;
@@ -31,11 +32,16 @@ public class FileChunk implements Serializable {
         return GUID;
     }
 
-    public FileChunk(byte[] FilePart, long Offset, int Length, String Username, UUID GUID) {
+    public String getExtension() {
+        return Extension;
+    }
+
+    public FileChunk(byte[] FilePart, long Offset, int Length, String Username, UUID GUID, String Extension) {
         this.FilePart = FilePart;
         this.Offset = Offset;
         this.Length = Length;
         this.Username = Username;
         this.GUID = GUID;
+        this.Extension = Extension;
     }
 }

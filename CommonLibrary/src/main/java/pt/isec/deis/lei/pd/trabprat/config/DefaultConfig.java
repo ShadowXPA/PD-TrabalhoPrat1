@@ -17,12 +17,12 @@ public final class DefaultConfig {
             "https://checkip.amazonaws.com/",
             "https://api.ipify.org"
         };
-        for (int i = 0; i < Urls.length; i++) {
+        for (String Url : Urls) {
             try {
-                URL ExtIP = new URL(Urls[i]);
+                URL ExtIP = new URL(Url);
                 BufferedReader br = new BufferedReader(new InputStreamReader(ExtIP.openStream()));
                 return br.readLine();
-            } catch (Exception ex) {
+            }catch (Exception ex) {
                 ExceptionHandler.ShowException(ex);
             }
         }

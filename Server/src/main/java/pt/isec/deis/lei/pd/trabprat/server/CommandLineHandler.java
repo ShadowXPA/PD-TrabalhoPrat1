@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
+import pt.isec.deis.lei.pd.trabprat.server.model.Client;
 
 public class CommandLineHandler {
 
@@ -62,6 +63,10 @@ public class CommandLineHandler {
                 WriteLine(HandleUsers(cmd));
                 break;
             }
+            case "online": {
+                WriteLine(HandleOnline(cmd));
+                break;
+            }
             default: {
                 break;
             }
@@ -79,6 +84,22 @@ public class CommandLineHandler {
             for (int i = 0; i < info.size(); i++) {
                 str.append(info.get(i).toString());
                 str.append("\n");
+            }
+        }
+        str.append("End ").append(cmd).append(".");
+        return str.toString();
+    }
+
+    private String HandleOnline(String cmd) {
+        StringBuilder str = new StringBuilder();
+        str.append(cmd).append(":\n");
+        synchronized (SV_CFG) {
+            var info = SV_CFG.ClientList;
+            if (info != null) {
+                for (Client c : info.values()) {
+                    str.append(c.toString());
+                    str.append("\n");
+                }
             }
         }
         str.append("End ").append(cmd).append(".");

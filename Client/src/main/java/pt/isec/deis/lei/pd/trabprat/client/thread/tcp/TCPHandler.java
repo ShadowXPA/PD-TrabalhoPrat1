@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
@@ -33,8 +34,11 @@ public class TCPHandler implements Runnable {
                     break;
                 }
                 case ECommand.CMD_CREATED: {
-                    if(command.Body instanceof TUser){
+                    if (command.Body instanceof TUser) {
+                        TUser user = (TUser) command.Body;
                         System.out.println("Utilizador criado!");
+                        // Send File
+                        ServerController.SendFile(user.getUPhoto(), user.getUUsername(), null);
                     }
                     break;
                 }
@@ -43,7 +47,7 @@ public class TCPHandler implements Runnable {
                     break;
                 }
                 default: {
-                    
+
                 }
             }
         } catch (Exception ex) {

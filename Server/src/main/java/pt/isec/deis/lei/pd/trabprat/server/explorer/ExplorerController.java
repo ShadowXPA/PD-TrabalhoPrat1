@@ -34,6 +34,11 @@ public final class ExplorerController {
         }
     }
 
+    public static void Touch(String DBName, String SubDir, String FileName) throws IOException, FileNotFoundException, InterruptedException {
+        String BaseDir = DBName + BASE_DIR;
+        _WriteFile(BaseDir + SubDir + "/" + FileName, null, 0, 0);
+    }
+
     public static void WriteFile(String DBName, String SubDir, String FileName, byte[] Bytes, long Offset, int Length) throws FileNotFoundException, IOException, InterruptedException {
         String BaseDir = DBName + BASE_DIR;
         _WriteFile(BaseDir + SubDir + "/" + FileName, Bytes, Offset, Length);

@@ -4,8 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.net.Socket;
 import java.util.UUID;
 import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
@@ -38,7 +36,11 @@ public final class ServerController {
                 }
                 byte[] temp = new byte[read];
                 System.arraycopy(buffer, 0, temp, 0, read);
-                command = new Command(ECommand.CMD_UPLOAD, new FileChunk(temp, i, temp.length, Username, GUID));
+                int extIndex = Path.lastIndexOf(".");
+                String extension = "";
+                if (extIndex != -1)
+                    extension = Path.substring(extIndex);
+                command = new Command(ECommand.CMD_UPLOAD, new FileChunk(temp, i, temp.length, Username, GUID, extension));
                 TCPHelper.SendTCPCommand(OOS, command);
             }
         } catch (Exception ex) {

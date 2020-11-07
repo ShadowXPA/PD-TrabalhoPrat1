@@ -6,13 +6,9 @@
 package pt.isec.deis.lei.pd.trabprat.client;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.UUID;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -24,7 +20,6 @@ import javafx.stage.FileChooser;
 import pt.isec.deis.lei.pd.trabprat.client.config.DefaultWindowSizes;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
-import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.encryption.AES;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.validation.Validator;
@@ -87,7 +82,7 @@ public class RegisterController implements Initializable {
         String Username = TFUsername.getText();
         String Password = PFPassword.getText();
         String ConfirmPassword = PFConfirmPassword.getText();
-        String Path = TFPhoto.getText();
+        String Path = TFPhoto.getText().replace("\\", "\\\\");
         boolean bool = true;
         if (!Validator.Name(name)) {
             bool = false;
@@ -132,8 +127,6 @@ public class RegisterController implements Initializable {
                     // Send TUser
                     String PasswordEncripted = AES.Encrypt(Password);
                     ServerController.Register(new TUser(0, name, Username, PasswordEncripted, Path, 0));
-                    // Send File
-                    ServerController.SendFile(TFPhoto.getText(), Username, null);
                 } catch (Exception ex) {
                     ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", null, ex.getMessage());
                 }

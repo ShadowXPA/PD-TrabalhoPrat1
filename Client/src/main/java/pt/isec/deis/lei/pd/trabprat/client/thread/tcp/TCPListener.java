@@ -28,6 +28,8 @@ public class TCPListener implements Runnable {
             boolean Continue = true;
             while (Continue) {
                 cmd = (Command) oIS.readUnshared();
+                System.out.println("Command from server: " + cmd.CMD);
+                System.out.println("Data: " + cmd.Body);
 
                 try {
                     Thread td = new Thread(new TCPHandler(socket, oOS, oIS, cmd));

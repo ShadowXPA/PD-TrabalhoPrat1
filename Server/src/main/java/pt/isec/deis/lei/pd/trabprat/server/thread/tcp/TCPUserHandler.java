@@ -1,5 +1,6 @@
 package pt.isec.deis.lei.pd.trabprat.server.thread.tcp;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -15,6 +16,7 @@ import pt.isec.deis.lei.pd.trabprat.server.config.DefaultSvMsg;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.db.DatabaseWrapper;
 import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
+import pt.isec.deis.lei.pd.trabprat.server.model.Client;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
 public class TCPUserHandler implements Runnable {
@@ -38,11 +40,7 @@ public class TCPUserHandler implements Runnable {
                     break;
                 }
                 case ECommand.CMD_LOGIN: {
-                    // Check if user exists in the database
-                    // Check if password is good and matches
-                    // Send OK to the client
-                    // Add user to the client list
-                    // Announce to other servers via multicast
+                    HandleLogin();
                     break;
                 }
                 case ECommand.CMD_UPLOAD: {
@@ -52,6 +50,8 @@ public class TCPUserHandler implements Runnable {
                 default: {
                     sendCmd = new Command(ECommand.CMD_FORBIDDEN);
                     TCPHelper.SendTCPCommand(oOS, sendCmd);
+                    Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
+                    break;
                 }
             }
         } catch (Exception ex) {
@@ -59,15 +59,17 @@ public class TCPUserHandler implements Runnable {
         }
     }
 
-    private void HandleRegister() throws IOException {
+    private void HandleRegister() throws IOException, FileNotFoundException, InterruptedException {
         // Check if user already exists in the database
         DatabaseWrapper db;
         Command sendCmd;
         TUser user = (TUser) Cmd.Body;
         TUser info;
+        String DBName;
         synchronized (SV_CFG) {
             db = SV_CFG.DB;
             info = db.getUserByName(user.getUName());
+            DBName = SV_CFG.DBConnection.getSchema();
         }
         if (info != null) {
             // Send internal error
@@ -80,18 +82,30 @@ public class TCPUserHandler implements Runnable {
             if (info != null) {
                 sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_USERNAME_EXISTS);
                 TCPHelper.SendTCPCommand(oOS, sendCmd);
+                Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
             } else {
                 // Check if password is good
                 // Encrypt password
                 // Store information
+                int extIndex = user.getUPhoto().lastIndexOf(".");
+                String extension = "";
+                if (extIndex != -1) {
+                    extension = user.getUPhoto().substring(extIndex);
+                }
+                ExplorerController.CreateUserDirectory(DBName, user.getUUsername());
+                ExplorerController.Touch(DBName, ExplorerController.AVATAR_SUBDIR, user.getUUsername() + extension);
+                String fullDir = DBName + ExplorerController.BASE_DIR + ExplorerController.AVATAR_SUBDIR + "/"
+                        + user.getUUsername() + extension;
+                TUser insUser = new TUser(0, user.getUName(), user.getUUsername(), user.getUPassword(), fullDir, 0);
                 int inserted;
                 synchronized (SV_CFG) {
-                    inserted = db.insertUser(user);
+                    inserted = db.insertUser(insUser);
                 }
                 if (inserted <= 0) {
                     // Tell client, server couldn't register
                     sendCmd = new Command(ECommand.CMD_SERVICE_UNAVAILABLE, DefaultSvMsg.SV_INTERNAL_ERROR);
                     TCPHelper.SendTCPCommand(oOS, sendCmd);
+                    Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
                 } else {
                     // Send OK to the client
                     sendCmd = new Command(ECommand.CMD_CREATED, user);
@@ -104,7 +118,56 @@ public class TCPUserHandler implements Runnable {
         }
     }
 
-    private void HandleUpload() {
+    private void HandleLogin() throws IOException {
+        // Check if user exists in the database
+        DatabaseWrapper db;
+        Command sendCmd;
+        TUser user = (TUser) Cmd.Body;
+        TUser info;
+        synchronized (SV_CFG) {
+            db = SV_CFG.DB;
+            info = db.getUserByUsername(user.getUUsername());
+        }
+        if (info != null) {
+            // Check if password is good and matches
+            // Send OK to the client or UNAUTHORIZED
+            if (user.getUPassword().equals(info.getUPassword())) {
+                // OK
+                boolean LoggedIn;
+                synchronized (SV_CFG) {
+                    LoggedIn = SV_CFG.ClientList.containsKey(UserSocket);
+                }
+                if (!LoggedIn) {
+                    sendCmd = new Command(ECommand.CMD_LOGIN);
+                    TCPHelper.SendTCPCommand(oOS, sendCmd);
+                    Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
+                    Main.Log("[User: (" + info.getUID() + ") " + info.getUUsername() + "]", "has logged in.");
+                    // Add user to the client list
+                    synchronized (SV_CFG) {
+                        SV_CFG.ClientList.put(UserSocket, new Client(info, oOS));
+                    }
+                    // Announce to other servers via multicast
+                } else {
+                    // User already logged in
+                    sendCmd = new Command(ECommand.CMD_UNAUTHORIZED, DefaultSvMsg.SV_USER_LOGGED_IN);
+                    TCPHelper.SendTCPCommand(oOS, sendCmd);
+                    Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
+                }
+            } else {
+                // Password doesn't match
+                sendCmd = new Command(ECommand.CMD_UNAUTHORIZED, DefaultSvMsg.SV_PASSWORD_DOES_NOT_MATCH);
+                TCPHelper.SendTCPCommand(oOS, sendCmd);
+                Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
+            }
+        } else {
+            // Username doesn't exist....
+            sendCmd = new Command(ECommand.CMD_UNAUTHORIZED, DefaultSvMsg.SV_USERNAME_NOT_EXISTS);
+            TCPHelper.SendTCPCommand(oOS, sendCmd);
+            Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
+        }
+    }
+
+    private void HandleUpload() throws IOException {
         // Check if user is in database
         DatabaseWrapper db;
         FileChunk fc = (FileChunk) Cmd.Body;
@@ -119,7 +182,7 @@ public class TCPUserHandler implements Runnable {
                 boolean hasGUID = (fc.getGUID() != null);
                 ExplorerController.WriteFile(SV_CFG.DBConnection.getSchema(),
                         !hasGUID ? ExplorerController.AVATAR_SUBDIR : ExplorerController.FILES_SUBDIR,
-                        !hasGUID ? fc.getUsername() : fc.getGUID().toString(),
+                        !hasGUID ? fc.getUsername() + fc.getExtension() : fc.getGUID().toString() + fc.getExtension(),
                         fc.getFilePart(),
                         fc.getOffset(),
                         fc.getLength());
@@ -127,6 +190,10 @@ public class TCPUserHandler implements Runnable {
             } catch (Exception ex) {
                 ExceptionHandler.ShowException(ex);
             }
+        } else {
+            Command sendCmd = new Command(ECommand.CMD_FORBIDDEN);
+            TCPHelper.SendTCPCommand(oOS, sendCmd);
+            Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
         }
     }
 

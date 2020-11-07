@@ -1,8 +1,10 @@
 package pt.isec.deis.lei.pd.trabprat.server.config;
 
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import pt.isec.deis.lei.pd.trabprat.comparator.ServerComparator;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.server.db.Database;
@@ -15,7 +17,7 @@ public class ServerConfig {
     public final DatabaseWrapper DB;
     public final ServerComparator SvComp;
     public final ArrayList<Server> ServerList;
-    public final ArrayList<Client> ClientList;
+    public final HashMap<Socket, Client> ClientList;
     public final InetAddress ExternalIP;
 
     public void SortServerList() {
@@ -28,6 +30,6 @@ public class ServerConfig {
         this.SvComp = new ServerComparator();
         this.ExternalIP = InetAddress.getByName(ExternalIP);
         this.ServerList = new ArrayList<>();
-        this.ClientList = new ArrayList<>();
+        this.ClientList = new HashMap<>();
     }
 }
