@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class TUser implements Serializable {
+
     private final int UID;
     private final String UName;
     private final String UUsername;
