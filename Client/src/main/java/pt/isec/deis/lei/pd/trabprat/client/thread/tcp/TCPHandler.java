@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import javafx.scene.control.Alert;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
+import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
@@ -39,11 +41,18 @@ public class TCPHandler implements Runnable {
                         System.out.println("Utilizador criado!");
                         // Send File
                         ServerController.SendFile(user.getUPhoto(), user.getUUsername(), null);
+                        ClientDialog.ShowDialog(Alert.AlertType.INFORMATION, "Information Dialog", "User", "The user has been successfully created!");
                     }
                     break;
                 }
                 case ECommand.CMD_BAD_REQUEST: {
-
+                    if (command.Body instanceof String) {
+                        ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error", (String) command.Body);
+                    }
+                    break;
+                }
+                case ECommand.CMD_LOGIN:{
+                    
                     break;
                 }
                 default: {

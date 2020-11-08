@@ -61,8 +61,7 @@ public class RegisterController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select photo");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("JPG", "*.jpg", "*.jpeg"),
-                new FileChooser.ExtensionFilter("PNG", "*.png")
+                new FileChooser.ExtensionFilter("Images", "*.jpg", "*.jpeg", "*.png")
         );
 
         File file = fileChooser.showOpenDialog(App.CL_CFG.Stage);
@@ -131,14 +130,14 @@ public class RegisterController implements Initializable {
                     ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", null, ex.getMessage());
                 }
             }).start();
+            try {
+                App.CL_CFG.Stage.setWidth(DefaultWindowSizes.DEFAULT_LOGIN_WIDTH);
+                App.CL_CFG.Stage.setHeight(DefaultWindowSizes.DEFAULT_LOGIN_HEIGHT);
+                App.setRoot("Login");
+            } catch (Exception ex) {
+                ex.getMessage();
+            }
         }
-        try {
-            App.CL_CFG.Stage.setWidth(DefaultWindowSizes.DEFAULT_LOGIN_WIDTH);
-            App.CL_CFG.Stage.setHeight(DefaultWindowSizes.DEFAULT_LOGIN_HEIGHT);
-            App.setRoot("Login");
-        } catch (Exception ex) {
-            ex.getMessage();
-        }
-
+        
     }
 }
