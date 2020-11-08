@@ -2,6 +2,7 @@ package pt.isec.deis.lei.pd.trabprat.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 public class TUser implements Serializable {
 
@@ -39,6 +40,34 @@ public class TUser implements Serializable {
 
     public Date getDate() {
         return Date;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 71 * hash + this.UID;
+        hash = 71 * hash + Objects.hashCode(this.UName);
+        hash = 71 * hash + Objects.hashCode(this.UUsername);
+        hash = 71 * hash + Objects.hashCode(this.UPassword);
+        hash = 71 * hash + Objects.hashCode(this.UPhoto);
+        hash = 71 * hash + (int) (this.UDate ^ (this.UDate >>> 32));
+        hash = 71 * hash + Objects.hashCode(this.Date);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TUser other = (TUser) obj;
+        return this.UID == other.UID;
     }
 
     @Override

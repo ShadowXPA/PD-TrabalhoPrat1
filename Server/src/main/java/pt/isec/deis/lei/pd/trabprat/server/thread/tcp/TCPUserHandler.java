@@ -134,19 +134,22 @@ public class TCPUserHandler implements Runnable {
             if (user.getUPassword().equals(info.getUPassword())) {
                 // OK
                 boolean LoggedIn;
+                Client c = new Client(info, oOS);
                 synchronized (SV_CFG) {
-                    LoggedIn = SV_CFG.ClientList.containsKey(UserSocket);
+                    LoggedIn = SV_CFG.ClientListContains(c);
                 }
                 if (!LoggedIn) {
+                    // Send channel list, online users, DMs
                     sendCmd = new Command(ECommand.CMD_LOGIN);
                     TCPHelper.SendTCPCommand(oOS, sendCmd);
                     Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
                     Main.Log("[User: (" + info.getUID() + ") " + info.getUUsername() + "]", "has logged in.");
                     // Add user to the client list
                     synchronized (SV_CFG) {
-                        SV_CFG.ClientList.put(UserSocket, new Client(info, oOS));
+                        SV_CFG.ClientList.put(UserSocket, c);
                     }
                     // Announce to other servers via multicast
+                    // Send to other users that the list of users has been updated
                 } else {
                     // User already logged in
                     sendCmd = new Command(ECommand.CMD_UNAUTHORIZED, DefaultSvMsg.SV_USER_LOGGED_IN);

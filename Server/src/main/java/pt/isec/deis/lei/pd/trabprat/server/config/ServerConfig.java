@@ -20,6 +20,10 @@ public class ServerConfig {
     public final HashMap<Socket, Client> ClientList;
     public final InetAddress ExternalIP;
 
+    public boolean ClientListContains(Client user) {
+        return ClientList.containsValue(user);
+    }
+
     public void SortServerList() {
         ServerList.sort(SvComp);
     }
