@@ -1,5 +1,6 @@
 package pt.isec.deis.lei.pd.trabprat.server.db;
 
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -126,31 +127,46 @@ public final class DatabaseWrapper {
     }
 
     public int insertUser(TUser User) {
+        String uphoto = "null";
+        if (User.getUPhoto() != null) {
+            uphoto = "'" + User.getUPhoto().replace("'", "''") + "'";
+        }
         return db.Insert("TUser",
                 new ArrayList<>(List.of("0",
-                        "'" + User.getUName() + "'",
-                        "'" + User.getUUsername() + "'",
-                        "'" + User.getUPassword() + "'",
-                        "'" + User.getUPhoto() + "'",
+                        "'" + User.getUName().replace("'", "''") + "'",
+                        "'" + User.getUUsername().replace("'", "''") + "'",
+                        "'" + User.getUPassword().replace("'", "''") + "'",
+                        uphoto,
                         "" + new Date().getTime())));
     }
 
     public int insertMessage(TMessage Message) {
+        String mpath = "null";
+        if (Message.getMPath() != null) {
+            mpath = "'" + Message.getMPath().replace("'", "''") + "'";
+        }
         return db.Insert("TMessage",
                 new ArrayList<>(List.of("0",
                         "" + Message.getMUID().getUID(),
-                        "'" + Message.getMText() + "'",
-                        "'" + Message.getMPath() + "'",
+                        "'" + Message.getMText().replace("'", "''") + "'",
+                        mpath,
                         "" + new Date().getTime())));
     }
 
     public int insertChannel(TChannel Channel) {
+        String cdesc = "null", cpass = "null";
+        if (Channel.getCDescription() != null) {
+            cdesc = "'" + Channel.getCDescription().replace("'", "''") + "'";
+        }
+        if (Channel.getCPassword() != null) {
+            cpass = "'" + Channel.getCPassword().replace("'", "''") + "'";
+        }
         return db.Insert("TChannel",
                 new ArrayList<>(List.of("0",
                         "" + Channel.getCUID().getUID(),
-                        "'" + Channel.getCName() + "'",
-                        "'" + Channel.getCDescription() + "'",
-                        "'" + Channel.getCPassword() + "'",
+                        "'" + Channel.getCName().replace("'", "''") + "'",
+                        cdesc,
+                        cpass,
                         "" + new Date().getTime())));
     }
 
