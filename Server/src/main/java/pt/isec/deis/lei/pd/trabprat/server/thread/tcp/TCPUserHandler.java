@@ -139,7 +139,7 @@ public class TCPUserHandler implements Runnable {
                 }
                 if (!LoggedIn) {
                     // Send channel list, online users, DMs
-                    LoginPackage lp = new LoginPackage();
+                    LoginPackage lp = new LoginPackage(info);
                     synchronized (SV_CFG) {
                         var users = SV_CFG.ClientList.values().iterator();
                         while (users.hasNext()) {

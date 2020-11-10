@@ -5,15 +5,17 @@ import java.util.ArrayList;
 
 public class LoginPackage implements Serializable {
 
+    public final TUser LoginAuthor;
     public final ArrayList<TUser> Users;
     public final ArrayList<TChannel> Channels;
     public final ArrayList<TUser> DMUsers;
 
-    public LoginPackage() {
-        this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    public LoginPackage(TUser LoginAuthor) {
+        this(LoginAuthor, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
-    public LoginPackage(ArrayList<TUser> Users, ArrayList<TChannel> Channels, ArrayList<TUser> DMUsers) {
+    public LoginPackage(TUser LoginAuthor, ArrayList<TUser> Users, ArrayList<TChannel> Channels, ArrayList<TUser> DMUsers) {
+        this.LoginAuthor = LoginAuthor;
         this.Users = Users;
         this.Channels = Channels;
         this.DMUsers = DMUsers;
