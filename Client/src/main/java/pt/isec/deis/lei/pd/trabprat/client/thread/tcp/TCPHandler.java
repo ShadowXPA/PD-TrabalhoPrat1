@@ -55,9 +55,9 @@ public class TCPHandler implements Runnable {
                     }
                     break;
                 }
-                case ECommand.CMD_LOGIN:{
-                    LoginPackage LP = (LoginPackage)command.Body;
-                    synchronized (App.CL_CFG){
+                case ECommand.CMD_LOGIN: {
+                    LoginPackage LP = (LoginPackage) command.Body;
+                    synchronized (App.CL_CFG) {
                         App.CL_CFG.OnlineUsers = LP.Users;
                         App.CL_CFG.ChannelsList = LP.Channels;
                         App.CL_CFG.MyUser = LP.LoginAuthor;
@@ -66,13 +66,17 @@ public class TCPHandler implements Runnable {
                     }
                     break;
                 }
-                case ECommand.CMD_UNAUTHORIZED:{
+                case ECommand.CMD_UNAUTHORIZED: {
                     if (command.Body instanceof String) {
                         ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error", (String) command.Body);
                     }
-                    synchronized (App.CL_CFG){
+                    synchronized (App.CL_CFG) {
                         App.CL_CFG.notifyAll();
                     }
+                    break;
+                }
+                case ECommand.CMD_FORBIDDEN: {
+                    ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error", "Command Forbidden");
                     break;
                 }
                 default: {

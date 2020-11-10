@@ -38,8 +38,9 @@ public final class ServerController {
                 System.arraycopy(buffer, 0, temp, 0, read);
                 int extIndex = Path.lastIndexOf(".");
                 String extension = "";
-                if (extIndex != -1)
+                if (extIndex != -1) {
                     extension = Path.substring(extIndex);
+                }
                 command = new Command(ECommand.CMD_UPLOAD, new FileChunk(temp, i, temp.length, Username, GUID, extension));
                 TCPHelper.SendTCPCommand(OOS, command);
             }
@@ -50,6 +51,11 @@ public final class ServerController {
 
     public static void Login(TUser User) throws IOException {
         Command command = new Command(ECommand.CMD_LOGIN, User);
+        TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
+    }
+
+    public static void ChannelMessages(String ChannelName) throws IOException {
+        Command command = new Command(ECommand.CMD_GET_CHANNEL_MESSAGES, ChannelName);
         TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
     }
 }

@@ -62,4 +62,7 @@ public final class ECommand {
 
     // The client wants to download a file
     public static final int CMD_DOWNLOAD = 701;
+    
+    // The client wants to receive the messages from the channel
+    public static final int CMD_GET_CHANNEL_MESSAGES = 702;
 }
