@@ -28,6 +28,10 @@ public class PrimaryController implements Initializable {
     private AnchorPane Info;
     @FXML
     private AnchorPane UsersOnline;
+    @FXML
+    private VBox vboxChannel;
+    @FXML
+    private VBox vboxDM;
 
     /**
      * Initializes the controller class.
@@ -35,10 +39,6 @@ public class PrimaryController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-        vbox.
-        App.CL_CFG.ChannelsList;
-        for(int i =0; i <)
-        ChannelList = 
     }    
     
 }
