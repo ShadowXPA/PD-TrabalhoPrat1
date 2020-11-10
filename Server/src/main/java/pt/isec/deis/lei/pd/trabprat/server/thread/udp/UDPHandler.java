@@ -65,10 +65,10 @@ public class UDPHandler implements Runnable {
     }
 
     public UDPHandler(DatagramSocket ServerSocket, DatagramPacket ReceivedPacket, String IP, ServerConfig SV_CFG) throws IOException {
-        this.ServerSocket = ServerSocket;
         this.ReceivedPacket = new DatagramPacket(ReceivedPacket.getData(),
                 ReceivedPacket.getOffset(), ReceivedPacket.getLength(),
                 ReceivedPacket.getAddress(), ReceivedPacket.getPort());
+        this.ServerSocket = ServerSocket;
         this.IP = IP;
         this.SV_CFG = SV_CFG;
     }

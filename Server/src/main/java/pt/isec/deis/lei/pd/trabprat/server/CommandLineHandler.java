@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
@@ -67,6 +68,10 @@ public class CommandLineHandler {
                 WriteLine(HandleOnline(cmd));
                 break;
             }
+            case "servers": {
+                WriteLine(HandleServers(cmd));
+                break;
+            }
             default: {
                 break;
             }
@@ -100,6 +105,20 @@ public class CommandLineHandler {
                     str.append(c.toString());
                     str.append("\n");
                 }
+            }
+        }
+        str.append("End ").append(cmd).append(".");
+        return str.toString();
+    }
+
+    private String HandleServers(String cmd) {
+        StringBuilder str = new StringBuilder();
+        str.append(cmd).append(":\n");
+        synchronized (SV_CFG) {
+            var info = SV_CFG.ServerList;
+            for (Server s : info) {
+                str.append(s.toString());
+                str.append("\n");
             }
         }
         str.append("End ").append(cmd).append(".");

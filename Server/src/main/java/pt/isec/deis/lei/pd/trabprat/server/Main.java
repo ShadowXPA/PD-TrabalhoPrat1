@@ -5,7 +5,7 @@ import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.db.Database;
-import pt.isec.deis.lei.pd.trabprat.server.thread.multicast.MulticasListener;
+import pt.isec.deis.lei.pd.trabprat.server.thread.multicast.MulticastListener;
 import pt.isec.deis.lei.pd.trabprat.server.thread.tcp.TCPListener;
 import pt.isec.deis.lei.pd.trabprat.server.thread.udp.UDPListener;
 
@@ -20,7 +20,7 @@ public class Main {
                 System.exit(-1);
             }
 
-            SV_CFG = new ServerConfig(InitDatabase(args), DefaultConfig.getExternalIP());
+            SV_CFG = new ServerConfig(InitDatabase(args), DefaultConfig.getExternalIP(), args[0]);
             // Check for other servers, ask for information if there are other servers already online
 
             // Create threads
@@ -33,9 +33,9 @@ public class Main {
             tdTCP.setDaemon(true);
             tdTCP.start();
             // Thread Multicast
-//            Thread tdMC = new Thread(new MulticasListener(SV_CFG), "MulticastListener");
-//            tdMC.setDaemon(true);
-//            tdMC.start();
+            Thread tdMC = new Thread(new MulticastListener(SV_CFG), "MulticastListener");
+            tdMC.setDaemon(true);
+            tdMC.start();
             try {
                 // Handle Admin Commands
                 new CommandLineHandler(System.in, System.out, SV_CFG).Initialize();

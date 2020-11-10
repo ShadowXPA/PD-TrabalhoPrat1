@@ -19,20 +19,32 @@ public class ServerConfig {
     public final ArrayList<Server> ServerList;
     public final HashMap<Socket, Client> ClientList;
     public final InetAddress ExternalIP;
+    public final InetAddress InternalIP;
 
     public boolean ClientListContains(Client user) {
         return ClientList.containsValue(user);
+    }
+
+    public void AddOrUpdateServer(Server s) {
+        int Index = ServerList.indexOf(s);
+        if (Index == -1) {
+            ServerList.add(s);
+        } else {
+            ServerList.get(Index).setUserCount(s.getUserCount());
+        }
+        SortServerList();
     }
 
     public void SortServerList() {
         ServerList.sort(SvComp);
     }
 
-    public ServerConfig(Database DBConnection, String ExternalIP) throws UnknownHostException {
+    public ServerConfig(Database DBConnection, String ExternalIP, String InternalIP) throws UnknownHostException {
         this.DBConnection = DBConnection;
         this.DB = new DatabaseWrapper(this.DBConnection);
         this.SvComp = new ServerComparator();
         this.ExternalIP = InetAddress.getByName(ExternalIP);
+        this.InternalIP = InetAddress.getByName(InternalIP);
         this.ServerList = new ArrayList<>();
         this.ClientList = new HashMap<>();
     }

@@ -13,7 +13,6 @@ public class Client {
     public int hashCode() {
         int hash = 7;
         hash = 29 * hash + Objects.hashCode(this.User);
-        hash = 29 * hash + Objects.hashCode(this.oOS);
         return hash;
     }
 

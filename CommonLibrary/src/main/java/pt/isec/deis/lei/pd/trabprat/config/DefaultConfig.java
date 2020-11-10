@@ -22,12 +22,14 @@ public final class DefaultConfig {
                 URL ExtIP = new URL(Url);
                 BufferedReader br = new BufferedReader(new InputStreamReader(ExtIP.openStream()));
                 return br.readLine();
-            }catch (Exception ex) {
+            } catch (Exception ex) {
                 ExceptionHandler.ShowException(ex);
             }
         }
         return "127.0.0.1";
     }
+
+    public static final String DEFAULT_MULTICAST_IP = "239.14.3.22";
 
     // Default Packet Sizes
     public static final int DEFAULT_UDP_PACKET_SIZE = 65536;
