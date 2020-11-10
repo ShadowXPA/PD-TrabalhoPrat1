@@ -7,6 +7,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+import pt.isec.deis.lei.pd.trabprat.client.App;
 
 public class PrimaryController implements Initializable {
 
@@ -33,6 +35,10 @@ public class PrimaryController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        vbox.
+        App.CL_CFG.ChannelsList;
+        for(int i =0; i <)
+        ChannelList = 
     }    
     
 }
