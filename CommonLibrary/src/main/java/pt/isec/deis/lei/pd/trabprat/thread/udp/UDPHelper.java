@@ -34,19 +34,23 @@ public final class UDPHelper {
     }
 
     public static void SendUDPCommand(DatagramSocket Socket, InetAddress Address, int Port, Command cmd) throws IOException {
-        oOS.writeUnshared(cmd);
-        oOS.flush();
-        byte[] buffer = baOS.toByteArray();
-        DatagramPacket SendPacket = new DatagramPacket(buffer, buffer.length, Address, Port);
-        Socket.send(SendPacket);
+        synchronized (oOS) {
+            oOS.writeUnshared(cmd);
+            oOS.flush();
+            byte[] buffer = baOS.toByteArray();
+            DatagramPacket SendPacket = new DatagramPacket(buffer, buffer.length, Address, Port);
+            Socket.send(SendPacket);
+        }
     }
 
     public static void SendMulticastCommand(MulticastSocket Socket, InetAddress Address, int Port, Command cmd) throws IOException {
-        oOS.writeUnshared(cmd);
-        oOS.flush();
-        byte[] buffer = baOS.toByteArray();
-        DatagramPacket SendPacket = new DatagramPacket(buffer, buffer.length, Address, Port);
-        Socket.send(SendPacket);
+        synchronized (oOS) {
+            oOS.writeUnshared(cmd);
+            oOS.flush();
+            byte[] buffer = baOS.toByteArray();
+            DatagramPacket SendPacket = new DatagramPacket(buffer, buffer.length, Address, Port);
+            Socket.send(SendPacket);
+        }
     }
 
     private UDPHelper() {

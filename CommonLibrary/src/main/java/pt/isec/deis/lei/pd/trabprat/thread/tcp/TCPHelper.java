@@ -6,9 +6,11 @@ import pt.isec.deis.lei.pd.trabprat.communication.Command;
 
 public final class TCPHelper {
 
-    public synchronized static void SendTCPCommand(ObjectOutputStream oOS, Command cmd) throws IOException {
-        oOS.writeUnshared(cmd);
-        oOS.flush();
+    public static void SendTCPCommand(ObjectOutputStream oOS, Command cmd) throws IOException {
+        synchronized (oOS) {
+            oOS.writeUnshared(cmd);
+            oOS.flush();
+        }
     }
 
     private TCPHelper() {

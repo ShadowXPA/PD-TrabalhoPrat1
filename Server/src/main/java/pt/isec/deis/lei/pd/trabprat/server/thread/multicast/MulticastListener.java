@@ -67,13 +67,14 @@ public class MulticastListener implements Runnable {
         while (true) {
             try {
                 Thread.sleep(10000);
+                // Clear list
                 int userCount;
                 synchronized (SV_CFG) {
                     userCount = SV_CFG.ClientList.size();
                 }
                 cmd = new Command(ECommand.CMD_HEARTBEAT, new Server(SV_CFG.ExternalIP,
                     DefaultConfig.DEFAULT_UDP_PORT, DefaultConfig.DEFAULT_TCP_PORT, userCount));
-                UDPHelper.SendUDPCommand(mCS, iA, Port, cmd);
+                UDPHelper.SendMulticastCommand(mCS, iA, Port, cmd);
             } catch (Exception ex) {
                 ExceptionHandler.ShowException(ex);
             }

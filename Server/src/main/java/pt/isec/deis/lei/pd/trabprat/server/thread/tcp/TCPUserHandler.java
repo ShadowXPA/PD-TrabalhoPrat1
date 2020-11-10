@@ -4,12 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
+import pt.isec.deis.lei.pd.trabprat.model.LoginPackage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.DefaultSvMsg;
@@ -140,7 +139,21 @@ public class TCPUserHandler implements Runnable {
                 }
                 if (!LoggedIn) {
                     // Send channel list, online users, DMs
-                    sendCmd = new Command(ECommand.CMD_LOGIN);
+                    LoginPackage lp = new LoginPackage();
+                    synchronized (SV_CFG) {
+                        var users = SV_CFG.ClientList.values().iterator();
+                        while (users.hasNext()) {
+                            TUser cl = users.next().User;
+                            lp.Users.add(new TUser(cl.getUID(),
+                                    cl.getUName(), cl.getUUsername(),
+                                    null, cl.getUPhoto(), cl.getUDate()));
+                        }
+                        var channels = SV_CFG.DB.getAllChannels();
+                        lp.Channels.addAll(channels);
+                        // Add DMUsers to LoginPackage
+                    }
+
+                    sendCmd = new Command(ECommand.CMD_LOGIN, lp);
                     TCPHelper.SendTCPCommand(oOS, sendCmd);
                     Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
                     Main.Log("[User: (" + info.getUID() + ") " + info.getUUsername() + "]", "has logged in.");
