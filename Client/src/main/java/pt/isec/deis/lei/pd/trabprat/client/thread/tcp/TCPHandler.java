@@ -11,6 +11,7 @@ import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
+import pt.isec.deis.lei.pd.trabprat.model.LoginPackage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 
 public class TCPHandler implements Runnable {
@@ -53,9 +54,13 @@ public class TCPHandler implements Runnable {
                     break;
                 }
                 case ECommand.CMD_LOGIN:{
+                    LoginPackage LP = (LoginPackage)command.Body;
+                    
                     synchronized (App.CL_CFG){
-                        
-                        App.CL_CFG.setUsername("Pixa");
+                        App.CL_CFG.OnlineUsers = LP.Users;
+                        App.CL_CFG.ChannelsList = LP.Channels;
+                        App.CL_CFG.MyUser = LP.LoginAuthor;
+                        App.CL_CFG.setLogin();
                         App.CL_CFG.notifyAll();
                     }
                     break;

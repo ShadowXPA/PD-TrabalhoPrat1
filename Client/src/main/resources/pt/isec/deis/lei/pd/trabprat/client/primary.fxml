@@ -13,7 +13,6 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pt.isec.deis.lei.pd.trabprat.client.PrimaryController">
    <children>
       <MenuBar maxWidth="1280.0" minWidth="1280.0">
@@ -42,13 +41,13 @@
                   <Label text="Channel:" />
                   <ScrollPane maxHeight="347.5" maxWidth="253.6" minHeight="330.5" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
                     <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="330.0" prefWidth="253.6" />
+                      <AnchorPane fx:id="ChannelList" minHeight="0.0" minWidth="0.0" prefHeight="330.0" prefWidth="253.6" />
                     </content>
                   </ScrollPane>
                   <Label text="Direct Message:" />
                   <ScrollPane maxHeight="330.0" maxWidth="253.6" minHeight="330.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
                      <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="330.0" prefWidth="253.6" />
+                        <AnchorPane fx:id="DirectMessageList" minHeight="0.0" minWidth="0.0" prefHeight="330.0" prefWidth="253.6" />
                      </content>
                   </ScrollPane>
                </children>
@@ -59,18 +58,18 @@
                   <Label text="Messages / Files:" />
                   <ScrollPane maxHeight="620.0" maxWidth="760.8" minHeight="620.0" minWidth="760.8" prefHeight="200.0" prefWidth="200.0">
                      <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="620.0" prefWidth="760.8" />
+                        <AnchorPane fx:id="MF" minHeight="0.0" minWidth="0.0" prefHeight="620.0" prefWidth="760.8" />
                      </content>
                   </ScrollPane>
-                  <HBox prefHeight="100.0" prefWidth="200.0">
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <TextField maxWidth="760.8" minWidth="760.8" />
+                        <TextField fx:id="TFMessage" maxWidth="760.8" minWidth="760.8" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <Button mnemonicParsing="false" text="File" />
-                        <Button mnemonicParsing="false" text="Send" />
+                        <Button fx:id="btnFile" mnemonicParsing="false" text="File" />
+                        <Button fx:id="btnSend" mnemonicParsing="false" text="Send" />
                      </children>
                   </HBox>
                </children>
@@ -78,16 +77,16 @@
             <Separator orientation="VERTICAL" prefHeight="200.0" />
             <VBox maxWidth="253.6" minWidth="253.6" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Label text="Info channel / Direct Message:" />
+                  <Label text="Channel info / Direct Message:" />
                   <ScrollPane maxHeight="220.0" maxWidth="253.6" minHeight="220.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
                      <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="220.0" prefWidth="253.6" />
+                        <AnchorPane fx:id="Info" minHeight="0.0" minWidth="0.0" prefHeight="220.0" prefWidth="253.6" />
                      </content>
                   </ScrollPane>
-                  <Label text="Users Online:" />
+                  <Label text="Online Users:" />
                   <ScrollPane maxHeight="440.0" maxWidth="253.6" minHeight="440.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
                      <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="440.0" prefWidth="253.6" />
+                        <AnchorPane fx:id="UsersOnline" minHeight="0.0" minWidth="0.0" prefHeight="440.0" prefWidth="253.6" />
                      </content>
                   </ScrollPane>
                </children>
