@@ -1,20 +1,31 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pt.isec.deis.lei.pd.trabprat.client;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 
-/**
- * FXML Controller class
- *
- * @author ShadowXPA
- */
 public class PrimaryController implements Initializable {
+
+    @FXML
+    private AnchorPane ChannelList;
+    @FXML
+    private AnchorPane DirectMessageList;
+    @FXML
+    private AnchorPane MF;
+    @FXML
+    private TextField TFMessage;
+    @FXML
+    private Button btnFile;
+    @FXML
+    private Button btnSend;
+    @FXML
+    private AnchorPane Info;
+    @FXML
+    private AnchorPane UsersOnline;
 
     /**
      * Initializes the controller class.

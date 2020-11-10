@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pt.isec.deis.lei.pd.trabprat.client;
 
 import java.io.File;
@@ -24,11 +19,6 @@ import pt.isec.deis.lei.pd.trabprat.encryption.AES;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.validation.Validator;
 
-/**
- * FXML Controller class
- *
- * @author
- */
 public class RegisterController implements Initializable {
 
     @FXML
