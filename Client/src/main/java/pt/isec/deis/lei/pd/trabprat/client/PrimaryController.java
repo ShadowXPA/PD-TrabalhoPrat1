@@ -27,12 +27,13 @@ public class PrimaryController implements Initializable {
     private Button btnSend;
     @FXML
     private AnchorPane Info;
-    @FXML
     private AnchorPane UsersOnline;
     @FXML
     private VBox vboxChannel;
     @FXML
     private VBox vboxDM;
+    @FXML
+    private VBox vboxUserOnline;
 
     /**
      * Initializes the controller class.
@@ -50,11 +51,11 @@ public class PrimaryController implements Initializable {
         }
         for(int i =0;i < App.CL_CFG.OnlineUsers.size(); i++){
             Button button = new Button();
-            double db = UsersOnline.getMaxWidth();
+            double db = vboxUserOnline.getMaxWidth();
             button.setMinWidth(db);
             button.setMaxWidth(db);
             button.setText(App.CL_CFG.OnlineUsers.get(i).getUName());
-            UsersOnline.getChildren().add(button);
+            vboxUserOnline.getChildren().add(button);
         }
     }
 }
