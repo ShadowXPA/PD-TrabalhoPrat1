@@ -53,7 +53,6 @@ public class RegisterController implements Initializable {
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Images", "*.jpg", "*.jpeg", "*.png")
         );
-
         File file = fileChooser.showOpenDialog(App.CL_CFG.Stage);
         TFPhoto.setText(file.getAbsolutePath());
     }

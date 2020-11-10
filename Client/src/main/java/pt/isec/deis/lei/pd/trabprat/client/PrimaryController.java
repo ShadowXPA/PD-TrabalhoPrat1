@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import pt.isec.deis.lei.pd.trabprat.client.App;
 
@@ -39,6 +40,21 @@ public class PrimaryController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }    
-    
+        for(int i =0;i < App.CL_CFG.ChannelsList.size(); i++){
+            Button button = new Button();
+            double db = vboxChannel.getMaxWidth();
+            button.setMinWidth(db);
+            button.setMaxWidth(db);
+            button.setText(App.CL_CFG.ChannelsList.get(i).getCName());
+            vboxChannel.getChildren().add(button);
+        }
+        for(int i =0;i < App.CL_CFG.OnlineUsers.size(); i++){
+            Button button = new Button();
+            double db = UsersOnline.getMaxWidth();
+            button.setMinWidth(db);
+            button.setMaxWidth(db);
+            button.setText(App.CL_CFG.OnlineUsers.get(i).getUName());
+            UsersOnline.getChildren().add(button);
+        }
+    }
 }

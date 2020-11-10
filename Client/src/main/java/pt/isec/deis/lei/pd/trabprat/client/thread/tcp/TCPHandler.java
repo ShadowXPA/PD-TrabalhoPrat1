@@ -34,7 +34,9 @@ public class TCPHandler implements Runnable {
         try {
             switch (command.CMD) {
                 case ECommand.CMD_SERVICE_UNAVAILABLE: {
-
+                    if (command.Body instanceof String) {
+                        ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error", (String) command.Body);
+                    }
                     break;
                 }
                 case ECommand.CMD_CREATED: {
@@ -55,7 +57,6 @@ public class TCPHandler implements Runnable {
                 }
                 case ECommand.CMD_LOGIN:{
                     LoginPackage LP = (LoginPackage)command.Body;
-                    
                     synchronized (App.CL_CFG){
                         App.CL_CFG.OnlineUsers = LP.Users;
                         App.CL_CFG.ChannelsList = LP.Channels;
