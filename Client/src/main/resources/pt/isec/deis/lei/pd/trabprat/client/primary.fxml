@@ -1,91 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <VBox prefHeight="720.0" prefWidth="256.0">
+      <MenuBar maxWidth="1280.0" minWidth="1280.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Message">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Channel">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <HBox layoutY="25.0" maxHeight="695.0" maxWidth="1280.0" minHeight="695.0" minWidth="1280.0" prefHeight="100.0" prefWidth="200.0">
          <children>
-            <ScrollPane prefHeight="360.0" prefWidth="256.0">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="360.0" prefWidth="256.0">
-                     <children>
-                        <VBox prefHeight="360.0" prefWidth="256.0">
-                           <children>
-                              <Label text="Channels:" />
-                           </children>
-                        </VBox>
-                     </children>
-                  </AnchorPane>
-              </content>
-            </ScrollPane>
-            <Separator prefWidth="200.0" />
-            <ScrollPane prefHeight="360.0" prefWidth="256.0">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="360.0" prefWidth="256.0">
-                     <children>
-                        <VBox prefHeight="360.0" prefWidth="256.0">
-                           <children>
-                              <Label text="DM:" />
-                           </children>
-                        </VBox>
-                     </children>
-                  </AnchorPane>
-              </content>
-            </ScrollPane>
-         </children>
-      </VBox>
-      <Separator orientation="VERTICAL" prefHeight="200.0" />
-      <ScrollPane prefHeight="720.0" prefWidth="768.0">
-        <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="720.0" prefWidth="768.0">
+            <VBox maxWidth="253.6" minWidth="253.6" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <VBox prefHeight="720.0" prefWidth="768.0">
-                     <children>
-                        <Label text="Messages / Files:" />
-                     </children>
-                  </VBox>
+                  <Label text="Channel:" />
+                  <ScrollPane maxHeight="347.5" maxWidth="253.6" minHeight="330.5" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="330.0" prefWidth="253.6" />
+                    </content>
+                  </ScrollPane>
+                  <Label text="Direct Message:" />
+                  <ScrollPane maxHeight="330.0" maxWidth="253.6" minHeight="330.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="330.0" prefWidth="253.6" />
+                     </content>
+                  </ScrollPane>
                </children>
-            </AnchorPane>
-        </content>
-      </ScrollPane>
-      <Separator orientation="VERTICAL" prefHeight="200.0" />
-      <VBox prefHeight="720.0" prefWidth="256.0">
-         <children>
-            <ScrollPane prefHeight="240.0" prefWidth="256.0">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="240.0" prefWidth="256.0">
+            </VBox>
+            <Separator orientation="VERTICAL" prefHeight="200.0" />
+            <VBox maxHeight="695.0" maxWidth="760.8" minHeight="695.0" minWidth="760.8" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Label text="Messages / Files:" />
+                  <ScrollPane maxHeight="620.0" maxWidth="760.8" minHeight="620.0" minWidth="760.8" prefHeight="200.0" prefWidth="200.0">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="620.0" prefWidth="760.8" />
+                     </content>
+                  </ScrollPane>
+                  <HBox prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <VBox prefHeight="240.0" prefWidth="256.0">
-                           <children>
-                              <Label text="Info Channel / DM:" />
-                           </children>
-                        </VBox>
+                        <TextField maxWidth="760.8" minWidth="760.8" />
                      </children>
-                  </AnchorPane>
-              </content>
-            </ScrollPane>
-            <Separator prefWidth="200.0" />
-            <ScrollPane prefHeight="480.0" prefWidth="256.0">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="480.0" prefWidth="256.0">
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <VBox prefHeight="480.0" prefWidth="256.0">
-                           <children>
-                              <Label text="Users Online:" />
-                           </children>
-                        </VBox>
+                        <Button mnemonicParsing="false" text="File" />
+                        <Button mnemonicParsing="false" text="Send" />
                      </children>
-                  </AnchorPane>
-              </content>
-            </ScrollPane>
+                  </HBox>
+               </children>
+            </VBox>
+            <Separator orientation="VERTICAL" prefHeight="200.0" />
+            <VBox maxWidth="253.6" minWidth="253.6" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Label text="Info channel / Direct Message:" />
+                  <ScrollPane maxHeight="220.0" maxWidth="253.6" minHeight="220.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="220.0" prefWidth="253.6" />
+                     </content>
+                  </ScrollPane>
+                  <Label text="Users Online:" />
+                  <ScrollPane maxHeight="440.0" maxWidth="253.6" minHeight="440.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="440.0" prefWidth="253.6" />
+                     </content>
+                  </ScrollPane>
+               </children>
+            </VBox>
          </children>
-      </VBox>
+      </HBox>
    </children>
-</HBox>
+</Pane>

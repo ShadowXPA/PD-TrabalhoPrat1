@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import javafx.scene.control.Alert;
+import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
@@ -52,7 +53,20 @@ public class TCPHandler implements Runnable {
                     break;
                 }
                 case ECommand.CMD_LOGIN:{
-                    
+                    synchronized (App.CL_CFG){
+                        
+                        App.CL_CFG.setUsername("Pixa");
+                        App.CL_CFG.notifyAll();
+                    }
+                    break;
+                }
+                case ECommand.CMD_UNAUTHORIZED:{
+                    if (command.Body instanceof String) {
+                        ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error", (String) command.Body);
+                    }
+                    synchronized (App.CL_CFG){
+                        App.CL_CFG.notifyAll();
+                    }
                     break;
                 }
                 default: {

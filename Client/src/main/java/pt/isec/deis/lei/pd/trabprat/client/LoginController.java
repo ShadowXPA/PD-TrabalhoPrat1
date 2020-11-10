@@ -63,7 +63,17 @@ public class LoginController implements Initializable {
             }
             Password = AES.Encrypt(Password);
             if (bool) {
+                boolean accepted = false;
                 ServerController.Login(new TUser(0, "", Username, Password, "", 0));
+                synchronized (App.CL_CFG) {
+                    App.CL_CFG.wait();
+                    accepted = App.CL_CFG.isLoggedIn();
+                }
+                if (accepted) {
+                    App.CL_CFG.Stage.setWidth(DefaultWindowSizes.DEFAULT_MAIN_WIDTH);
+                    App.CL_CFG.Stage.setHeight(DefaultWindowSizes.DEFAULT_MAIN_HEIGHT);
+                    App.setRoot("primary");
+                }
             }
         } catch (Exception ex) {
             ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", null, ex.getMessage());

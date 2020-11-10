@@ -23,6 +23,10 @@ public class ClientConfig {
         return this.Username;
     }
 
+    public synchronized boolean isLoggedIn() {
+        return LoggedIn;
+    }
+
     public synchronized void setUsername(String Username) {
         if (!this.LoggedIn) {
             this.LoggedIn = true;
