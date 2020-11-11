@@ -6,11 +6,14 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.UUID;
 import pt.isec.deis.lei.pd.trabprat.client.App;
+import pt.isec.deis.lei.pd.trabprat.client.thread.tcp.TCPHandler;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
+import pt.isec.deis.lei.pd.trabprat.model.TChannel;
+import pt.isec.deis.lei.pd.trabprat.model.TChannelUser;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
@@ -55,7 +58,14 @@ public final class ServerController {
     }
 
     public static void ChannelMessages(String ChannelName) throws IOException {
-        Command command = new Command(ECommand.CMD_GET_CHANNEL_MESSAGES, ChannelName);
+        TChannel c = null;
+        for(int i=0;i<App.CL_CFG.ChannelsList.size(); i++){
+            if(App.CL_CFG.ChannelsList.get(i).getCName().equals(ChannelName)){
+                c = App.CL_CFG.ChannelsList.get(i);
+                break;
+            }
+        }
+        Command command = new Command(ECommand.CMD_GET_CHANNEL_MESSAGES, new TChannelUser(c, App.CL_CFG.MyUser));
         TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
     }
 }

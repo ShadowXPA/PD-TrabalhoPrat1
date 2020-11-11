@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -40,6 +41,10 @@ public class PrimaryController implements Initializable {
     private VBox vboxDM;
     @FXML
     private VBox vboxUserOnline;
+    @FXML
+    private VBox Channel_DM_Info;
+    @FXML
+    private VBox VBox_Mess_Files;
 
     /**
      * Initializes the controller class.
@@ -47,6 +52,12 @@ public class PrimaryController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        VBox_ChannelList();
+        VBox_DMUsers();
+        VBox_UsersOnline();
+    }
+
+    public void VBox_ChannelList() {
         for (int i = 0; i < App.CL_CFG.ChannelsList.size(); i++) {
             Button button = new Button();
             double db = vboxChannel.getMaxWidth();
@@ -61,6 +72,26 @@ public class PrimaryController implements Initializable {
             });
             vboxChannel.getChildren().add(button);
         }
+    }
+
+    public void VBox_DMUsers() {
+        for (int i = 0; i < App.CL_CFG.DMUsers.size(); i++) {
+            Button button = new Button();
+            double db = vboxDM.getMaxWidth();
+            button.setMinWidth(db);
+            button.setMaxWidth(db);
+            button.setText(App.CL_CFG.DMUsers.get(i).getUName());
+            button.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent t) {
+                    buttonDMUsers((Button) t.getSource());
+                }
+            });
+            vboxDM.getChildren().add(button);
+        }
+    }
+
+    public void VBox_UsersOnline() {
         for (int i = 0; i < App.CL_CFG.OnlineUsers.size(); i++) {
             Button button = new Button();
             double db = vboxUserOnline.getMaxWidth();
@@ -87,6 +118,7 @@ public class PrimaryController implements Initializable {
                         ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error", "Channel Password", "Password is invalid!");
                     } else {
                         ServerController.ChannelMessages(ChannelName);
+                        InfoChannel(button);
                     }
                     break;
                 }
@@ -94,10 +126,26 @@ public class PrimaryController implements Initializable {
         } catch (Exception ex) {
             ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error", "Channel", ex.getMessage());
         }
-
     }
 
     public void buttonUsersOnline(Button button) {
 
+    }
+
+    public void buttonDMUsers(Button button) {
+
+    }
+
+    public void InfoChannel(Button button) {
+        Label label = new Label();
+        var c = App.CL_CFG.GetChannelByCName(button.getText());
+        //TODO -> número de utilizadores, número de mensagens enviadas e número de ficheiros partilhados.
+        try {
+            Channel_DM_Info.getChildren().removeAll(Channel_DM_Info.getChildren());
+            label.setText(c.getCDescription());
+            Channel_DM_Info.getChildren().add(label);
+        } catch (Exception ex) {
+            ex.getMessage();
+        }
     }
 }

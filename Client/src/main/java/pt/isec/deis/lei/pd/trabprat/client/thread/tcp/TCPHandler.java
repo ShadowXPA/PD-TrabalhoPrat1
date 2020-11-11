@@ -61,6 +61,7 @@ public class TCPHandler implements Runnable {
                         App.CL_CFG.OnlineUsers = LP.Users;
                         App.CL_CFG.ChannelsList = LP.Channels;
                         App.CL_CFG.MyUser = LP.LoginAuthor;
+                        App.CL_CFG.DMUsers = LP.DMUsers;
                         App.CL_CFG.setLogin();
                         App.CL_CFG.notifyAll();
                     }

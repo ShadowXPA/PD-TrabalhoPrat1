@@ -43,7 +43,7 @@
                     <content>
                       <AnchorPane fx:id="ChannelList" minHeight="0.0" minWidth="0.0" prefHeight="330.0" prefWidth="253.6">
                            <children>
-                              <VBox fx:id="vboxChannel" maxWidth="253.6" minHeight="330.0" minWidth="253.6" prefHeight="200.0" prefWidth="100.0" />
+                              <VBox fx:id="vboxChannel" layoutX="-21.0" maxWidth="253.6" minHeight="330.0" minWidth="253.6" prefHeight="200.0" prefWidth="100.0" />
                            </children></AnchorPane>
                     </content>
                   </ScrollPane>
@@ -66,7 +66,7 @@
                      <content>
                         <AnchorPane fx:id="MF" minHeight="0.0" minWidth="0.0" prefHeight="620.0" prefWidth="760.8">
                            <children>
-                              <VBox maxHeight="620.0" maxWidth="760.8" minHeight="620.0" minWidth="760.8" prefHeight="200.0" prefWidth="100.0" />
+                              <VBox fx:id="VBox_Mess_Files" maxHeight="620.0" maxWidth="760.8" minHeight="620.0" minWidth="760.8" prefHeight="200.0" prefWidth="100.0" />
                            </children></AnchorPane>
                      </content>
                   </ScrollPane>
@@ -91,7 +91,7 @@
                      <content>
                         <AnchorPane fx:id="Info" minHeight="0.0" minWidth="0.0" prefHeight="220.0" prefWidth="253.6">
                            <children>
-                              <VBox maxHeight="220.0" maxWidth="253.6" minHeight="220.0" minWidth="253.6" prefHeight="200.0" prefWidth="100.0" />
+                              <VBox fx:id="Channel_DM_Info" maxHeight="220.0" maxWidth="253.6" minHeight="220.0" minWidth="253.6" prefHeight="200.0" prefWidth="100.0" />
                            </children></AnchorPane>
                      </content>
                   </ScrollPane>

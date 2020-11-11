@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import javafx.stage.Stage;
+import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
@@ -15,6 +16,7 @@ public class ClientConfig {
     public ArrayList<Server> ServerList;
     public ArrayList<TUser> OnlineUsers;
     public ArrayList<TChannel> ChannelsList;
+    public ArrayList<TUser> DMUsers;
     public TUser MyUser;
     public Stage Stage;
     public Server server;
@@ -54,5 +56,14 @@ public class ClientConfig {
 
     public ObjectInputStream getOIS() {
         return OIS;
+    }
+    
+    public TChannel GetChannelByCName(String CName){
+        for(int i=0;i<ChannelsList.size();i++){
+            if(ChannelsList.get(i).getCName().equals(CName)){
+                return ChannelsList.get(i);
+            }
+        }
+        return null;
     }
 }
