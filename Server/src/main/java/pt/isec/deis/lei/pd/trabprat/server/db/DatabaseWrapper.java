@@ -166,9 +166,9 @@ public final class DatabaseWrapper {
     }
 
     public boolean doesUserBelongToChannel(TChannel Channel, TUser User) {
-        var info = db.Select("select cu.CID, cu.UID from tchannelusers cu,"
-                + " tuser u where cu.UID = u.UID and cu.CID = " + Channel.getCID()
-                + "and u.UID = " + User.getUID());
+        var info = db.Select("select cu.CID, cu.UID from tchannelusers cu"
+                + " where cu.CID = " + Channel.getCID()
+                + " and cu.UID = " + User.getUID());
         if (info == null) {
             return false;
         }
@@ -274,7 +274,7 @@ public final class DatabaseWrapper {
     }
 
     public int insertChannelUser(TChannel Channel, TUser User) {
-        return db.Insert("TChannelUser",
+        return db.Insert("TChannelUsers",
                 new ArrayList<>(List.of("" + Channel.getCID(),
                         "" + User.getUID())));
     }
