@@ -4,11 +4,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
 import pt.isec.deis.lei.pd.trabprat.model.LoginPackage;
+import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
+import pt.isec.deis.lei.pd.trabprat.model.TChannelUser;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.DefaultSvMsg;
@@ -44,6 +47,10 @@ public class TCPUserHandler implements Runnable {
                 }
                 case ECommand.CMD_UPLOAD: {
                     HandleUpload();
+                    break;
+                }
+                case ECommand.CMD_GET_CHANNEL_MESSAGES: {
+                    HandleGetChannelMessages();
                     break;
                 }
                 default: {
@@ -150,7 +157,10 @@ public class TCPUserHandler implements Runnable {
                         }
                         var channels = SV_CFG.DB.getAllChannels();
                         lp.Channels.addAll(channels);
-                        // Add DMUsers to LoginPackage
+                        var dms = SV_CFG.DB.getAllDMByUserID(info.getUID());
+                        lp.DMUsers.addAll(SV_CFG.DB.getOtherUserFromDM(dms, info));
+                        var channelUsers = SV_CFG.DB.getAllChannelUsers();
+                        lp.ChannelUsers.addAll(channelUsers);
                     }
 
                     sendCmd = new Command(ECommand.CMD_LOGIN, lp);
@@ -211,6 +221,25 @@ public class TCPUserHandler implements Runnable {
             TCPHelper.SendTCPCommand(oOS, sendCmd);
             Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
         }
+    }
+
+    private void HandleGetChannelMessages() throws IOException {
+        // Add channel user if they don't exist
+        DatabaseWrapper db;
+        TChannelUser cU = (TChannelUser) Cmd.Body;
+        ArrayList<TChannelMessage> messages = new ArrayList<>();
+        Command sendCmd;
+        synchronized (SV_CFG) {
+            db = SV_CFG.DB;
+            if (!db.doesUserBelongToChannel(cU.getCID(), cU.getUID())) {
+                db.insertChannelUser(cU.getCID(), cU.getUID());
+            }
+            messages.addAll(db.getAllMessagesFromChannelID(cU.getCID().getCID()));
+        }
+        // Send messages from channel
+        sendCmd = new Command(ECommand.CMD_GET_CHANNEL_MESSAGES, messages);
+        TCPHelper.SendTCPCommand(oOS, sendCmd);
+        Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
     }
 
     public TCPUserHandler(Socket UserSocket, ObjectOutputStream oOS, Command Cmd, String IP, ServerConfig SV_CFG) throws IOException {

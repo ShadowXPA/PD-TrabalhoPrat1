@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
+import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
+import pt.isec.deis.lei.pd.trabprat.model.TChannelUser;
+import pt.isec.deis.lei.pd.trabprat.model.TDirectMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 
@@ -126,6 +129,106 @@ public final class DatabaseWrapper {
         return new TChannel(cid, cuid, cname, cdesc, cpassword, cdate);
     }
 
+    public ArrayList<TChannelUser> getAllChannelUsers() {
+        var info = db.Select("select * from tchannelusers");
+        ArrayList<TChannelUser> channelUsers = new ArrayList<>();
+        for (int i = 0; i < info.size(); i++) {
+            channelUsers.add(parseChannelUser(info.get(i)));
+        }
+        return channelUsers;
+    }
+
+    public ArrayList<TChannelUser> getAllUsersFromChannelID(int CID) {
+        var info = db.Select("select u.CID, u.UID from tchannelusers u"
+                + " where u.CID = " + CID);
+        ArrayList<TChannelUser> channelUsers = new ArrayList<>();
+        for (int i = 0; i < info.size(); i++) {
+            channelUsers.add(parseChannelUser(info.get(i)));
+        }
+        return channelUsers;
+    }
+
+    public ArrayList<TChannelUser> getAllUsersFromChannelName(String CName) {
+        var info = db.Select("select u.CID, u.UID from tchannelusers u,"
+                + " tchannel c where c.CID = u.CID and c.CName = '"
+                + CName.replace("'", "''") + "'");
+        ArrayList<TChannelUser> channelUsers = new ArrayList<>();
+        for (int i = 0; i < info.size(); i++) {
+            channelUsers.add(parseChannelUser(info.get(i)));
+        }
+        return channelUsers;
+    }
+
+    private TChannelUser parseChannelUser(HashMap<String, String> Set) {
+        TChannel CID = getChannelByID(Integer.parseInt(Set.get("CID")));
+        TUser UID = getUserByID(Integer.parseInt(Set.get("UID")));
+        return new TChannelUser(CID, UID);
+    }
+
+    public boolean doesUserBelongToChannel(TChannel Channel, TUser User) {
+        var info = db.Select("select cu.CID, cu.UID from tchannelusers cu,"
+                + " tuser u where cu.UID = u.UID and cu.CID = " + Channel.getCID()
+                + "and u.UID = " + User.getUID());
+        if (info == null) {
+            return false;
+        }
+        return !info.isEmpty();
+    }
+
+    public ArrayList<TChannelMessage> getAllMessagesFromChannelID(int CID) {
+        var info = db.Select("select * from tchannelmessages where CID = " + CID);
+        ArrayList<TChannelMessage> messages = new ArrayList<>();
+        for (int i = 0; i < info.size(); i++) {
+            messages.add(parseChannelMessage(info.get(i)));
+        }
+        return messages;
+    }
+
+    private TChannelMessage parseChannelMessage(HashMap<String, String> Set) {
+        TChannel CID = getChannelByID(Integer.parseInt(Set.get("CID")));
+        TMessage MID = getMessageByID(Integer.parseInt(Set.get("MID")));
+        return new TChannelMessage(CID, MID);
+    }
+
+    public ArrayList<TDirectMessage> getAllDMByUserID(int UID) {
+        var info = db.Select("select d.MID, d.UID"
+                + " from tdirectmessage d,"
+                + " tmessage m where d.MID = m.MID and (d.UID = "
+                + UID + " or m.MUID = " + UID + ")");
+        if (info == null || info.isEmpty()) {
+            return null;
+        }
+        ArrayList<TDirectMessage> DMs = new ArrayList<>();
+        for (int i = 0; i < info.size(); i++) {
+            DMs.add(parseDirectMessage(info.get(i)));
+        }
+        return DMs;
+    }
+
+    public ArrayList<TUser> getOtherUserFromDM(ArrayList<TDirectMessage> DMs, TUser user) {
+        ArrayList<TUser> users = new ArrayList<>();
+        for (int i = 0; i < DMs.size(); i++) {
+            if (DMs.get(i).getUID().equals(user)) {
+                TUser u = DMs.get(i).getMID().getMUID();
+                if (!users.contains(u)) {
+                    users.add(u);
+                }
+            } else {
+                TUser u = DMs.get(i).getUID();
+                if (!users.contains(u)) {
+                    users.add(u);
+                }
+            }
+        }
+        return users;
+    }
+
+    private TDirectMessage parseDirectMessage(HashMap<String, String> Set) {
+        TMessage mid = getMessageByID(Integer.parseInt(Set.get("MID")));
+        TUser receiver = getUserByID(Integer.parseInt(Set.get("UID")));
+        return new TDirectMessage(mid, receiver);
+    }
+
     public int insertUser(TUser User) {
         String uphoto = "null";
         if (User.getUPhoto() != null) {
@@ -168,6 +271,12 @@ public final class DatabaseWrapper {
                         cdesc,
                         cpass,
                         "" + new Date().getTime())));
+    }
+
+    public int insertChannelUser(TChannel Channel, TUser User) {
+        return db.Insert("TChannelUser",
+                new ArrayList<>(List.of("" + Channel.getCID(),
+                        "" + User.getUID())));
     }
 
     public DatabaseWrapper(Database db) {
