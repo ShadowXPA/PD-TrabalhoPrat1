@@ -9,14 +9,21 @@ import javafx.stage.Stage;
 import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
+import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
+import pt.isec.deis.lei.pd.trabprat.model.TChannelUser;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 
 public class ClientConfig {
 
     public ArrayList<Server> ServerList;
     public ArrayList<TUser> OnlineUsers;
+    //List of channels
     public ArrayList<TChannel> ChannelsList;
     public ArrayList<TUser> DMUsers;
+    //list of users connected to channels
+    public ArrayList<TChannelUser> ChannelUsers;
+    //list of messages from the channel
+    public ArrayList<TChannelMessage> ChannelMessage;
     public TUser MyUser;
     public Stage Stage;
     public Server server;
@@ -57,13 +64,25 @@ public class ClientConfig {
     public ObjectInputStream getOIS() {
         return OIS;
     }
-    
-    public TChannel GetChannelByCName(String CName){
-        for(int i=0;i<ChannelsList.size();i++){
-            if(ChannelsList.get(i).getCName().equals(CName)){
+
+    public TChannel GetChannelByCName(String CName) {
+        for (int i = 0; i < ChannelsList.size(); i++) {
+            if (ChannelsList.get(i).getCName().equals(CName)) {
                 return ChannelsList.get(i);
             }
         }
         return null;
+    }
+
+    public int[] GetNumMesagesAndFiles() {
+        int [] array = new int[2];
+        for (int i = 0; i < ChannelMessage.size(); i++) {
+            if (ChannelMessage.get(i).getMID().getMPath() == null) {
+                array[0]++;
+            } else {
+                array[1]++;
+            }
+        }
+        return array;
     }
 }

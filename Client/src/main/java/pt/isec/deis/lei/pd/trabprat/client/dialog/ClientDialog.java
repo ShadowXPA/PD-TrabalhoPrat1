@@ -34,13 +34,19 @@ public final class ClientDialog {
         if (tchannel.getCUID().equals(App.CL_CFG.MyUser) || tchannel.getCPassword() == null) {
             return true;
         }
+        for (int i = 0; i < App.CL_CFG.ChannelUsers.size(); i++) {
+            if (App.CL_CFG.ChannelUsers.get(i).getCID().equals(tchannel) && 
+                    App.CL_CFG.ChannelUsers.get(i).getUID().equals(App.CL_CFG.MyUser)) {
+                return true;
+            }
+        }
         TextInputDialog dialog = new TextInputDialog();
         dialog.setHeaderText(null);
         dialog.setTitle("Password of channel");
         dialog.setContentText("Please enter the password of channel:");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-                return AES.Encrypt(result.get()).equals(tchannel.getCPassword());
+            return AES.Encrypt(result.get()).equals(tchannel.getCPassword());
         }
         return false;
     }

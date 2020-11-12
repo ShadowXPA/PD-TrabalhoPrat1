@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
+import pt.isec.deis.lei.pd.trabprat.model.TChannel;
 
 public class PrimaryController implements Initializable {
 
@@ -111,17 +112,13 @@ public class PrimaryController implements Initializable {
     public void buttonChannels(Button button) {
         try {
             String ChannelName = button.getText();
-            for (int i = 0; i < App.CL_CFG.ChannelsList.size(); i++) {
-                if (ChannelName.equals(App.CL_CFG.ChannelsList.get(i).getCName())) {
-                    boolean bool = ClientDialog.ShowDialog2(App.CL_CFG.ChannelsList.get(i));
-                    if (!bool) {
-                        ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error", "Channel Password", "Password is invalid!");
-                    } else {
-                        ServerController.ChannelMessages(ChannelName);
-                        InfoChannel(button);
-                    }
-                    break;
-                }
+            var channel = App.CL_CFG.GetChannelByCName(ChannelName);
+            boolean bool = ClientDialog.ShowDialog2(channel);
+            if (!bool) {
+                ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error", "Channel Password", "Password is invalid!");
+            } else {
+                ServerController.ChannelMessages(ChannelName);
+                InfoChannel(channel);
             }
         } catch (Exception ex) {
             ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error", "Channel", ex.getMessage());
@@ -136,14 +133,34 @@ public class PrimaryController implements Initializable {
 
     }
 
-    public void InfoChannel(Button button) {
-        Label label = new Label();
-        var c = App.CL_CFG.GetChannelByCName(button.getText());
-        //TODO -> número de utilizadores, número de mensagens enviadas e número de ficheiros partilhados.
+    public void InfoChannel(TChannel channel) {
+        Label label_description = new Label();
+        Label label_num_users = new Label();
+        Label label_num_messages = new Label();
+        Label label_num_files = new Label();
+        //TODO -> número de mensagens enviadas e número de ficheiros partilhados.
         try {
+            int num_users = 0;
+            for (int i = 0; i < App.CL_CFG.ChannelUsers.size(); i++) {
+                if (App.CL_CFG.ChannelUsers.get(i).getCID().equals(channel)) {
+                    num_users++;
+                }
+            }
             Channel_DM_Info.getChildren().removeAll(Channel_DM_Info.getChildren());
-            label.setText(c.getCDescription());
-            Channel_DM_Info.getChildren().add(label);
+
+            label_description.setText(channel.getCDescription());
+            Channel_DM_Info.getChildren().add(label_description);
+
+            label_num_users.setText(String.valueOf(num_users));
+            Channel_DM_Info.getChildren().add(label_num_users);
+
+            synchronized (App.CL_CFG) {
+                App.CL_CFG.wait(5000);
+            }
+            int[] array = App.CL_CFG.GetNumMesagesAndFiles();
+            label_num_messages.setText(String.valueOf(array[0]));
+            label_num_files.setText(String.valueOf(array[1]));
+
         } catch (Exception ex) {
             ex.getMessage();
         }

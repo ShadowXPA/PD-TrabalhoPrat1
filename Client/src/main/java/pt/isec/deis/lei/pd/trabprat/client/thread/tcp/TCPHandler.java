@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import javafx.scene.control.Alert;
 import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
@@ -12,6 +13,7 @@ import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.LoginPackage;
+import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 
 public class TCPHandler implements Runnable {
@@ -62,6 +64,7 @@ public class TCPHandler implements Runnable {
                         App.CL_CFG.ChannelsList = LP.Channels;
                         App.CL_CFG.MyUser = LP.LoginAuthor;
                         App.CL_CFG.DMUsers = LP.DMUsers;
+                        App.CL_CFG.ChannelUsers = LP.ChannelUsers;
                         App.CL_CFG.setLogin();
                         App.CL_CFG.notifyAll();
                     }
@@ -78,6 +81,13 @@ public class TCPHandler implements Runnable {
                 }
                 case ECommand.CMD_FORBIDDEN: {
                     ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error", "Command Forbidden");
+                    break;
+                }
+                case ECommand.CMD_GET_CHANNEL_MESSAGES:{
+                    synchronized (App.CL_CFG){
+                        App.CL_CFG.ChannelMessage = (ArrayList<TChannelMessage>) command.Body;
+                        App.CL_CFG.notifyAll();
+                    }
                     break;
                 }
                 default: {
