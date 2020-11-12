@@ -82,6 +82,14 @@ public final class DatabaseWrapper {
         return Messages;
     }
 
+    public TMessage getLastMessage() {
+        var info = db.Select("select * from TMessage order by MID desc limit 1");
+        if (info == null || info.isEmpty()) {
+            return null;
+        }
+        return parseMessage(info.get(0));
+    }
+
     private TMessage parseMessage(HashMap<String, String> Set) {
         int mid = Integer.parseInt(Set.get("MID"));
         TUser muid = getUserByID(Integer.parseInt(Set.get("MUID")));
@@ -299,6 +307,25 @@ public final class DatabaseWrapper {
         return db.Insert("TChannelUsers",
                 new ArrayList<>(List.of("" + Channel.getCID(),
                         "" + User.getUID())));
+    }
+
+    public int insertChannelMessage(TChannel Channel, TMessage Message) {
+        return insert__Message("TChannelMessages", Message, Channel.getCID());
+    }
+
+    public int insertDirectMessage(TUser User, TMessage Message) {
+        return insert__Message("TDirectMessage", Message, User.getUID());
+    }
+
+    private int insert__Message(String Table, TMessage Message, int ID) {
+        int i = insertMessage(Message);
+        if (i > 0) {
+            int MID = getLastMessage().getMID();
+            i += db.Insert(Table,
+                    new ArrayList<>(List.of("" + MID,
+                            "" + ID)));
+        }
+        return i;
     }
 
     public DatabaseWrapper(Database db) {

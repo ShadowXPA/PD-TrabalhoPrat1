@@ -14,6 +14,7 @@ public final class DefaultSvMsg {
     public static final String SV_DELETE_CHANNEL_FAIL = "Could not delete channel.\nPlease try again later!";
     public static final String SV_DOWNLOAD_FILE_FAIL = "Could not download file.\nPlease try again later!";
     public static final String SV_DOWNLOAD_FILE_FAIL2 = "Could not download file.\nFile may not exist.\nPlease try again later!";
+    public static final String SV_MESSAGE_FAIL = "Could not send message.";
 
     private DefaultSvMsg() {}
 }

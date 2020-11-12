@@ -78,6 +78,10 @@ public class TCPUserHandler implements Runnable {
                     HandleDeleteChannel();
                     break;
                 }
+                case ECommand.CMD_CREATE_MESSAGE: {
+                    HandleCreateMessage();
+                    break;
+                }
                 default: {
                     sendCmd = new Command(ECommand.CMD_FORBIDDEN);
                     TCPHelper.SendTCPCommand(oOS, sendCmd);
@@ -397,6 +401,56 @@ public class TCPUserHandler implements Runnable {
         } else {
             // Operation failed
             sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_DELETE_CHANNEL_FAIL);
+        }
+        TCPHelper.SendTCPCommand(oOS, sendCmd);
+        Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
+    }
+
+    private void HandleCreateMessage() throws IOException {
+        // Get TChannelMessage or TDirectMessage
+        // Add message according to the instance of Cmd.Body
+        // Send error message if message fails to add
+        DatabaseWrapper db;
+        Command sendCmd;
+        TChannelMessage cm = null;
+        TDirectMessage dm = null;
+        TMessage m = null;
+        if (Cmd.Body instanceof TChannelMessage) {
+            cm = (TChannelMessage) Cmd.Body;
+        } else if (Cmd.Body instanceof TDirectMessage) {
+            dm = (TDirectMessage) Cmd.Body;
+        }
+        if (cm == null && dm == null) {
+            // Both null send error
+            sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
+        } else {
+            synchronized (SV_CFG) {
+                db = SV_CFG.DB;
+            }
+            int i = 0;
+            if (dm == null) {
+                // Channel Message
+                synchronized (SV_CFG) {
+                    i += db.insertChannelMessage(cm.getCID(), cm.getMID());
+                    m = db.getLastMessage();
+                }
+                if (i > 0) {
+                    sendCmd = new Command(ECommand.CMD_CREATED, m);
+                } else {
+                    sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
+                }
+            } else {
+                // Direct Message
+                synchronized (SV_CFG) {
+                    i += db.insertDirectMessage(dm.getUID(), dm.getMID());
+                    m = db.getLastMessage();
+                }
+                if (i > 0) {
+                    sendCmd = new Command(ECommand.CMD_CREATED, m);
+                } else {
+                    sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
+                }
+            }
         }
         TCPHelper.SendTCPCommand(oOS, sendCmd);
         Main.Log("[Server] to " + IP, "" + sendCmd.CMD);

@@ -79,4 +79,7 @@ public final class ECommand {
 
     // The client wants to delete a channel
     public static final int CMD_DELETE_CHANNEL = 706;
+
+    // The client wants to create a message
+    public static final int CMD_CREATE_MESSAGE = 707;
 }
