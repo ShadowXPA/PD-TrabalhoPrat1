@@ -1,5 +1,6 @@
 package pt.isec.deis.lei.pd.trabprat.client.thread.tcp;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -12,6 +13,7 @@ import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
+import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
 import pt.isec.deis.lei.pd.trabprat.model.LoginPackage;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
@@ -83,10 +85,30 @@ public class TCPHandler implements Runnable {
                     ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error", "Command Forbidden");
                     break;
                 }
-                case ECommand.CMD_GET_CHANNEL_MESSAGES:{
-                    synchronized (App.CL_CFG){
+                case ECommand.CMD_GET_CHANNEL_MESSAGES: {
+                    synchronized (App.CL_CFG) {
                         App.CL_CFG.ChannelMessage = (ArrayList<TChannelMessage>) command.Body;
                         App.CL_CFG.notifyAll();
+                    }
+                    break;
+                }
+                case ECommand.CMD_DOWNLOAD: {
+                    FileChunk fc = (FileChunk) command.Body;
+                    try {
+                        // Write File
+                        String home = System.getProperty("user.home");
+                        try ( FileOutputStream f = new FileOutputStream(home + "/Downloads/" + fc.getUsername() + fc.getExtension() , true)) {
+                            if (fc.getLength() > 0) {
+                                synchronized (f.getChannel()) {
+                                    while (f.getChannel().position() < fc.getOffset()) {
+                                        f.getChannel().wait(10);
+                                    }
+                                }
+                                f.write(fc.getFilePart(), 0, fc.getLength());
+                            }
+                        }
+                    } catch (Exception ex) {
+                        ExceptionHandler.ShowException(ex);
                     }
                     break;
                 }

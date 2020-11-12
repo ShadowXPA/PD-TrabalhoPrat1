@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -18,6 +19,7 @@ import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
+import pt.isec.deis.lei.pd.trabprat.model.TMessage;
 
 public class PrimaryController implements Initializable {
 
@@ -46,6 +48,8 @@ public class PrimaryController implements Initializable {
     private VBox Channel_DM_Info;
     @FXML
     private VBox VBox_Mess_Files;
+    @FXML
+    private ScrollPane sp_main;
 
     /**
      * Initializes the controller class.
@@ -119,6 +123,7 @@ public class PrimaryController implements Initializable {
             } else {
                 ServerController.ChannelMessages(ChannelName);
                 InfoChannel(channel);
+                Messages();
             }
         } catch (Exception ex) {
             ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error", "Channel", ex.getMessage());
@@ -147,22 +152,64 @@ public class PrimaryController implements Initializable {
                 }
             }
             Channel_DM_Info.getChildren().removeAll(Channel_DM_Info.getChildren());
-
+            label_description.setWrapText(true);
             label_description.setText(channel.getCDescription());
             Channel_DM_Info.getChildren().add(label_description);
-
-            label_num_users.setText(String.valueOf(num_users));
+            label_num_users.setText("Number of users: " + String.valueOf(num_users));
             Channel_DM_Info.getChildren().add(label_num_users);
-
             synchronized (App.CL_CFG) {
                 App.CL_CFG.wait(5000);
             }
             int[] array = App.CL_CFG.GetNumMesagesAndFiles();
-            label_num_messages.setText(String.valueOf(array[0]));
-            label_num_files.setText(String.valueOf(array[1]));
+            label_num_messages.setText("Number of messages: " + String.valueOf(array[0]));
+            label_num_files.setText("Number of files: " + String.valueOf(array[1]));
+            Channel_DM_Info.getChildren().add(label_num_messages);
+            Channel_DM_Info.getChildren().add(label_num_files);
 
         } catch (Exception ex) {
             ex.getMessage();
+        }
+    }
+
+    public void Messages() {
+        VBox_Mess_Files.getChildren().removeAll(VBox_Mess_Files.getChildren());
+        for (int i = 0; i < App.CL_CFG.ChannelMessage.size(); i++) {
+            if (App.CL_CFG.ChannelMessage.get(i).getMID().getMPath() == null) {
+                Label label_name = new Label();
+                Label label_text_message = new Label();
+                Label label_date = new Label();
+                label_name.setText(App.CL_CFG.ChannelMessage.get(i).getMID().getMUID().getUName());
+                label_date.setText(App.CL_CFG.ChannelMessage.get(i).getMID().getDate().toString());
+                label_text_message.setText(App.CL_CFG.ChannelMessage.get(i).getMID().getMText());
+                label_text_message.setWrapText(true);
+                VBox_Mess_Files.getChildren().add(label_name);
+                VBox_Mess_Files.getChildren().add(label_date);
+                VBox_Mess_Files.getChildren().add(label_text_message);
+            } else {
+                Button button = new Button();
+                double db = VBox_Mess_Files.getMaxWidth() / 4.0;
+                button.setMinWidth(db);
+                button.setMaxWidth(db);
+                button.setText(App.CL_CFG.ChannelMessage.get(i).getMID().getMText());
+                button.setId("" + App.CL_CFG.ChannelMessage.get(i).getMID().getMID());
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent t) {
+                        filesSearch((Button) t.getSource());
+                    }
+                });
+                VBox_Mess_Files.getChildren().add(button);
+            }
+        }
+        sp_main.setContent(VBox_Mess_Files);
+    }
+
+    public void filesSearch(Button button) {
+        try {
+            TMessage m = App.CL_CFG.GetMessageByID(Integer.parseInt(button.getId()));
+            ServerController.GetFile(m);
+        } catch (IOException ex) {
+            ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error File", "Can´t download the file!");
         }
     }
 }

@@ -11,6 +11,7 @@ import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelUser;
+import pt.isec.deis.lei.pd.trabprat.model.TMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 
 public class ClientConfig {
@@ -75,7 +76,7 @@ public class ClientConfig {
     }
 
     public int[] GetNumMesagesAndFiles() {
-        int [] array = new int[2];
+        int[] array = new int[2];
         for (int i = 0; i < ChannelMessage.size(); i++) {
             if (ChannelMessage.get(i).getMID().getMPath() == null) {
                 array[0]++;
@@ -84,5 +85,14 @@ public class ClientConfig {
             }
         }
         return array;
+    }
+
+    public TMessage GetMessageByID(int ID) {
+        for (int i = 0; i < ChannelMessage.size(); i++) {
+            if (ChannelMessage.get(i).getMID().getMID() == ID) {
+                return ChannelMessage.get(i).getMID();
+            }
+        }
+        return null;
     }
 }

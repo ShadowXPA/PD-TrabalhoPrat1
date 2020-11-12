@@ -24,7 +24,7 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Channel">
             <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
+              <MenuItem mnemonicParsing="false" text="Add" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
@@ -39,7 +39,7 @@
             <VBox maxWidth="253.6" minWidth="253.6" prefHeight="200.0" prefWidth="100.0">
                <children>
                   <Label text="Channel:" />
-                  <ScrollPane maxHeight="347.5" maxWidth="253.6" minHeight="330.5" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                  <ScrollPane fx:id="sp_channel" maxHeight="347.5" maxWidth="253.6" minHeight="330.5" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
                     <content>
                       <AnchorPane fx:id="ChannelList" minHeight="0.0" minWidth="0.0" prefHeight="330.0" prefWidth="253.6">
                            <children>
@@ -48,7 +48,7 @@
                     </content>
                   </ScrollPane>
                   <Label text="Direct Message:" />
-                  <ScrollPane maxHeight="330.0" maxWidth="253.6" minHeight="330.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                  <ScrollPane fx:id="sp_DM" maxHeight="330.0" maxWidth="253.6" minHeight="330.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
                      <content>
                         <AnchorPane fx:id="DirectMessageList" minHeight="0.0" minWidth="0.0" prefHeight="330.0" prefWidth="253.6">
                            <children>
@@ -62,11 +62,11 @@
             <VBox maxHeight="695.0" maxWidth="760.8" minHeight="695.0" minWidth="760.8" prefHeight="200.0" prefWidth="100.0">
                <children>
                   <Label text="Messages / Files:" />
-                  <ScrollPane maxHeight="620.0" maxWidth="760.8" minHeight="620.0" minWidth="760.8" prefHeight="200.0" prefWidth="200.0">
+                  <ScrollPane fx:id="sp_main" maxHeight="620.0" maxWidth="760.8" minHeight="620.0" minWidth="760.8" prefHeight="200.0" prefWidth="200.0">
                      <content>
                         <AnchorPane fx:id="MF" minHeight="0.0" minWidth="0.0" prefHeight="620.0" prefWidth="760.8">
                            <children>
-                              <VBox fx:id="VBox_Mess_Files" maxHeight="620.0" maxWidth="760.8" minHeight="620.0" minWidth="760.8" prefHeight="200.0" prefWidth="100.0" />
+                              <VBox fx:id="VBox_Mess_Files" maxWidth="760.8" minHeight="620.0" minWidth="760.8" prefHeight="200.0" prefWidth="100.0" />
                            </children></AnchorPane>
                      </content>
                   </ScrollPane>
@@ -87,20 +87,20 @@
             <VBox maxWidth="253.6" minWidth="253.6" prefHeight="200.0" prefWidth="100.0">
                <children>
                   <Label text="Channel info / Direct Message:" />
-                  <ScrollPane maxHeight="220.0" maxWidth="253.6" minHeight="220.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                  <ScrollPane fx:id="sp_info" maxHeight="220.0" maxWidth="253.6" minHeight="220.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
                      <content>
                         <AnchorPane fx:id="Info" minHeight="0.0" minWidth="0.0" prefHeight="220.0" prefWidth="253.6">
                            <children>
-                              <VBox fx:id="Channel_DM_Info" maxHeight="220.0" maxWidth="253.6" minHeight="220.0" minWidth="253.6" prefHeight="200.0" prefWidth="100.0" />
+                              <VBox fx:id="Channel_DM_Info" maxWidth="253.6" minHeight="220.0" minWidth="253.6" prefHeight="200.0" prefWidth="100.0" />
                            </children></AnchorPane>
                      </content>
                   </ScrollPane>
                   <Label text="Online Users:" />
-                  <ScrollPane maxHeight="440.0" maxWidth="253.6" minHeight="440.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                  <ScrollPane fx:id="sp_users" maxHeight="440.0" maxWidth="253.6" minHeight="440.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="440.0" prefWidth="253.6">
                            <children>
-                              <VBox fx:id="vboxUserOnline" maxHeight="440.0" maxWidth="253.6" minHeight="440.0" minWidth="253.6" prefHeight="200.0" prefWidth="100.0" />
+                              <VBox fx:id="vboxUserOnline" maxWidth="253.6" minHeight="440.0" minWidth="253.6" prefHeight="200.0" prefWidth="100.0" />
                            </children></AnchorPane>
                      </content>
                   </ScrollPane>

@@ -13,6 +13,7 @@ import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelUser;
+import pt.isec.deis.lei.pd.trabprat.model.TMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
@@ -65,6 +66,11 @@ public final class ServerController {
             }
         }
         Command command = new Command(ECommand.CMD_GET_CHANNEL_MESSAGES, new TChannelUser(c, App.CL_CFG.MyUser));
+        TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
+    }
+    
+    public static void GetFile(TMessage message) throws IOException{
+        Command command = new Command(ECommand.CMD_DOWNLOAD, message);
         TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
     }
 }
