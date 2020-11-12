@@ -62,6 +62,8 @@ public class PrimaryController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        sp_main.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        sp_main.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         VBox_ChannelList();
         VBox_DMUsers();
         VBox_UsersOnline();
