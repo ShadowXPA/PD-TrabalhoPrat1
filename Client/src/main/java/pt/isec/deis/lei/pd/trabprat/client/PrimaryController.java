@@ -22,19 +22,11 @@ import pt.isec.deis.lei.pd.trabprat.model.TMessage;
 public class PrimaryController implements Initializable {
 
     @FXML
-    private AnchorPane ChannelList;
-    @FXML
-    private AnchorPane DirectMessageList;
-    @FXML
-    private AnchorPane MF;
-    @FXML
     private TextField TFMessage;
     @FXML
     private Button btnFile;
     @FXML
     private Button btnSend;
-    @FXML
-    private AnchorPane Info;
     @FXML
     private VBox vboxChannel;
     @FXML
@@ -62,8 +54,16 @@ public class PrimaryController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-        sp_main.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        sp_main.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        sp_main.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        sp_main.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        sp_channel.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        sp_channel.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        sp_DM.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        sp_DM.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        sp_info.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        sp_info.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        sp_users.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        sp_users.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         VBox_ChannelList();
         VBox_DMUsers();
         VBox_UsersOnline();
@@ -84,6 +84,7 @@ public class PrimaryController implements Initializable {
             });
             vboxChannel.getChildren().add(button);
         }
+        sp_channel.setContent(vboxChannel);
     }
 
     public void VBox_DMUsers() {
@@ -101,6 +102,7 @@ public class PrimaryController implements Initializable {
             });
             vboxDM.getChildren().add(button);
         }
+        sp_DM.setContent(vboxDM);
     }
 
     public void VBox_UsersOnline() {
@@ -118,6 +120,7 @@ public class PrimaryController implements Initializable {
             });
             vboxUserOnline.getChildren().add(button);
         }
+        sp_users.setContent(vboxUserOnline);
     }
 
     public void buttonChannels(Button button) {
@@ -172,7 +175,7 @@ public class PrimaryController implements Initializable {
             label_num_files.setText("Number of files: " + String.valueOf(array[1]));
             Channel_DM_Info.getChildren().add(label_num_messages);
             Channel_DM_Info.getChildren().add(label_num_files);
-
+            sp_info.setContent(Channel_DM_Info);
         } catch (Exception ex) {
             ex.getMessage();
         }
