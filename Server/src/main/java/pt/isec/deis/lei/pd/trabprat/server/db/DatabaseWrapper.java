@@ -130,28 +130,22 @@ public final class DatabaseWrapper {
     }
 
     public ArrayList<TChannelUser> getAllChannelUsers() {
-        var info = db.Select("select * from tchannelusers");
-        ArrayList<TChannelUser> channelUsers = new ArrayList<>();
-        for (int i = 0; i < info.size(); i++) {
-            channelUsers.add(parseChannelUser(info.get(i)));
-        }
-        return channelUsers;
+        return getAllUsersFromChannelBy("select * from tchannelusers");
     }
 
     public ArrayList<TChannelUser> getAllUsersFromChannelID(int CID) {
-        var info = db.Select("select u.CID, u.UID from tchannelusers u"
+        return getAllUsersFromChannelBy("select u.CID, u.UID from tchannelusers u"
                 + " where u.CID = " + CID);
-        ArrayList<TChannelUser> channelUsers = new ArrayList<>();
-        for (int i = 0; i < info.size(); i++) {
-            channelUsers.add(parseChannelUser(info.get(i)));
-        }
-        return channelUsers;
     }
 
     public ArrayList<TChannelUser> getAllUsersFromChannelName(String CName) {
-        var info = db.Select("select u.CID, u.UID from tchannelusers u,"
+        return getAllUsersFromChannelBy("select u.CID, u.UID from tchannelusers u,"
                 + " tchannel c where c.CID = u.CID and c.CName = '"
                 + CName.replace("'", "''") + "'");
+    }
+
+    public ArrayList<TChannelUser> getAllUsersFromChannelBy(String Select) {
+        var info = db.Select(Select);
         ArrayList<TChannelUser> channelUsers = new ArrayList<>();
         for (int i = 0; i < info.size(); i++) {
             channelUsers.add(parseChannelUser(info.get(i)));
@@ -191,10 +185,21 @@ public final class DatabaseWrapper {
     }
 
     public ArrayList<TDirectMessage> getAllDMByUserID(int UID) {
-        var info = db.Select("select d.MID, d.UID"
+        return getAllDMBy("select d.MID, d.UID"
                 + " from tdirectmessage d,"
                 + " tmessage m where d.MID = m.MID and (d.UID = "
                 + UID + " or m.MUID = " + UID + ")");
+    }
+
+    public ArrayList<TDirectMessage> getAllDMByUserIDAndOtherID(int UID, int OUID) {
+        return getAllDMBy("select d.UID, d.MID from tdirectmessage d,"
+                + " tmessage m where d.MID = m.MID and"
+                + " ((d.UID = " + UID + " and m.MUID = " + OUID + ") or"
+                + " (d.UID = " + OUID + " and m.MUID = " + UID + "))");
+    }
+
+    public ArrayList<TDirectMessage> getAllDMBy(String Select) {
+        var info = db.Select(Select);
         if (info == null || info.isEmpty()) {
             return null;
         }
@@ -271,6 +276,23 @@ public final class DatabaseWrapper {
                         cdesc,
                         cpass,
                         "" + new Date().getTime())));
+    }
+
+    public int updateChannel(TChannel Channel) {
+        String cdesc = "null", cpass = "null";
+        if (Channel.getCDescription() != null) {
+            cdesc = "'" + Channel.getCDescription().replace("'", "''") + "'";
+        }
+        if (Channel.getCPassword() != null) {
+            cpass = "'" + Channel.getCPassword().replace("'", "''") + "'";
+        }
+        return db.Update("UPDATE TChannel SET CName = " + Channel.getCName()
+                + ", CDescription = " + cdesc + ", CPassword = " + cpass
+                + " WHERE CID = " + Channel.getCID());
+    }
+
+    public int deleteChannel(TChannel Channel) {
+        return db.Delete("DELETE FROM TChannel WHERE CID = " + Channel.getCID());
     }
 
     public int insertChannelUser(TChannel Channel, TUser User) {

@@ -7,12 +7,17 @@ import java.net.Socket;
 import java.util.ArrayList;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
+import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
 import pt.isec.deis.lei.pd.trabprat.model.LoginPackage;
+import pt.isec.deis.lei.pd.trabprat.model.TChannel;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelUser;
+import pt.isec.deis.lei.pd.trabprat.model.TDirectMessage;
+import pt.isec.deis.lei.pd.trabprat.model.TMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
+import pt.isec.deis.lei.pd.trabprat.model.TUserPair;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.DefaultSvMsg;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
@@ -49,8 +54,28 @@ public class TCPUserHandler implements Runnable {
                     HandleUpload();
                     break;
                 }
+                case ECommand.CMD_DOWNLOAD: {
+                    HandleDownload();
+                    break;
+                }
                 case ECommand.CMD_GET_CHANNEL_MESSAGES: {
                     HandleGetChannelMessages();
+                    break;
+                }
+                case ECommand.CMD_GET_DM_MESSAGES: {
+                    HandleGetDMMessages();
+                    break;
+                }
+                case ECommand.CMD_CREATE_CHANNEL: {
+                    HandleCreateChannel();
+                    break;
+                }
+                case ECommand.CMD_UPDATE_CHANNEL: {
+                    HandleUpdateChannel();
+                    break;
+                }
+                case ECommand.CMD_DELETE_CHANNEL: {
+                    HandleDeleteChannel();
                     break;
                 }
                 default: {
@@ -223,6 +248,52 @@ public class TCPUserHandler implements Runnable {
         }
     }
 
+    private void HandleDownload() throws IOException {
+        // Get TMessage or TUser
+        String Path = null;
+        String _Username = null;
+        Command sendCmd;
+        if (Cmd.Body instanceof TMessage) {
+            TMessage msg = (TMessage) Cmd.Body;
+            Path = msg.getMPath();
+            _Username = msg.getMText();
+        } else if (Cmd.Body instanceof TUser) {
+            TUser usr = (TUser) Cmd.Body;
+            Path = usr.getUPhoto();
+            _Username = usr.getUUsername();
+        }
+        if (Path != null) {
+            // Send file to user
+            FileChunk fc;
+            try {
+                int extIndex = Path.lastIndexOf(".");
+                String Extension = "";
+                if (extIndex != -1) {
+                    Extension = Path.substring(extIndex);
+                }
+                int Length = DefaultConfig.DEFAULT_TCP_PACKET_SIZE;
+                int Offset = 0;
+                byte[] buffer = ExplorerController._ReadFile(Path, Offset, Length);
+                while (buffer.length > 0) {
+                    fc = new FileChunk(buffer, Offset, Length, _Username, null, Extension);
+                    sendCmd = new Command(ECommand.CMD_DOWNLOAD, fc);
+                    TCPHelper.SendTCPCommand(oOS, sendCmd);
+                    Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
+                    Offset += Length;
+                    buffer = ExplorerController._ReadFile(Path, Offset, Length);
+                }
+            } catch (Exception ex) {
+                sendCmd = new Command(ECommand.CMD_SERVICE_UNAVAILABLE, DefaultSvMsg.SV_DOWNLOAD_FILE_FAIL2);
+                TCPHelper.SendTCPCommand(oOS, sendCmd);
+                Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
+            }
+        } else {
+            sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_DOWNLOAD_FILE_FAIL);
+            TCPHelper.SendTCPCommand(oOS, sendCmd);
+            Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
+        }
+    }
+
     private void HandleGetChannelMessages() throws IOException {
         // Add channel user if they don't exist
         DatabaseWrapper db;
@@ -238,6 +309,95 @@ public class TCPUserHandler implements Runnable {
         }
         // Send messages from channel
         sendCmd = new Command(ECommand.CMD_GET_CHANNEL_MESSAGES, messages);
+        TCPHelper.SendTCPCommand(oOS, sendCmd);
+        Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
+    }
+
+    private void HandleGetDMMessages() throws IOException {
+        DatabaseWrapper db;
+        TUserPair pair = (TUserPair) Cmd.Body;
+        Command sendCmd;
+        ArrayList<TDirectMessage> DMs;
+        synchronized (SV_CFG) {
+            db = SV_CFG.DB;
+            DMs = db.getAllDMByUserIDAndOtherID(pair.User1.getUID(), pair.User2.getUID());
+        }
+        sendCmd = new Command(ECommand.CMD_GET_DM_MESSAGES, DMs);
+        TCPHelper.SendTCPCommand(oOS, sendCmd);
+        Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
+    }
+
+    private void HandleCreateChannel() throws IOException {
+        // Insert channel into database
+        DatabaseWrapper db;
+        TChannel channel = (TChannel) Cmd.Body;
+        TChannel c = null;
+        Command sendCmd;
+        int ErrorNumber;
+        synchronized (SV_CFG) {
+            db = SV_CFG.DB;
+            ErrorNumber = db.insertChannel(channel);
+            if (ErrorNumber > 0) {
+                c = db.getChannelByName(channel.getCName());
+            }
+        }
+        if (ErrorNumber > 0) {
+            // Success
+            sendCmd = new Command(ECommand.CMD_CREATED, c);
+        } else {
+            // Operation failed
+            sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_CREATE_CHANNEL_FAIL);
+        }
+        TCPHelper.SendTCPCommand(oOS, sendCmd);
+        Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
+    }
+
+    private void HandleUpdateChannel() throws IOException {
+        // Update channel if user is owner
+        DatabaseWrapper db;
+        TChannelUser cU = (TChannelUser) Cmd.Body;
+        Command sendCmd;
+        int ErrorNumber;
+        if (!cU.getCID().getCUID().equals(cU.getUID())) {
+            ErrorNumber = 0;
+        } else {
+            synchronized (SV_CFG) {
+                db = SV_CFG.DB;
+                ErrorNumber = db.updateChannel(cU.getCID());
+            }
+        }
+        if (ErrorNumber > 0) {
+            // Success
+            sendCmd = new Command(ECommand.CMD_UPDATE_CHANNEL, cU.getCID());
+        } else {
+            // Operation failed
+            sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_UPDATE_CHANNEL_FAIL);
+        }
+        TCPHelper.SendTCPCommand(oOS, sendCmd);
+        Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
+    }
+
+    private void HandleDeleteChannel() throws IOException {
+        // Delete channel if user is owner
+        DatabaseWrapper db;
+        TChannelUser cU = (TChannelUser) Cmd.Body;
+        Command sendCmd;
+        int ErrorNumber;
+        if (!cU.getCID().getCUID().equals(cU.getUID())) {
+            ErrorNumber = 0;
+        } else {
+            synchronized (SV_CFG) {
+                db = SV_CFG.DB;
+                ErrorNumber = db.deleteChannel(cU.getCID());
+            }
+        }
+        if (ErrorNumber > 0) {
+            // Success
+            sendCmd = new Command(ECommand.CMD_DELETE_CHANNEL, cU.getCID());
+        } else {
+            // Operation failed
+            sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_DELETE_CHANNEL_FAIL);
+        }
         TCPHelper.SendTCPCommand(oOS, sendCmd);
         Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
     }

@@ -1,7 +1,9 @@
 package pt.isec.deis.lei.pd.trabprat.communication;
 
 public final class ECommand {
-    private ECommand() {}
+
+    private ECommand() {
+    }
 
     // Ignore
     public static final int CMD_IGNORE = 1;
@@ -62,7 +64,19 @@ public final class ECommand {
 
     // The client wants to download a file
     public static final int CMD_DOWNLOAD = 701;
-    
-    // The client wants to receive the messages from the channel
+
+    // The client wants to receive channel messages
     public static final int CMD_GET_CHANNEL_MESSAGES = 702;
+
+    // The client wants to receive DM messages
+    public static final int CMD_GET_DM_MESSAGES = 703;
+
+    // The client wants to create a channel
+    public static final int CMD_CREATE_CHANNEL = 704;
+
+    // The client wants to update a channel
+    public static final int CMD_UPDATE_CHANNEL = 705;
+
+    // The client wants to delete a channel
+    public static final int CMD_DELETE_CHANNEL = 706;
 }

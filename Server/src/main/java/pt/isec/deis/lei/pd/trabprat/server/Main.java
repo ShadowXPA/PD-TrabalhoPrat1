@@ -1,6 +1,7 @@
 package pt.isec.deis.lei.pd.trabprat.server;
 
 import java.sql.SQLException;
+import java.util.Date;
 import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
@@ -57,6 +58,7 @@ public class Main {
     }
 
     public static void Log(String Prefix, String Message) {
+        System.out.print(new Date().toString() + " ");
         System.out.println(Prefix + ": " + Message);
         System.out.print("Admin: ");
     }

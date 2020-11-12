@@ -62,7 +62,7 @@ public final class ExplorerController {
         return _ReadFile(BaseDir + SubDir + "/" + FileName, Offset, Length);
     }
 
-    private synchronized static byte[] _ReadFile(String Path, long Offset, int Length) throws IOException {
+    public synchronized static byte[] _ReadFile(String Path, long Offset, int Length) throws IOException {
         byte[] buffer = new byte[Length];
         try ( FileInputStream f = new FileInputStream(Path)) {
             f.skipNBytes(Offset);

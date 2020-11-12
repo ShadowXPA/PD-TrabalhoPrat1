@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.UUID;
 import pt.isec.deis.lei.pd.trabprat.client.App;
-import pt.isec.deis.lei.pd.trabprat.client.thread.tcp.TCPHandler;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
