@@ -13,9 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
@@ -37,7 +35,6 @@ public class PrimaryController implements Initializable {
     private Button btnSend;
     @FXML
     private AnchorPane Info;
-    private AnchorPane UsersOnline;
     @FXML
     private VBox vboxChannel;
     @FXML
@@ -50,6 +47,14 @@ public class PrimaryController implements Initializable {
     private VBox VBox_Mess_Files;
     @FXML
     private ScrollPane sp_main;
+    @FXML
+    private ScrollPane sp_channel;
+    @FXML
+    private ScrollPane sp_DM;
+    @FXML
+    private ScrollPane sp_info;
+    @FXML
+    private ScrollPane sp_users;
 
     /**
      * Initializes the controller class.
