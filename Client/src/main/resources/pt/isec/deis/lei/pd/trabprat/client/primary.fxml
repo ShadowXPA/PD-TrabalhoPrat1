@@ -67,8 +67,8 @@
                   </HBox>
                   <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <Button fx:id="btnFile" mnemonicParsing="false" text="File" />
-                        <Button fx:id="btnSend" mnemonicParsing="false" text="Send" />
+                        <Button fx:id="btnFile" mnemonicParsing="false" onAction="#SendFile" text="File" />
+                        <Button fx:id="btnSend" mnemonicParsing="false" onAction="#SendMessage" text="Send" />
                      </children>
                   </HBox>
                </children>

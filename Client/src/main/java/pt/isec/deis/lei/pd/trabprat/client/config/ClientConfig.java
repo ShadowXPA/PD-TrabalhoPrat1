@@ -11,6 +11,7 @@ import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelUser;
+import pt.isec.deis.lei.pd.trabprat.model.TDirectMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 
@@ -25,6 +26,11 @@ public class ClientConfig {
     public ArrayList<TChannelUser> ChannelUsers;
     //list of messages from the channel
     public ArrayList<TChannelMessage> ChannelMessage;
+    public final Object LockCM = new Object();
+    public ArrayList<TDirectMessage> DirectMessages;
+    public final Object LockDM = new Object();
+    //selected channel
+    public Object SelectedChannel;
     public TUser MyUser;
     public Stage Stage;
     public Server server;
@@ -94,5 +100,26 @@ public class ClientConfig {
             }
         }
         return null;
+    }
+
+    public TUser GetDMByUName(String UName) {
+        for (int i = 0; i < DMUsers.size(); i++) {
+            if (DMUsers.get(i).getUName().equals(UName)) {
+                return DMUsers.get(i);
+            }
+        }
+        return null;
+    }
+
+    public int[] GetNumMesagesAndFilesDM() {
+        int[] array = new int[2];
+        for (int i = 0; i < DirectMessages.size(); i++) {
+            if (DirectMessages.get(i).getMID().getMPath() == null) {
+                array[0]++;
+            } else {
+                array[1]++;
+            }
+        }
+        return array;
     }
 }

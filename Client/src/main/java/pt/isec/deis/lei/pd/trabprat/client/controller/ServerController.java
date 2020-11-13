@@ -12,9 +12,11 @@ import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
+import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelUser;
 import pt.isec.deis.lei.pd.trabprat.model.TMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
+import pt.isec.deis.lei.pd.trabprat.model.TUserPair;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
 public final class ServerController {
@@ -57,20 +59,23 @@ public final class ServerController {
         TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
     }
 
-    public static void ChannelMessages(String ChannelName) throws IOException {
-        TChannel c = null;
-        for(int i=0;i<App.CL_CFG.ChannelsList.size(); i++){
-            if(App.CL_CFG.ChannelsList.get(i).getCName().equals(ChannelName)){
-                c = App.CL_CFG.ChannelsList.get(i);
-                break;
-            }
+    public static void ChannelMessages() throws IOException {
+        Command command = null;
+        if (App.CL_CFG.SelectedChannel instanceof TChannel) {
+            command = new Command(ECommand.CMD_GET_CHANNEL_MESSAGES, new TChannelUser((TChannel) App.CL_CFG.SelectedChannel, App.CL_CFG.MyUser));
+        } else if (App.CL_CFG.SelectedChannel instanceof TUser) {
+            command = new Command(ECommand.CMD_GET_DM_MESSAGES, new TUserPair((TUser) App.CL_CFG.SelectedChannel, App.CL_CFG.MyUser));
         }
-        Command command = new Command(ECommand.CMD_GET_CHANNEL_MESSAGES, new TChannelUser(c, App.CL_CFG.MyUser));
         TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
     }
-    
-    public static void GetFile(TMessage message) throws IOException{
+
+    public static void GetFile(TMessage message) throws IOException {
         Command command = new Command(ECommand.CMD_DOWNLOAD, message);
+        TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
+    }
+
+    public static void NewMessage(Object channel) throws IOException {
+        Command command = new Command(ECommand.CMD_CREATE_MESSAGE, channel);
         TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
     }
 }
