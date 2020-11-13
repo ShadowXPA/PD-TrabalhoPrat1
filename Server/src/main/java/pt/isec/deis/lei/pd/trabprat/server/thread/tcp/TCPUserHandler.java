@@ -279,7 +279,7 @@ public class TCPUserHandler implements Runnable {
                 int Offset = 0;
                 byte[] buffer = ExplorerController._ReadFile(Path, Offset, Length);
                 while (buffer.length > 0) {
-                    fc = new FileChunk(buffer, Offset, Length, _Username, null, Extension);
+                    fc = new FileChunk(buffer, Offset, buffer.length, _Username, null, Extension);
                     sendCmd = new Command(ECommand.CMD_DOWNLOAD, fc);
                     TCPHelper.SendTCPCommand(oOS, sendCmd);
                     Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
@@ -414,7 +414,8 @@ public class TCPUserHandler implements Runnable {
         Command sendCmd;
         TChannelMessage cm = null;
         TDirectMessage dm = null;
-        TMessage m = null;
+        ArrayList<TChannelMessage> cmL = null;
+        ArrayList<TDirectMessage> dmL = null;
         if (Cmd.Body instanceof TChannelMessage) {
             cm = (TChannelMessage) Cmd.Body;
         } else if (Cmd.Body instanceof TDirectMessage) {
@@ -428,25 +429,56 @@ public class TCPUserHandler implements Runnable {
                 db = SV_CFG.DB;
             }
             int i = 0;
+            TMessage msg;
             if (dm == null) {
                 // Channel Message
+                if (cm.getMID().getMPath() != null) {
+                    int extIndex = cm.getMID().getMText().lastIndexOf(".");
+                    String Extension = "";
+                    if (extIndex != -1) {
+                        Extension = cm.getMID().getMText().substring(extIndex);
+                    }
+                    synchronized (SV_CFG) {
+                        String BaseDir = SV_CFG.DBConnection.getSchema() + ExplorerController.BASE_DIR;
+                        String InternalPath = BaseDir + ExplorerController.FILES_SUBDIR
+                                + "/" + cm.getMID().getMPath() + Extension;
+                        msg = new TMessage(0, cm.getMID().getMUID(), cm.getMID().getMText(), InternalPath, 0);
+                    }
+                } else {
+                    msg = cm.getMID();
+                }
                 synchronized (SV_CFG) {
-                    i += db.insertChannelMessage(cm.getCID(), cm.getMID());
-                    m = db.getLastMessage();
+                    i += db.insertChannelMessage(cm.getCID(), msg);
+                    cmL = db.getAllMessagesFromChannelID(cm.getCID().getCID());
                 }
                 if (i > 0) {
-                    sendCmd = new Command(ECommand.CMD_CREATED, m);
+                    sendCmd = new Command(ECommand.CMD_CREATED, cmL);
                 } else {
                     sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
                 }
             } else {
                 // Direct Message
+                if (dm.getMID().getMPath() != null) {
+                    int extIndex = cm.getMID().getMText().lastIndexOf(".");
+                    String Extension = "";
+                    if (extIndex != -1) {
+                        Extension = cm.getMID().getMText().substring(extIndex);
+                    }
+                    synchronized (SV_CFG) {
+                        String BaseDir = SV_CFG.DBConnection.getSchema() + ExplorerController.BASE_DIR;
+                        String InternalPath = BaseDir + ExplorerController.FILES_SUBDIR
+                                + "/" + cm.getMID().getMPath() + Extension;
+                        msg = new TMessage(0, dm.getMID().getMUID(), dm.getMID().getMText(), InternalPath, 0);
+                    }
+                } else {
+                    msg = dm.getMID();
+                }
                 synchronized (SV_CFG) {
-                    i += db.insertDirectMessage(dm.getUID(), dm.getMID());
-                    m = db.getLastMessage();
+                    i += db.insertDirectMessage(dm.getUID(), msg);
+                    dmL = db.getAllDMByUserIDAndOtherID(dm.getMID().getMUID().getUID(), dm.getUID().getUID());
                 }
                 if (i > 0) {
-                    sendCmd = new Command(ECommand.CMD_CREATED, m);
+                    sendCmd = new Command(ECommand.CMD_CREATED, dmL);
                 } else {
                     sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
                 }
