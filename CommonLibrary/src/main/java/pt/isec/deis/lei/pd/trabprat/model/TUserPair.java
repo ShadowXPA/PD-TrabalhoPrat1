@@ -2,7 +2,7 @@ package pt.isec.deis.lei.pd.trabprat.model;
 
 import java.io.Serializable;
 
-public class TUserPair implements Serializable{
+public class TUserPair implements Serializable {
 
     public final TUser User1;
     public final TUser User2;
