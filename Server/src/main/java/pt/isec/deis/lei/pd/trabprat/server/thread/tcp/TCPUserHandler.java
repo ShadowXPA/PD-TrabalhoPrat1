@@ -459,10 +459,10 @@ public class TCPUserHandler implements Runnable {
             } else {
                 // Direct Message
                 if (dm.getMID().getMPath() != null) {
-                    int extIndex = cm.getMID().getMText().lastIndexOf(".");
+                    int extIndex = dm.getMID().getMText().lastIndexOf(".");
                     String Extension = "";
                     if (extIndex != -1) {
-                        Extension = cm.getMID().getMText().substring(extIndex);
+                        Extension = dm.getMID().getMText().substring(extIndex);
                     }
                     synchronized (SV_CFG) {
                         String BaseDir = SV_CFG.DBConnection.getSchema() + ExplorerController.BASE_DIR;
