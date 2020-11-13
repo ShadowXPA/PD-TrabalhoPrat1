@@ -36,6 +36,15 @@ public final class DatabaseWrapper {
         return parseUser(info.get(0));
     }
 
+    public ArrayList<TUser> findUserBy(String by, String what) {
+        var info = db.Select("");
+        ArrayList<TUser> Users = new ArrayList<>();
+        for (int i = 0; i < info.size(); i++) {
+            Users.add(parseUser(info.get(i)));
+        }
+        return Users;
+    }
+
     public ArrayList<TUser> getAllUsers() {
         var info = db.Select("select * from tuser");
         if (info == null || info.isEmpty()) {

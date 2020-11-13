@@ -5,12 +5,12 @@
 create schema if not exists pd_trab;
 use pd_trab;
 
-drop table if exists pd_trab.TDirectMessage;
-drop table if exists pd_trab.TChannelMessages;
-drop table if exists pd_trab.TChannelUsers;
-drop table if exists pd_trab.TMessage;
-drop table if exists pd_trab.TChannel;
-drop table if exists pd_trab.TUser;
+drop table if exists TDirectMessage;
+drop table if exists TChannelMessages;
+drop table if exists TChannelUsers;
+drop table if exists TMessage;
+drop table if exists TChannel;
+drop table if exists TUser;
 
 /*
     UID = User ID
@@ -20,7 +20,7 @@ drop table if exists pd_trab.TUser;
     UPhoto = User photo (path to photo on the server)
     UDate = User creation date
 */
-CREATE TABLE IF NOT EXISTS pd_trab.TUser (
+CREATE TABLE IF NOT EXISTS TUser (
     UID INT AUTO_INCREMENT PRIMARY KEY,
     UName VARCHAR(50) UNIQUE NOT NULL,
     UUsername VARCHAR(25) UNIQUE NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS pd_trab.TUser (
     CPassowrd = Channel password
     CDate = Channel creation date
 */
-CREATE TABLE IF NOT EXISTS pd_trab.TChannel (
+CREATE TABLE IF NOT EXISTS TChannel (
     CID INT AUTO_INCREMENT PRIMARY KEY,
     CUID INT,
     CName VARCHAR(50) UNIQUE NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS pd_trab.TChannel (
     CPassword VARCHAR(255),
     CDate BIGINT NOT NULL,
     CONSTRAINT FK_CUID FOREIGN KEY (CUID)
-        REFERENCES pd_trab.TUser (UID)
+        REFERENCES TUser (UID)
         ON DELETE CASCADE
 );
 
@@ -56,14 +56,14 @@ CREATE TABLE IF NOT EXISTS pd_trab.TChannel (
     MPath = File path (In case it's a file message)
     MDate = Message creation date
 */
-CREATE TABLE IF NOT EXISTS pd_trab.TMessage (
+CREATE TABLE IF NOT EXISTS TMessage (
     MID INT AUTO_INCREMENT PRIMARY KEY,
     MUID INT,
     MText VARCHAR(1024) NOT NULL,
     MPath VARCHAR(512),
     MDate BIGINT NOT NULL,
     CONSTRAINT FK_MUID FOREIGN KEY (MUID)
-        REFERENCES pd_trab.TUser (UID)
+        REFERENCES TUser (UID)
         ON DELETE CASCADE
 );
 
@@ -71,15 +71,15 @@ CREATE TABLE IF NOT EXISTS pd_trab.TMessage (
     CID = Channel ID (Channel reference)
     UID = User's in a certain channel (User reference)
 */
-CREATE TABLE IF NOT EXISTS pd_trab.TChannelUsers (
+CREATE TABLE IF NOT EXISTS TChannelUsers (
     CID INT,
     UID INT,
     PRIMARY KEY (CID , UID),
     CONSTRAINT FK_CUCID FOREIGN KEY (CID)
-        REFERENCES pd_trab.TChannel (CID)
+        REFERENCES TChannel (CID)
         ON DELETE CASCADE,
     CONSTRAINT FK_CUUID FOREIGN KEY (UID)
-        REFERENCES pd_trab.TUser (UID)
+        REFERENCES TUser (UID)
         ON DELETE CASCADE
 );
 
@@ -87,14 +87,14 @@ CREATE TABLE IF NOT EXISTS pd_trab.TChannelUsers (
     MID = Message ID (Message reference)
     CID = Channel in which the message was sent to (Channel reference)
 */
-CREATE TABLE IF NOT EXISTS pd_trab.TChannelMessages (
+CREATE TABLE IF NOT EXISTS TChannelMessages (
     MID INT PRIMARY KEY,
     CID INT,
     CONSTRAINT FK_CMMID FOREIGN KEY (MID)
-        REFERENCES pd_trab.TMessage (MID)
+        REFERENCES TMessage (MID)
         ON DELETE CASCADE,
     CONSTRAINT FK_CMCID FOREIGN KEY (CID)
-        REFERENCES pd_trab.TChannel (CID)
+        REFERENCES TChannel (CID)
         ON DELETE CASCADE
 );
 
@@ -102,14 +102,14 @@ CREATE TABLE IF NOT EXISTS pd_trab.TChannelMessages (
     MID = Message ID (Message reference)
     UID = Direct message destinatary (User reference)
 */
-CREATE TABLE IF NOT EXISTS pd_trab.TDirectMessage (
+CREATE TABLE IF NOT EXISTS TDirectMessage (
     MID INT PRIMARY KEY,
     UID INT,
     CONSTRAINT FK_DMMID FOREIGN KEY (MID)
-        REFERENCES pd_trab.TMessage (MID)
+        REFERENCES TMessage (MID)
         ON DELETE CASCADE,
     CONSTRAINT FK_DMUIDDest FOREIGN KEY (UID)
-        REFERENCES pd_trab.TUser (UID)
+        REFERENCES TUser (UID)
         ON DELETE CASCADE
 );
 

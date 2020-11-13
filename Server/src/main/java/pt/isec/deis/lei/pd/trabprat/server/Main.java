@@ -34,9 +34,9 @@ public class Main {
             tdTCP.setDaemon(true);
             tdTCP.start();
             // Thread Multicast
-//            Thread tdMC = new Thread(new MulticastListener(SV_CFG), "MulticastListener");
-//            tdMC.setDaemon(true);
-//            tdMC.start();
+            Thread tdMC = new Thread(new MulticastListener(SV_CFG), "MulticastListener");
+            tdMC.setDaemon(true);
+            tdMC.start();
             try {
                 // Handle Admin Commands
                 new CommandLineHandler(System.in, System.out, SV_CFG).Initialize();

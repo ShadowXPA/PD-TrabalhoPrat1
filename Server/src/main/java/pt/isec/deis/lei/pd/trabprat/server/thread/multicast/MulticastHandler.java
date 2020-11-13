@@ -30,7 +30,7 @@ public class MulticastHandler implements Runnable {
     public void run() {
         try {
             // Read command
-            Command cmd = UDPHelper.ReadUDPCommand(ReceivedPacket);
+            Command cmd = UDPHelper.ReadMulticastCommand(ReceivedPacket);
             Main.Log(IP + " to [Server]", "" + cmd.CMD);
 
             // React accordingly
@@ -41,7 +41,7 @@ public class MulticastHandler implements Runnable {
                 }
                 default: {
                     // Send CMD_FORBIDDEN command
-                    //UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket.getAddress(), ReceivedPacket.getPort(), new Command(ECommand.CMD_FORBIDDEN));
+                    //UDPHelper.SendMulticastCommand(ServerSocket, ReceivedPacket.getAddress(), ReceivedPacket.getPort(), new Command(ECommand.CMD_FORBIDDEN));
                     break;
                 }
             }
