@@ -429,4 +429,20 @@ public class PrimaryController implements Initializable {
         }
         event.consume();
     }
+
+    @FXML
+    private void SendMessage_menuitem(ActionEvent event) {
+    }
+
+    @FXML
+    private void AddChannel_menuitem(ActionEvent event) {
+    }
+
+    @FXML
+    private void SearchUsers_menuitem(ActionEvent event) {
+    }
+
+    @FXML
+    private void About_menuitem(ActionEvent event) {
+    }
 }
