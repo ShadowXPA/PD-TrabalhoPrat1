@@ -101,8 +101,6 @@ public class TCPHandler implements Runnable {
                 }
                 case ECommand.CMD_GET_CHANNEL_MESSAGES: {
                     synchronized (App.CL_CFG.LockCM) {
-//                        App.CL_CFG.ChannelMessage.clear();
-//                        App.CL_CFG.ChannelMessage = null;
                         App.CL_CFG.ChannelMessage = (ArrayList<TChannelMessage>) command.Body;
                         App.CL_CFG.DirectMessages = null;
                         App.CL_CFG.LockCM.notifyAll();
@@ -111,8 +109,6 @@ public class TCPHandler implements Runnable {
                 }
                 case ECommand.CMD_GET_DM_MESSAGES: {
                     synchronized (App.CL_CFG.LockCM) {
-//                        App.CL_CFG.DirectMessages.clear();
-//                        App.CL_CFG.DirectMessages = null;
                         App.CL_CFG.DirectMessages = (ArrayList<TDirectMessage>) command.Body;
                         App.CL_CFG.ChannelMessage = null;
                         App.CL_CFG.LockCM.notifyAll();

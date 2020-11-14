@@ -229,7 +229,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void EditChannel(Button button) {
-
+        
     }
 
     public void DeleteChannel(Button button) {

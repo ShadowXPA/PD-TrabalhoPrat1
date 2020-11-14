@@ -18,17 +18,22 @@
         <menus>
           <Menu mnemonicParsing="false" text="Message">
             <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
+              <MenuItem fx:id="MI_Send_Message" mnemonicParsing="false" text="Send" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Channel">
             <items>
-              <MenuItem mnemonicParsing="false" text="Add" />
+              <MenuItem fx:id="MI_Add_Channel" mnemonicParsing="false" text="Add" />
             </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="Search">
+               <items>
+                  <MenuItem fx:id="MI_Search_Users" mnemonicParsing="false" text="Search Users" />
+               </items>
+            </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem fx:id="MI_About" mnemonicParsing="false" text="About" />
             </items>
           </Menu>
         </menus>
@@ -55,14 +60,14 @@
             <VBox maxHeight="695.0" maxWidth="760.8" minHeight="695.0" minWidth="760.8" prefHeight="200.0" prefWidth="100.0">
                <children>
                   <Label text="Messages / Files:" />
-                  <ScrollPane fx:id="sp_main" maxHeight="620.0" maxWidth="760.8" minHeight="620.0" minWidth="760.8" prefHeight="200.0" prefWidth="200.0">
+                  <ScrollPane fx:id="sp_main" maxHeight="620.0" maxWidth="760.8" minHeight="620.0" minWidth="760.8" onDragDropped="#OnDragFile_spmain" prefHeight="200.0" prefWidth="200.0">
                      <content>
                         <VBox fx:id="VBox_Mess_Files" maxWidth="759.0" minWidth="759.0" prefHeight="200.0" prefWidth="759.0" />
                      </content>
                   </ScrollPane>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <TextField fx:id="TFMessage" maxWidth="760.8" minWidth="760.8" />
+                        <TextField fx:id="TFMessage" maxWidth="760.8" minWidth="760.8" onKeyPressed="#OnKeyPressed_tfmessage" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
