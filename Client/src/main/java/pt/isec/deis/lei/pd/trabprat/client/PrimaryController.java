@@ -185,60 +185,62 @@ public class PrimaryController implements Initializable {
     }
 
     public void InfoChannel(Object channel) {
-        Label label_description = new Label();
-        Label label_num_users = new Label();
-        Label label_num_messages = new Label();
-        Label label_num_files = new Label();
-        try {
-            Channel_DM_Info.getChildren().removeAll(Channel_DM_Info.getChildren());
-            if (channel instanceof TChannel) {
-                int num_users = 0;
-                for (int i = 0; i < App.CL_CFG.ChannelUsers.size(); i++) {
-                    if (App.CL_CFG.ChannelUsers.get(i).getCID().equals(channel)) {
-                        num_users++;
+        Platform.runLater(() -> {
+            Label label_description = new Label();
+            Label label_num_users = new Label();
+            Label label_num_messages = new Label();
+            Label label_num_files = new Label();
+            try {
+                Channel_DM_Info.getChildren().removeAll(Channel_DM_Info.getChildren());
+                if (channel instanceof TChannel) {
+                    int num_users = 0;
+                    for (int i = 0; i < App.CL_CFG.ChannelUsers.size(); i++) {
+                        if (App.CL_CFG.ChannelUsers.get(i).getCID().equals(channel)) {
+                            num_users++;
+                        }
                     }
+                    label_description.setWrapText(true);
+                    label_description.setText("Description: " + ((TChannel) channel).getCDescription());
+                    Channel_DM_Info.getChildren().add(label_description);
+                    label_num_users.setText("Number of users: " + String.valueOf(num_users));
+                    Channel_DM_Info.getChildren().add(label_num_users);
                 }
-                label_description.setWrapText(true);
-                label_description.setText(((TChannel) channel).getCDescription());
-                Channel_DM_Info.getChildren().add(label_description);
-                label_num_users.setText("Number of users: " + String.valueOf(num_users));
-                Channel_DM_Info.getChildren().add(label_num_users);
+                synchronized (App.CL_CFG.LockCM) {
+                    App.CL_CFG.LockCM.wait(1000);
+                }
+                int[] array;
+                if (channel instanceof TChannel) {
+                    array = App.CL_CFG.GetNumMesagesAndFiles();
+                } else {
+                    array = App.CL_CFG.GetNumMesagesAndFilesDM();
+                }
+                label_num_messages.setText("Number of messages: " + String.valueOf(array[0]));
+                label_num_files.setText("Number of files: " + String.valueOf(array[1]));
+                Channel_DM_Info.getChildren().add(label_num_messages);
+                Channel_DM_Info.getChildren().add(label_num_files);
+                if (App.CL_CFG.SelectedChannel instanceof TChannel && ((TChannel) App.CL_CFG.SelectedChannel).getCUID().equals(App.CL_CFG.MyUser)) {
+                    Button EditChannel = new Button("Edit Channel");
+                    EditChannel.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent t) {
+                            EditChannel((Button) t.getSource());
+                        }
+                    });
+                    Button DeleteChannel = new Button("Delete Channel");
+                    DeleteChannel.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent t) {
+                            DeleteChannel((Button) t.getSource());
+                        }
+                    });
+                    Channel_DM_Info.getChildren().add(EditChannel);
+                    Channel_DM_Info.getChildren().add(DeleteChannel);
+                }
+                sp_info.setContent(Channel_DM_Info);
+            } catch (Exception ex) {
+                ex.getMessage();
             }
-            synchronized (App.CL_CFG.LockCM) {
-                App.CL_CFG.LockCM.wait(1000);
-            }
-            int[] array;
-            if (channel instanceof TChannel) {
-                array = App.CL_CFG.GetNumMesagesAndFiles();
-            } else {
-                array = App.CL_CFG.GetNumMesagesAndFilesDM();
-            }
-            label_num_messages.setText("Number of messages: " + String.valueOf(array[0]));
-            label_num_files.setText("Number of files: " + String.valueOf(array[1]));
-            Channel_DM_Info.getChildren().add(label_num_messages);
-            Channel_DM_Info.getChildren().add(label_num_files);
-            if (App.CL_CFG.SelectedChannel instanceof TChannel && ((TChannel) App.CL_CFG.SelectedChannel).getCUID().equals(App.CL_CFG.MyUser)) {
-                Button EditChannel = new Button("Edit Channel");
-                EditChannel.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent t) {
-                        EditChannel((Button) t.getSource());
-                    }
-                });
-                Button DeleteChannel = new Button("Delete Channel");
-                DeleteChannel.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent t) {
-                        DeleteChannel((Button) t.getSource());
-                    }
-                });
-                Channel_DM_Info.getChildren().add(EditChannel);
-                Channel_DM_Info.getChildren().add(DeleteChannel);
-            }
-            sp_info.setContent(Channel_DM_Info);
-        } catch (Exception ex) {
-            ex.getMessage();
-        }
+        });
     }
 
     public void EditChannel(Button button) {
@@ -328,7 +330,7 @@ public class PrimaryController implements Initializable {
         String text_message = TFMessage.getText();
         if (!text_message.isEmpty()) {
             try {
-                Object object = App.CL_CFG.SelectedChannel;
+                final Object object = App.CL_CFG.SelectedChannel;
                 TMessage m = new TMessage(0, App.CL_CFG.MyUser, text_message, null, 0);
                 TChannelMessage cm = null;
                 TDirectMessage dm = null;
@@ -343,10 +345,8 @@ public class PrimaryController implements Initializable {
                     try {
                         ServerController.NewMessage(obj);
                         boolean bool = obj instanceof TChannelMessage;
-                        synchronized (App.CL_CFG.LockCM) {
-                            App.CL_CFG.LockCM.wait(1000);
-                            Messages(bool);
-                        }
+                        InfoChannel(object);
+                        Messages(bool);
                     } catch (Exception ex) {
                         ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error File", "Can´t send message!");
                     }
@@ -391,7 +391,7 @@ public class PrimaryController implements Initializable {
     private void SendFileToServer(File file) {
         if (file != null) {
             try {
-                Object object = App.CL_CFG.SelectedChannel;
+                final Object object = App.CL_CFG.SelectedChannel;
                 UUID uuid = UUID.randomUUID();
                 TMessage m = new TMessage(0, App.CL_CFG.MyUser, file.getName(), uuid.toString(), 0);
                 TChannelMessage cm = null;
@@ -407,11 +407,9 @@ public class PrimaryController implements Initializable {
                         ServerController.NewMessage(obj);
                         ServerController.SendFile(file.getAbsolutePath(), App.CL_CFG.MyUser.getUUsername(), uuid);
                         boolean bool = obj instanceof TChannelMessage;
-                        synchronized (App.CL_CFG.LockCM) {
-                            App.CL_CFG.LockCM.wait(1000);
-                            Messages(bool);
-                        }
-                        ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Info Dialog", "Info File", "File uploaded!");
+                        InfoChannel(object);
+                        Messages(bool);
+                        ClientDialog.ShowDialog(Alert.AlertType.INFORMATION, "Info Dialog", "Info File", "File uploaded!");
                     } catch (Exception ex) {
                         ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error File", "Can´t send message!");
                     }

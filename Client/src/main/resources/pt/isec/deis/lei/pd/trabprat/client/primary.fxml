@@ -18,22 +18,22 @@
         <menus>
           <Menu mnemonicParsing="false" text="Message">
             <items>
-              <MenuItem fx:id="MI_Send_Message" mnemonicParsing="false" text="Send" />
+              <MenuItem fx:id="MI_Send_Message" mnemonicParsing="false" onAction="#SendMessage_menuitem" text="Send" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Channel">
             <items>
-              <MenuItem fx:id="MI_Add_Channel" mnemonicParsing="false" text="Add" />
+              <MenuItem fx:id="MI_Add_Channel" mnemonicParsing="false" onAction="#AddChannel_menuitem" text="Add" />
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Search">
                <items>
-                  <MenuItem fx:id="MI_Search_Users" mnemonicParsing="false" text="Search Users" />
+                  <MenuItem fx:id="MI_Search_Users" mnemonicParsing="false" onAction="#SearchUsers_menuitem" text="Search Users" />
                </items>
             </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem fx:id="MI_About" mnemonicParsing="false" text="About" />
+              <MenuItem fx:id="MI_About" mnemonicParsing="false" onAction="#About_menuitem" text="About" />
             </items>
           </Menu>
         </menus>

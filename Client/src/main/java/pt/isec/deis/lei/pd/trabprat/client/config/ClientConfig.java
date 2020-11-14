@@ -93,9 +93,17 @@ public class ClientConfig {
     }
 
     public TMessage GetMessageByID(int ID) {
-        for (int i = 0; i < ChannelMessage.size(); i++) {
-            if (ChannelMessage.get(i).getMID().getMID() == ID) {
-                return ChannelMessage.get(i).getMID();
+        if (SelectedChannel instanceof TChannel) {
+            for (int i = 0; i < ChannelMessage.size(); i++) {
+                if (ChannelMessage.get(i).getMID().getMID() == ID) {
+                    return ChannelMessage.get(i).getMID();
+                }
+            }
+        } else if (SelectedChannel instanceof TUser) {
+            for (int i = 0; i < DirectMessages.size(); i++) {
+                if (DirectMessages.get(i).getMID().getMID() == ID) {
+                    return DirectMessages.get(i).getMID();
+                }
             }
         }
         return null;
