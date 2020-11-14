@@ -14,8 +14,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
@@ -54,6 +57,14 @@ public class PrimaryController implements Initializable {
     private ScrollPane sp_info;
     @FXML
     private ScrollPane sp_users;
+    @FXML
+    private MenuItem MI_Send_Message;
+    @FXML
+    private MenuItem MI_Add_Channel;
+    @FXML
+    private MenuItem MI_Search_Users;
+    @FXML
+    private MenuItem MI_About;
 
     /**
      * Initializes the controller class.
@@ -389,5 +400,13 @@ public class PrimaryController implements Initializable {
                 ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error File", "Can´t send message!");
             }
         }
+    }
+
+    @FXML
+    private void OnDragFile_spmain(DragEvent event) {
+    }
+
+    @FXML
+    private void OnKeyPressed_tfmessage(KeyEvent event) {
     }
 }
