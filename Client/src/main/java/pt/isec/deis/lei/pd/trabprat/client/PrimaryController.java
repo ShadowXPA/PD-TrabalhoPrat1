@@ -20,6 +20,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
@@ -380,6 +381,7 @@ public class PrimaryController implements Initializable {
             }
             SendFileToServer(drag.getFiles().get(0));
         }
+        event.consume();
     }
 
     @FXML
@@ -420,5 +422,13 @@ public class PrimaryController implements Initializable {
                 ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error File", "Can´t send message!");
             }
         }
+    }
+
+    @FXML
+    private void OnDragOverFile_spmain(DragEvent event) {
+        if (event.getGestureSource() != sp_main && event.getDragboard().hasFiles()) {
+            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+        }
+        event.consume();
     }
 }
