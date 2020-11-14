@@ -18,6 +18,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -240,7 +241,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void EditChannel(Button button) {
-        
+
     }
 
     public void DeleteChannel(Button button) {
@@ -358,8 +359,7 @@ public class PrimaryController implements Initializable {
     }
 
     @FXML
-    public void SendFile(ActionEvent event
-    ) {
+    public void SendFile(ActionEvent event) {
         if (App.CL_CFG.SelectedChannel == null) {
             ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Select Channel", "Select a channel to send a file!");
             return;
@@ -367,6 +367,26 @@ public class PrimaryController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select the file");
         File file = fileChooser.showOpenDialog(App.CL_CFG.Stage);
+        SendFileToServer(file);
+    }
+
+    @FXML
+    private void OnDragFile_spmain(DragEvent event) {
+        Dragboard drag = event.getDragboard();
+        if (drag.hasFiles()) {
+            if (App.CL_CFG.SelectedChannel == null) {
+                ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Select Channel", "Select a channel to send a file!");
+                return;
+            }
+            SendFileToServer(drag.getFiles().get(0));
+        }
+    }
+
+    @FXML
+    private void OnKeyPressed_tfmessage(KeyEvent event) {
+    }
+
+    private void SendFileToServer(File file) {
         if (file != null) {
             try {
                 Object object = App.CL_CFG.SelectedChannel;
@@ -400,13 +420,5 @@ public class PrimaryController implements Initializable {
                 ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error File", "Can´t send message!");
             }
         }
-    }
-
-    @FXML
-    private void OnDragFile_spmain(DragEvent event) {
-    }
-
-    @FXML
-    private void OnKeyPressed_tfmessage(KeyEvent event) {
     }
 }

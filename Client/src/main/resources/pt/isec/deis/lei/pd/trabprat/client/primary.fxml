@@ -60,7 +60,7 @@
             <VBox maxHeight="695.0" maxWidth="760.8" minHeight="695.0" minWidth="760.8" prefHeight="200.0" prefWidth="100.0">
                <children>
                   <Label text="Messages / Files:" />
-                  <ScrollPane fx:id="sp_main" maxHeight="620.0" maxWidth="760.8" minHeight="620.0" minWidth="760.8" onDragDropped="#OnDragFile_spmain" prefHeight="200.0" prefWidth="200.0">
+                  <ScrollPane fx:id="sp_main" maxHeight="620.0" maxWidth="760.8" minHeight="620.0" minWidth="760.8" onDragDropped="#OnDragFile_spmain" onDragOver="#OnDragOverFile_spmain" prefHeight="200.0" prefWidth="200.0">
                      <content>
                         <VBox fx:id="VBox_Mess_Files" maxWidth="759.0" minWidth="759.0" prefHeight="200.0" prefWidth="759.0" />
                      </content>
