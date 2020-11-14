@@ -16,7 +16,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
@@ -193,7 +192,7 @@ public class PrimaryController implements Initializable {
                 Channel_DM_Info.getChildren().add(label_num_users);
             }
             synchronized (App.CL_CFG.LockCM) {
-                App.CL_CFG.LockCM.wait();
+                App.CL_CFG.LockCM.wait(1000);
             }
             int[] array;
             if (channel instanceof TChannel) {
@@ -239,6 +238,7 @@ public class PrimaryController implements Initializable {
 
     public void Messages(boolean bool) {
         //TODO WRAPTEXT
+        Platform.setImplicitExit(false);
         Platform.runLater(() -> {
             VBox_Mess_Files.getChildren().removeAll(VBox_Mess_Files.getChildren());
             ArrayList<?> obj;
@@ -326,19 +326,20 @@ public class PrimaryController implements Initializable {
                 }
                 final Object obj = cm == null ? dm : cm;
                 TFMessage.setText("");
-                new Thread(() -> {
+                Thread td = new Thread(() -> {
                     try {
                         ServerController.NewMessage(obj);
                         boolean bool = obj instanceof TChannelMessage;
                         synchronized (App.CL_CFG.LockCM) {
                             App.CL_CFG.LockCM.wait(1000);
+                            Messages(bool);
                         }
-                        Messages(bool);
                     } catch (Exception ex) {
                         ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error File", "Can´t send message!");
                     }
-                }
-                ).start();
+                });
+                td.setDaemon(true);
+                td.start();
             } catch (Exception ex) {
                 ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error File", "Can´t send message!");
             }
@@ -368,20 +369,22 @@ public class PrimaryController implements Initializable {
                     dm = new TDirectMessage(m, (TUser) object);
                 }
                 final Object obj = cm == null ? dm : cm;
-                new Thread(() -> {
+                Thread td = new Thread(() -> {
                     try {
                         ServerController.NewMessage(obj);
                         ServerController.SendFile(file.getAbsolutePath(), App.CL_CFG.MyUser.getUUsername(), uuid);
+                        boolean bool = obj instanceof TChannelMessage;
                         synchronized (App.CL_CFG.LockCM) {
                             App.CL_CFG.LockCM.wait(1000);
+                            Messages(bool);
                         }
-                        boolean bool = obj instanceof TChannelMessage;
-                        Messages(bool);
                         ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Info Dialog", "Info File", "File uploaded!");
                     } catch (Exception ex) {
                         ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error File", "Can´t send message!");
                     }
-                }).start();
+                });
+                td.setDaemon(true);
+                td.start();
             } catch (Exception ex) {
                 ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error File", "Can´t send message!");
             }

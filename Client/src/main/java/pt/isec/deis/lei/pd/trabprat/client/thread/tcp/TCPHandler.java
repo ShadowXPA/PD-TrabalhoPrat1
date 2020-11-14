@@ -7,7 +7,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
 import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
@@ -18,7 +17,6 @@ import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
 import pt.isec.deis.lei.pd.trabprat.model.LoginPackage;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TDirectMessage;
-import pt.isec.deis.lei.pd.trabprat.model.TMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 
 public class TCPHandler implements Runnable {
@@ -37,7 +35,6 @@ public class TCPHandler implements Runnable {
 
     @Override
     public void run() {
-        Command sendCmd;
         try {
             switch (command.CMD) {
                 case ECommand.CMD_SERVICE_UNAVAILABLE: {
@@ -57,6 +54,13 @@ public class TCPHandler implements Runnable {
                         if (((ArrayList<?>) command.Body).get(0) instanceof TChannelMessage) {
                             synchronized (App.CL_CFG.LockCM) {
                                 App.CL_CFG.ChannelMessage = (ArrayList<TChannelMessage>) command.Body;
+                                App.CL_CFG.DirectMessages = null;
+                                App.CL_CFG.LockCM.notifyAll();
+                            }
+                        } else if (((ArrayList<?>) command.Body).get(0) instanceof TDirectMessage) {
+                            synchronized (App.CL_CFG.LockCM) {
+                                App.CL_CFG.DirectMessages = (ArrayList<TDirectMessage>) command.Body;
+                                App.CL_CFG.ChannelMessage = null;
                                 App.CL_CFG.LockCM.notifyAll();
                             }
                         }
@@ -97,6 +101,8 @@ public class TCPHandler implements Runnable {
                 }
                 case ECommand.CMD_GET_CHANNEL_MESSAGES: {
                     synchronized (App.CL_CFG.LockCM) {
+//                        App.CL_CFG.ChannelMessage.clear();
+//                        App.CL_CFG.ChannelMessage = null;
                         App.CL_CFG.ChannelMessage = (ArrayList<TChannelMessage>) command.Body;
                         App.CL_CFG.DirectMessages = null;
                         App.CL_CFG.LockCM.notifyAll();
@@ -105,6 +111,8 @@ public class TCPHandler implements Runnable {
                 }
                 case ECommand.CMD_GET_DM_MESSAGES: {
                     synchronized (App.CL_CFG.LockCM) {
+//                        App.CL_CFG.DirectMessages.clear();
+//                        App.CL_CFG.DirectMessages = null;
                         App.CL_CFG.DirectMessages = (ArrayList<TDirectMessage>) command.Body;
                         App.CL_CFG.ChannelMessage = null;
                         App.CL_CFG.LockCM.notifyAll();

@@ -6,7 +6,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import javafx.stage.Stage;
-import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
@@ -25,9 +24,9 @@ public class ClientConfig {
     //list of users connected to channels
     public ArrayList<TChannelUser> ChannelUsers;
     //list of messages from the channel
-    public ArrayList<TChannelMessage> ChannelMessage;
+    public volatile ArrayList<TChannelMessage> ChannelMessage;
     public final Object LockCM = new Object();
-    public ArrayList<TDirectMessage> DirectMessages;
+    public volatile ArrayList<TDirectMessage> DirectMessages;
     public final Object LockDM = new Object();
     //selected channel
     public Object SelectedChannel;
