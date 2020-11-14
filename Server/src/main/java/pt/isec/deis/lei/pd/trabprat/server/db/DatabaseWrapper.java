@@ -29,7 +29,7 @@ public final class DatabaseWrapper {
     }
 
     private TUser getUserBy(String by, String what) {
-        var info = db.Select("select * from tuser where " + by + "=" + what + "");
+        var info = db.Select("select * from tuser where " + by + "=" + what + " order by uid");
         if (info == null || info.isEmpty()) {
             return null;
         }
@@ -46,7 +46,7 @@ public final class DatabaseWrapper {
     }
 
     public ArrayList<TUser> getAllUsers() {
-        var info = db.Select("select * from tuser");
+        var info = db.Select("select * from tuser order by uid");
         if (info == null || info.isEmpty()) {
             return null;
         }
@@ -72,7 +72,7 @@ public final class DatabaseWrapper {
     }
 
     private TMessage getMessageBy(String by, String what) {
-        var info = db.Select("select * from tmessage where " + by + "=" + what + "");
+        var info = db.Select("select * from tmessage where " + by + "=" + what + " order by mdate");
         if (info == null || info.isEmpty()) {
             return null;
         }
@@ -80,7 +80,7 @@ public final class DatabaseWrapper {
     }
 
     public ArrayList<TMessage> getAllMessages() {
-        var info = db.Select("select * from tmessages");
+        var info = db.Select("select * from tmessages order by mdate");
         if (info == null || info.isEmpty()) {
             return null;
         }
@@ -117,7 +117,7 @@ public final class DatabaseWrapper {
     }
 
     private TChannel getChannelBy(String by, String what) {
-        var info = db.Select("select * from tchannel where " + by + "=" + what + "");
+        var info = db.Select("select * from tchannel where " + by + "=" + what + " order by cid");
         if (info == null || info.isEmpty()) {
             return null;
         }
@@ -125,7 +125,7 @@ public final class DatabaseWrapper {
     }
 
     public ArrayList<TChannel> getAllChannels() {
-        var info = db.Select("select * from tchannel");
+        var info = db.Select("select * from tchannel order by cid");
         if (info == null || info.isEmpty()) {
             return null;
         }
@@ -187,7 +187,9 @@ public final class DatabaseWrapper {
     }
 
     public ArrayList<TChannelMessage> getAllMessagesFromChannelID(int CID) {
-        var info = db.Select("select * from tchannelmessages where CID = " + CID);
+        var info = db.Select("select cm.MID, cm.CID from tchannelmessages cm,"
+                + " tmessage m where cm.MID = m.MID and cm.CID = " + CID
+                + " order by m.MDate");
         ArrayList<TChannelMessage> messages = new ArrayList<>();
         for (int i = 0; i < info.size(); i++) {
             messages.add(parseChannelMessage(info.get(i)));
@@ -205,14 +207,14 @@ public final class DatabaseWrapper {
         return getAllDMBy("select d.MID, d.UID"
                 + " from tdirectmessage d,"
                 + " tmessage m where d.MID = m.MID and (d.UID = "
-                + UID + " or m.MUID = " + UID + ")");
+                + UID + " or m.MUID = " + UID + ") order by m.MDate");
     }
 
     public ArrayList<TDirectMessage> getAllDMByUserIDAndOtherID(int UID, int OUID) {
         return getAllDMBy("select d.UID, d.MID from tdirectmessage d,"
                 + " tmessage m where d.MID = m.MID and"
                 + " ((d.UID = " + UID + " and m.MUID = " + OUID + ") or"
-                + " (d.UID = " + OUID + " and m.MUID = " + UID + "))");
+                + " (d.UID = " + OUID + " and m.MUID = " + UID + ")) order by m.MDate");
     }
 
     public ArrayList<TDirectMessage> getAllDMBy(String Select) {
@@ -303,8 +305,7 @@ public final class DatabaseWrapper {
         if (Channel.getCPassword() != null) {
             cpass = "'" + Channel.getCPassword().replace("'", "''") + "'";
         }
-        return db.Update("UPDATE TChannel SET CName = " + Channel.getCName()
-                + ", CDescription = " + cdesc + ", CPassword = " + cpass
+        return db.Update("UPDATE TChannel SET CDescription = " + cdesc + ", CPassword = " + cpass
                 + " WHERE CID = " + Channel.getCID());
     }
 
