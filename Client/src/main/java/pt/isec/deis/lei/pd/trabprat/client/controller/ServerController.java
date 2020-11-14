@@ -78,4 +78,19 @@ public final class ServerController {
         Command command = new Command(ECommand.CMD_CREATE_MESSAGE, channel);
         TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
     }
+    
+    public static void CreateChannel(TChannel channel) throws Exception{
+        Command command = new Command(ECommand.CMD_CREATE_CHANNEL, channel);
+        TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
+    }
+    
+    public static void EditChannel(TChannelUser channel) throws Exception{
+        Command command = new Command(ECommand.CMD_UPDATE_CHANNEL, channel);
+        TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
+    }
+    
+    public static void DeleteChannel(TChannelUser channel) throws Exception{
+        Command command = new Command(ECommand.CMD_DELETE_CHANNEL, channel);
+        TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
+    }
 }

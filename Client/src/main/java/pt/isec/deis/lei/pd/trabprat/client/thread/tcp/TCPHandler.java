@@ -15,6 +15,7 @@ import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
 import pt.isec.deis.lei.pd.trabprat.model.LoginPackage;
+import pt.isec.deis.lei.pd.trabprat.model.TChannel;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TDirectMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
@@ -63,10 +64,21 @@ public class TCPHandler implements Runnable {
                                 App.CL_CFG.ChannelMessage = null;
                                 App.CL_CFG.LockCM.notifyAll();
                             }
+                        } else if (((ArrayList<?>) command.Body).get(0) instanceof TChannel) {
+                            synchronized (App.CL_CFG.LockCL) {
+                                App.CL_CFG.ChannelsList = (ArrayList<TChannel>) command.Body;
+                                App.CL_CFG.LockCL.notifyAll();
+                            }
+                        } else if (((ArrayList<?>) command.Body).get(0) instanceof TUser) {
+                            synchronized (App.CL_CFG.LockDMUsers) {
+                                App.CL_CFG.DMUsers = (ArrayList<TUser>) command.Body;
+                                App.CL_CFG.LockDMUsers.notifyAll();
+                            }
                         }
                     }
                     break;
                 }
+
                 case ECommand.CMD_BAD_REQUEST: {
                     if (command.Body instanceof String) {
                         ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error", (String) command.Body);
@@ -132,6 +144,17 @@ public class TCPHandler implements Runnable {
                         }
                     } catch (Exception ex) {
                         ExceptionHandler.ShowException(ex);
+                    }
+                    break;
+                }
+                case ECommand.CMD_UPDATE_CHANNEL: {
+                    if (command.Body instanceof ArrayList<?>) {
+                        if (((ArrayList<?>) command.Body).get(0) instanceof TChannel) {
+                            synchronized (App.CL_CFG.LockCL) {
+                                App.CL_CFG.ChannelsList = (ArrayList<TChannel>) command.Body;
+                                App.CL_CFG.LockCL.notifyAll();
+                            }
+                        }
                     }
                     break;
                 }

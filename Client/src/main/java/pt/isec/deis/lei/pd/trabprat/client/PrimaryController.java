@@ -27,6 +27,7 @@ import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
+import pt.isec.deis.lei.pd.trabprat.model.TChannelUser;
 import pt.isec.deis.lei.pd.trabprat.model.TDirectMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
@@ -74,11 +75,85 @@ public class PrimaryController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        Thread[] threads = new Thread[]{
+            new Thread(() -> {
+                TdChannel();
+            }),
+            new Thread(() -> {
+                TdMessages();
+            }),
+            new Thread(() -> {
+                TdDM();
+            }),
+            new Thread(() -> {
+                TdOnlineUsers();
+            })
+        };
+        for (int i = 0; i < threads.length; i++) {
+            threads[i].setName("UI Thread " + i);
+            threads[i].setDaemon(true);
+            threads[i].start();
+        }
         App.CL_CFG.SelectedChannel = null;
         ScrollPanes();
         VBox_ChannelList();
         VBox_DMUsers();
         VBox_UsersOnline();
+    }
+
+    public void TdChannel() {
+        while (true) {
+            synchronized (App.CL_CFG.LockCL) {
+                try {
+                    App.CL_CFG.LockCL.wait();
+                    VBox_ChannelList();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void TdMessages() {
+        while (true) {
+            synchronized (App.CL_CFG.LockCM) {
+                try {
+                    App.CL_CFG.LockCM.wait();
+                    Object obj = App.CL_CFG.SelectedChannel;
+                    boolean bool = obj instanceof TChannel;
+                    InfoChannel(obj);
+                    Messages(bool);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void TdDM() {
+        while (true) {
+            synchronized (App.CL_CFG.LockDMUsers) {
+                try {
+                    App.CL_CFG.LockDMUsers.wait();
+                    VBox_DMUsers();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void TdOnlineUsers() {
+        while (true) {
+            synchronized (App.CL_CFG.LockOUsers) {
+                try {
+                    App.CL_CFG.LockOUsers.wait();
+                    VBox_UsersOnline();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
     }
 
     public void ScrollPanes() {
@@ -96,57 +171,66 @@ public class PrimaryController implements Initializable {
     }
 
     public void VBox_ChannelList() {
-        for (int i = 0; i < App.CL_CFG.ChannelsList.size(); i++) {
-            Button button = new Button();
-            double db = vboxChannel.getMaxWidth();
-            button.setMinWidth(db);
-            button.setMaxWidth(db);
-            button.setText(App.CL_CFG.ChannelsList.get(i).getCName());
-            button.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent t) {
-                    buttonChannels((Button) t.getSource());
-                }
-            });
-            vboxChannel.getChildren().add(button);
-        }
-        sp_channel.setContent(vboxChannel);
+        Platform.runLater(() -> {
+            vboxChannel.getChildren().removeAll(vboxChannel.getChildren());
+            for (int i = 0; i < App.CL_CFG.ChannelsList.size(); i++) {
+                Button button = new Button();
+                double db = vboxChannel.getMaxWidth();
+                button.setMinWidth(db);
+                button.setMaxWidth(db);
+                button.setText(App.CL_CFG.ChannelsList.get(i).getCName());
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent t) {
+                        buttonChannels((Button) t.getSource());
+                    }
+                });
+                vboxChannel.getChildren().add(button);
+            }
+            sp_channel.setContent(vboxChannel);
+        });
     }
 
     public void VBox_DMUsers() {
-        for (int i = 0; i < App.CL_CFG.DMUsers.size(); i++) {
-            Button button = new Button();
-            double db = vboxDM.getMaxWidth();
-            button.setMinWidth(db);
-            button.setMaxWidth(db);
-            button.setText(App.CL_CFG.DMUsers.get(i).getUName());
-            button.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent t) {
-                    buttonDMUsers((Button) t.getSource());
-                }
-            });
-            vboxDM.getChildren().add(button);
-        }
-        sp_DM.setContent(vboxDM);
+        Platform.runLater(() -> {
+            vboxDM.getChildren().removeAll(vboxDM.getChildren());
+            for (int i = 0; i < App.CL_CFG.DMUsers.size(); i++) {
+                Button button = new Button();
+                double db = vboxDM.getMaxWidth();
+                button.setMinWidth(db);
+                button.setMaxWidth(db);
+                button.setText(App.CL_CFG.DMUsers.get(i).getUName());
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent t) {
+                        buttonDMUsers((Button) t.getSource());
+                    }
+                });
+                vboxDM.getChildren().add(button);
+            }
+            sp_DM.setContent(vboxDM);
+        });
     }
 
     public void VBox_UsersOnline() {
-        for (int i = 0; i < App.CL_CFG.OnlineUsers.size(); i++) {
-            Button button = new Button();
-            double db = vboxUserOnline.getMaxWidth();
-            button.setMinWidth(db);
-            button.setMaxWidth(db);
-            button.setText(App.CL_CFG.OnlineUsers.get(i).getUName());
-            button.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent t) {
-                    buttonUsersOnline((Button) t.getSource());
-                }
-            });
-            vboxUserOnline.getChildren().add(button);
-        }
-        sp_users.setContent(vboxUserOnline);
+        Platform.runLater(() -> {
+            vboxUserOnline.getChildren().removeAll(vboxUserOnline.getChildren());
+            for (int i = 0; i < App.CL_CFG.OnlineUsers.size(); i++) {
+                Button button = new Button();
+                double db = vboxUserOnline.getMaxWidth();
+                button.setMinWidth(db);
+                button.setMaxWidth(db);
+                button.setText(App.CL_CFG.OnlineUsers.get(i).getUName());
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent t) {
+                        buttonUsersOnline((Button) t.getSource());
+                    }
+                });
+                vboxUserOnline.getChildren().add(button);
+            }
+            sp_users.setContent(vboxUserOnline);
+        });
     }
 
     public void buttonChannels(Button button) {
@@ -159,8 +243,6 @@ public class PrimaryController implements Initializable {
                 ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error", "Channel Password", "Password is invalid!");
             } else {
                 ServerController.ChannelMessages();
-                InfoChannel(channel);
-                Messages(true);
             }
         } catch (Exception ex) {
             ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error", "Channel", ex.getMessage());
@@ -173,8 +255,6 @@ public class PrimaryController implements Initializable {
             var channel = App.CL_CFG.GetDMByUName(DMChannel);
             App.CL_CFG.SelectedChannel = channel;
             ServerController.ChannelMessages();
-            InfoChannel(channel);
-            Messages(false);
         } catch (Exception ex) {
             ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error", "Channel", ex.getMessage());
         }
@@ -204,9 +284,6 @@ public class PrimaryController implements Initializable {
                     Channel_DM_Info.getChildren().add(label_description);
                     label_num_users.setText("Number of users: " + String.valueOf(num_users));
                     Channel_DM_Info.getChildren().add(label_num_users);
-                }
-                synchronized (App.CL_CFG.LockCM) {
-                    App.CL_CFG.LockCM.wait(1000);
                 }
                 int[] array;
                 if (channel instanceof TChannel) {
@@ -244,11 +321,48 @@ public class PrimaryController implements Initializable {
     }
 
     public void EditChannel(Button button) {
-
+        try {
+            TChannel channel;
+            channel = ClientDialog.ShowDialog3(false);
+            if (channel == null) {
+                ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Channel Editing", "Can´t edit channel!");
+                return;
+            }
+            Thread td = new Thread(() -> {
+                try {
+                    TChannel c = (TChannel) App.CL_CFG.SelectedChannel;
+                    ServerController.EditChannel(new TChannelUser(new TChannel(c.getCID(), c.getCUID(), c.getCName(), channel.getCDescription(), channel.getCPassword(), c.getCDate()), App.CL_CFG.MyUser));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
+            td.setDaemon(true);
+            td.start();
+        } catch (Exception ex) {
+            ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Channel Editing", "Can´t edit channel!");
+        }
     }
 
     public void DeleteChannel(Button button) {
-
+        try {
+            TChannel channel;
+            boolean bool = ClientDialog.ShowDialog4();
+            if (bool) {
+                channel = (TChannel) App.CL_CFG.SelectedChannel;
+                Thread td = new Thread(() -> {
+                    try {
+                        TChannel c = (TChannel) App.CL_CFG.SelectedChannel;
+                        ServerController.DeleteChannel(new TChannelUser(c, App.CL_CFG.MyUser));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+                td.setDaemon(true);
+                td.start();
+            }
+        } catch (Exception ex) {
+            ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Deleting Channel", "Can´t delete channel!");
+        }
     }
 
     public void Messages(boolean bool) {
@@ -289,10 +403,12 @@ public class PrimaryController implements Initializable {
                     Button button = new Button();
                     Label label_name = new Label();
                     Label label_space = new Label();
+                    Label label_date = new Label();
                     double db = VBox_Mess_Files.getMaxWidth() / 4.0;
                     button.setMinWidth(db);
                     button.setMaxWidth(db);
                     label_name.setText("File from: " + msg.getMUID().getUName());
+                    label_date.setText(msg.getMUID().getDate().toString());
                     button.setText(msg.getMText());
                     button.setId("" + msg.getMID());
                     button.setOnAction(new EventHandler<ActionEvent>() {
@@ -303,6 +419,7 @@ public class PrimaryController implements Initializable {
                     });
                     label_space.setText("\n");
                     VBox_Mess_Files.getChildren().add(label_name);
+                    VBox_Mess_Files.getChildren().add(label_date);
                     VBox_Mess_Files.getChildren().add(button);
                     VBox_Mess_Files.getChildren().add(label_space);
                 }
@@ -344,9 +461,6 @@ public class PrimaryController implements Initializable {
                 Thread td = new Thread(() -> {
                     try {
                         ServerController.NewMessage(obj);
-                        boolean bool = obj instanceof TChannelMessage;
-                        InfoChannel(object);
-                        Messages(bool);
                     } catch (Exception ex) {
                         ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error File", "Can´t send message!");
                     }
@@ -386,6 +500,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void OnKeyPressed_tfmessage(KeyEvent event) {
+
     }
 
     private void SendFileToServer(File file) {
@@ -406,9 +521,6 @@ public class PrimaryController implements Initializable {
                     try {
                         ServerController.NewMessage(obj);
                         ServerController.SendFile(file.getAbsolutePath(), App.CL_CFG.MyUser.getUUsername(), uuid);
-                        boolean bool = obj instanceof TChannelMessage;
-                        InfoChannel(object);
-                        Messages(bool);
                         ClientDialog.ShowDialog(Alert.AlertType.INFORMATION, "Info Dialog", "Info File", "File uploaded!");
                     } catch (Exception ex) {
                         ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error File", "Can´t send message!");
@@ -432,10 +544,30 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void SendMessage_menuitem(ActionEvent event) {
+
     }
 
     @FXML
     private void AddChannel_menuitem(ActionEvent event) {
+        try {
+            TChannel channel;
+            channel = ClientDialog.ShowDialog3(true);
+            if (channel == null) {
+                ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Channel Creation", "Can´t create the new channel!");
+                return;
+            }
+            Thread td = new Thread(() -> {
+                try {
+                    ServerController.CreateChannel(channel);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
+            td.setDaemon(true);
+            td.start();
+        } catch (Exception ex) {
+            ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Channel Creation", "Can´t create the new channel!");
+        }
     }
 
     @FXML
@@ -444,5 +576,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void About_menuitem(ActionEvent event) {
+        ClientDialog.ShowDialog(Alert.AlertType.INFORMATION, "Credits", null, "Program made by:\n- Leandro Adão Fidalgo\n- "
+                + "Pedro dos Santos Alves\nFor Programação Distribuida");
     }
 }
