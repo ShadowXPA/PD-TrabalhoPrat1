@@ -335,14 +335,14 @@ public class TCPUserHandler implements Runnable {
         // Insert channel into database
         DatabaseWrapper db;
         TChannel channel = (TChannel) Cmd.Body;
-        TChannel c = null;
+        ArrayList<TChannel> c = null;
         Command sendCmd;
         int ErrorNumber;
         synchronized (SV_CFG) {
             db = SV_CFG.DB;
             ErrorNumber = db.insertChannel(channel);
             if (ErrorNumber > 0) {
-                c = db.getChannelByName(channel.getCName());
+                c = db.getAllChannels();
             }
         }
         if (ErrorNumber > 0) {
@@ -360,6 +360,7 @@ public class TCPUserHandler implements Runnable {
         // Update channel if user is owner
         DatabaseWrapper db;
         TChannelUser cU = (TChannelUser) Cmd.Body;
+        ArrayList<TChannel> c = null;
         Command sendCmd;
         int ErrorNumber;
         if (!cU.getCID().getCUID().equals(cU.getUID())) {
@@ -368,11 +369,12 @@ public class TCPUserHandler implements Runnable {
             synchronized (SV_CFG) {
                 db = SV_CFG.DB;
                 ErrorNumber = db.updateChannel(cU.getCID());
+                c = db.getAllChannels();
             }
         }
         if (ErrorNumber > 0) {
             // Success
-            sendCmd = new Command(ECommand.CMD_UPDATE_CHANNEL, cU.getCID());
+            sendCmd = new Command(ECommand.CMD_UPDATE_CHANNEL, c);
         } else {
             // Operation failed
             sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_UPDATE_CHANNEL_FAIL);
@@ -385,6 +387,7 @@ public class TCPUserHandler implements Runnable {
         // Delete channel if user is owner
         DatabaseWrapper db;
         TChannelUser cU = (TChannelUser) Cmd.Body;
+        ArrayList<TChannel> c = null;
         Command sendCmd;
         int ErrorNumber;
         if (!cU.getCID().getCUID().equals(cU.getUID())) {
@@ -393,11 +396,12 @@ public class TCPUserHandler implements Runnable {
             synchronized (SV_CFG) {
                 db = SV_CFG.DB;
                 ErrorNumber = db.deleteChannel(cU.getCID());
+                c = db.getAllChannels();
             }
         }
         if (ErrorNumber > 0) {
             // Success
-            sendCmd = new Command(ECommand.CMD_DELETE_CHANNEL, cU.getCID());
+            sendCmd = new Command(ECommand.CMD_DELETE_CHANNEL, c);
         } else {
             // Operation failed
             sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_DELETE_CHANNEL_FAIL);
@@ -467,7 +471,7 @@ public class TCPUserHandler implements Runnable {
                     synchronized (SV_CFG) {
                         String BaseDir = SV_CFG.DBConnection.getSchema() + ExplorerController.BASE_DIR;
                         String InternalPath = BaseDir + ExplorerController.FILES_SUBDIR
-                                + "/" + cm.getMID().getMPath() + Extension;
+                                + "/" + dm.getMID().getMPath() + Extension;
                         msg = new TMessage(0, dm.getMID().getMUID(), dm.getMID().getMText(), InternalPath, 0);
                     }
                 } else {
