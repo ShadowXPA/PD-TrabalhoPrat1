@@ -109,7 +109,7 @@ public class RegisterController implements Initializable {
 
         if (bool) {
             //Thread
-            new Thread(() -> {
+            Thread td = new Thread(() -> {
                 try {
                     //UUID GUID = UUID.randomUUID();
                     // Send TUser
@@ -118,7 +118,9 @@ public class RegisterController implements Initializable {
                 } catch (Exception ex) {
                     ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", null, ex.getMessage());
                 }
-            }).start();
+            });
+            td.setDaemon(true);
+            td.start();
             try {
                 App.CL_CFG.Stage.setWidth(DefaultWindowSizes.DEFAULT_LOGIN_WIDTH);
                 App.CL_CFG.Stage.setHeight(DefaultWindowSizes.DEFAULT_LOGIN_HEIGHT);
@@ -127,6 +129,6 @@ public class RegisterController implements Initializable {
                 ex.getMessage();
             }
         }
-        
+
     }
 }

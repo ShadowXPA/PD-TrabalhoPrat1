@@ -18,7 +18,8 @@
         <menus>
           <Menu mnemonicParsing="false" text="Message">
             <items>
-              <MenuItem fx:id="MI_Send_Message" mnemonicParsing="false" onAction="#SendMessage_menuitem" text="Send" />
+              <MenuItem fx:id="MI_Send_Message" mnemonicParsing="false" onAction="#SendMessage_menuitem" text="Send Message" />
+                  <MenuItem fx:id="MI_Send_File" mnemonicParsing="false" onAction="#SendFile_menuitem" text="Send File" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Channel">

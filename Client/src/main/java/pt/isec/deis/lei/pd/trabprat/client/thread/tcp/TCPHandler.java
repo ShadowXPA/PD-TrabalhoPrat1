@@ -147,11 +147,21 @@ public class TCPHandler implements Runnable {
                     }
                     break;
                 }
+                case ECommand.CMD_DELETE_CHANNEL: {
+                    App.CL_CFG.SelectedChannel = null;
+                    synchronized (App.CL_CFG.LockCM) {
+                        App.CL_CFG.ChannelMessage = null;
+                        App.CL_CFG.LockCM.notifyAll();
+                    }
+                }
                 case ECommand.CMD_UPDATE_CHANNEL: {
                     if (command.Body instanceof ArrayList<?>) {
                         if (((ArrayList<?>) command.Body).get(0) instanceof TChannel) {
                             synchronized (App.CL_CFG.LockCL) {
                                 App.CL_CFG.ChannelsList = (ArrayList<TChannel>) command.Body;
+                                if (App.CL_CFG.SelectedChannel != null) {
+                                    App.CL_CFG.SelectedChannel = App.CL_CFG.GetChannelByCName(((TChannel) App.CL_CFG.SelectedChannel).getCName());
+                                }
                                 App.CL_CFG.LockCL.notifyAll();
                             }
                         }

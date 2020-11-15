@@ -19,10 +19,12 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.util.Pair;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.dialog.ClientDialog;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
@@ -62,6 +64,8 @@ public class PrimaryController implements Initializable {
     private ScrollPane sp_users;
     @FXML
     private MenuItem MI_Send_Message;
+    @FXML
+    private MenuItem MI_Send_File;
     @FXML
     private MenuItem MI_Add_Channel;
     @FXML
@@ -107,6 +111,7 @@ public class PrimaryController implements Initializable {
                 try {
                     App.CL_CFG.LockCL.wait();
                     VBox_ChannelList();
+                    InfoChannel(App.CL_CFG.SelectedChannel);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -261,7 +266,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void buttonUsersOnline(Button button) {
-
+        //TODO
     }
 
     public void InfoChannel(Object channel) {
@@ -272,6 +277,9 @@ public class PrimaryController implements Initializable {
             Label label_num_files = new Label();
             try {
                 Channel_DM_Info.getChildren().removeAll(Channel_DM_Info.getChildren());
+                if (channel == null) {
+                    return;
+                }
                 if (channel instanceof TChannel) {
                     int num_users = 0;
                     for (int i = 0; i < App.CL_CFG.ChannelUsers.size(); i++) {
@@ -348,7 +356,6 @@ public class PrimaryController implements Initializable {
             TChannel channel;
             boolean bool = ClientDialog.ShowDialog4();
             if (bool) {
-                channel = (TChannel) App.CL_CFG.SelectedChannel;
                 Thread td = new Thread(() -> {
                     try {
                         TChannel c = (TChannel) App.CL_CFG.SelectedChannel;
@@ -375,6 +382,9 @@ public class PrimaryController implements Initializable {
                 obj = App.CL_CFG.ChannelMessage;
             } else {
                 obj = App.CL_CFG.DirectMessages;
+            }
+            if (obj == null) {
+                return;
             }
             for (int i = 0; i < obj.size(); i++) {
                 TMessage msg;
@@ -500,7 +510,9 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void OnKeyPressed_tfmessage(KeyEvent event) {
-
+        if (event.getCode().equals(KeyCode.ENTER)) {
+            btnSend.fire();
+        }
     }
 
     private void SendFileToServer(File file) {
@@ -544,7 +556,35 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void SendMessage_menuitem(ActionEvent event) {
-
+        try {
+            Pair<String,String> pair = ClientDialog.ShowDialog5();
+            if (pair == null) {
+                ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Sending Message", "Can´t send the message!");
+                return;
+            }
+            String message_from = pair.getValue();
+            String message_text = pair.getValue();
+            TDirectMessage dm;
+        } catch (Exception ex) {
+            ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Sending Message", "Can´t send the message!");
+        }
+    }
+    
+    @FXML
+    private void SendFile_menuitem(ActionEvent event){
+        try {
+            Pair<String,String> pair = ClientDialog.ShowDialog6();
+            if (pair == null) {
+                ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Sending File", "Can´t send the file!");
+                return;
+            }
+            String message_from = pair.getValue();
+            String file_path = pair.getValue();
+            File file = new File(file_path);
+            TDirectMessage dm;
+        } catch (Exception ex) {
+            ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Sending Message", "Can´t send the message!");
+        }
     }
 
     @FXML
@@ -558,7 +598,7 @@ public class PrimaryController implements Initializable {
             }
             Thread td = new Thread(() -> {
                 try {
-                    ServerController.CreateChannel(channel);
+                    ServerController.CreateChannel(new TChannel(0, App.CL_CFG.MyUser, channel.getCName(), channel.getCDescription(), channel.getCPassword(), 0));
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -577,6 +617,6 @@ public class PrimaryController implements Initializable {
     @FXML
     private void About_menuitem(ActionEvent event) {
         ClientDialog.ShowDialog(Alert.AlertType.INFORMATION, "Credits", null, "Program made by:\n- Leandro Adão Fidalgo\n- "
-                + "Pedro dos Santos Alves\nFor Programação Distribuida");
+                + "Pedro dos Santos Alves\nFor Distributed Programming");
     }
 }

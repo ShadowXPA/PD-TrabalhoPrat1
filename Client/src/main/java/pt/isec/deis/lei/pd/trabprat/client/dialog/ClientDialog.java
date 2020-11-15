@@ -1,13 +1,14 @@
 package pt.isec.deis.lei.pd.trabprat.client.dialog;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.io.File;
 import java.util.Optional;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -16,10 +17,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import javafx.util.Pair;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.encryption.AES;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
@@ -27,6 +26,8 @@ import pt.isec.deis.lei.pd.trabprat.validation.Validator;
 
 public final class ClientDialog {
 
+    public static File file_to_send = null;
+    
     private ClientDialog() {
     }
 
@@ -98,6 +99,7 @@ public final class ClientDialog {
                 if (!ChannelPassword.getText().isEmpty()) {
                     pass = ChannelPassword.getText();
                     if (!Validator.Password(pass)) {
+                        ShowDialog(AlertType.ERROR, "Password Error", "Password Error", "The password need a upper case letter, lower case letter and a number!");
                         return null;
                     }
                     try {
@@ -109,7 +111,7 @@ public final class ClientDialog {
                 if (!ChannelDescription.getText().isEmpty()) {
                     desc = ChannelDescription.getText();
                 }
-                return new TChannel(0, App.CL_CFG.MyUser, ChannelName.getText(), desc, pass, 0);
+                return new TChannel(0, null, ChannelName.getText(), desc, pass, 0);
             }
             return null;
         });
@@ -121,7 +123,7 @@ public final class ClientDialog {
     }
 
     public static boolean ShowDialog4() {
-        
+
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Channel Dialog");
         alert.setContentText("Are you sure that want to delete the channel?");
@@ -133,5 +135,100 @@ public final class ClientDialog {
             // ... user chose CANCEL or closed the dialog
             return false;
         }
+    }
+
+    public static Pair<String, String> ShowDialog5() {
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Send Message Dialog");
+        dialog.setHeaderText("Write the new message");
+        ButtonType BtnCreateType = new ButtonType("Send Message", ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(BtnCreateType, ButtonType.CANCEL);
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField Message_From = new TextField();
+        Message_From.setPromptText("Message from");
+        TextField Message_Text = new TextField();
+        Message_Text.setPromptText("Message text");
+
+        grid.add(new Label("Message from:"), 0, 0);
+        grid.add(Message_From, 1, 0);
+        grid.add(new Label("Message text:"), 0, 1);
+        grid.add(Message_Text, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+        Platform.runLater(() -> Message_From.requestFocus());
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == BtnCreateType) {
+                if (Message_From.getText().isEmpty() || Message_Text.getText().isEmpty()) {
+                    return null;
+                } else {
+                    return new Pair<>(Message_From.getText(), Message_Text.getText());
+                }
+            }
+            return null;
+        });
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            return result.get();
+        }
+        return null;
+    }
+
+    public static Pair<String, String> ShowDialog6() {
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Send File Dialog");
+        dialog.setHeaderText("Choose the file to send");
+        ButtonType BtnCreateType = new ButtonType("Send File", ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(BtnCreateType, ButtonType.CANCEL);
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField Message_From = new TextField();
+        Message_From.setPromptText("Message from");
+        Button btn = new Button();
+        btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                ChooseFIle((Button) t.getSource());
+            }
+
+            private void ChooseFIle(Button button) {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Select the file");
+                File file = fileChooser.showOpenDialog(App.CL_CFG.Stage);
+                if(file == null){
+                    return;
+                }
+                file_to_send = file;
+            }
+        });
+        grid.add(new Label("Message from:"), 0, 0);
+        grid.add(Message_From, 1, 0);
+        grid.add(new Label("File to send:"), 0, 1);
+        grid.add(btn, 1, 1);
+        
+        dialog.getDialogPane().setContent(grid);
+        Platform.runLater(() -> Message_From.requestFocus());
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == BtnCreateType) {
+                if (Message_From.getText().isEmpty() || file_to_send == null) {
+                    return null;
+                } else {
+                    File file = file_to_send;
+                    return new Pair<>(Message_From.getText(), file.getAbsolutePath());
+                }
+            }
+            return null;
+        });
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            return result.get();
+        }
+        return null;
     }
 }
