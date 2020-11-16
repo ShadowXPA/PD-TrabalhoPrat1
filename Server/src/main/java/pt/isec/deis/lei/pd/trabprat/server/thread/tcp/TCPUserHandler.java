@@ -486,17 +486,27 @@ public class TCPUserHandler implements Runnable {
                     msg = dm.getMID();
                 }
                 synchronized (SV_CFG) {
+                    var temp = dm.getUID();
+                    if (dm.getUID().getUID() == 0) {
+                        temp = db.getUserByUsername(dm.getUID().getUUsername());
+                        if (temp == null) {
+                            temp = db.getUserByName(dm.getUID().getUUsername());
+                        }
+                    }
+                    dm = new TDirectMessage(msg, temp);
                     i += db.insertDirectMessage(dm.getUID(), msg);
                     dmL = db.getAllDMByUserIDAndOtherID(dm.getMID().getMUID().getUID(), dm.getUID().getUID());
-                    dmU = db.getOtherUserFromDM(dmL, dm.getMID().getMUID());
                 }
                 if (i > 0) {
 //                    sendCmd = new Command(ECommand.CMD_CREATED, dmL);
                     // Broadcast new message to all users
                     synchronized (SV_CFG) {
+                        dmU = db.getOtherUserFromDM(db.getAllDMByUserID(dm.getUID().getUID()), dm.getUID());
                         sendCmd = new Command(ECommand.CMD_CREATED, new GenericPair<>(dmL, dmU));
                         var ou = SV_CFG.GetUser(dm.getUID());
                         TCPHelper.SendTCPCommand(ou.value, sendCmd);
+                        dmU = db.getOtherUserFromDM(db.getAllDMByUserID(dm.getMID().getMUID().getUID()), dm.getMID().getMUID());
+                        sendCmd.Body = new GenericPair<>(dmL, dmU);
                     }
                 } else {
                     sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);

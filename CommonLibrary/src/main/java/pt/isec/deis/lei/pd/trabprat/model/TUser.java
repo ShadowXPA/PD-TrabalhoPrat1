@@ -9,7 +9,7 @@ public class TUser implements Serializable {
     private final int UID;
     private final String UName;
     private final String UUsername;
-    private final String UPassword;
+    private String UPassword;
     private final String UPhoto;
     private final long UDate;
     private final Date Date;
@@ -28,6 +28,10 @@ public class TUser implements Serializable {
 
     public String getUPassword() {
         return UPassword;
+    }
+
+    public void setPassword() {
+        UPassword = null;
     }
 
     public String getUPhoto() {

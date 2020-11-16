@@ -32,7 +32,7 @@
                   <Font size="16.0" />
                </font>
             </Label>
-            <PasswordField fx:id="PFPassword" promptText="Enter your password" style="-fx-background-color: #f0f0f0;" />
+            <PasswordField fx:id="PFPassword" promptText="Enter your password" style="-fx-background-color: #f0f0f0;" onKeyPressed="#OnKeyPressed_pfpassword" />
             <ButtonBar prefHeight="40.0" prefWidth="200.0">
               <buttons>
                   <Button fx:id="BtnLogin" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#LoginAccount" style="-fx-background-color: #2d9216;" text="Login" textFill="#f8f8f8">

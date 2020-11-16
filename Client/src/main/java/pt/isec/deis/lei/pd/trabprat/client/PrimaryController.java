@@ -513,6 +513,7 @@ public class PrimaryController implements Initializable {
         if (event.getCode().equals(KeyCode.ENTER)) {
             btnSend.fire();
         }
+        event.consume();
     }
 
     private void SendFileToServer(File file) {
@@ -557,7 +558,7 @@ public class PrimaryController implements Initializable {
     @FXML
     private void SendMessage_menuitem(ActionEvent event) {
         try {
-            Pair<String,String> pair = ClientDialog.ShowDialog5();
+            Pair<String, String> pair = ClientDialog.ShowDialog5();
             if (pair == null) {
                 ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Sending Message", "Can´t send the message!");
                 return;
@@ -565,18 +566,18 @@ public class PrimaryController implements Initializable {
             String message_to = pair.getKey();
             String message_text = pair.getValue();
             TUser user = new TUser(0, null, message_to, null, null, 0);
-            TMessage message = new TMessage(0,App.CL_CFG.MyUser, message_text, null, 0);
+            TMessage message = new TMessage(0, App.CL_CFG.MyUser, message_text, null, 0);
             TDirectMessage dm = new TDirectMessage(message, user);
             ServerController.NewMessage(dm);
         } catch (Exception ex) {
             ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Sending Message", "Can´t send the message!");
         }
     }
-    
+
     @FXML
-    private void SendFile_menuitem(ActionEvent event){
+    private void SendFile_menuitem(ActionEvent event) {
         try {
-            Pair<String,String> pair = ClientDialog.ShowDialog6();
+            Pair<String, String> pair = ClientDialog.ShowDialog6();
             if (pair == null) {
                 ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Sending File", "Can´t send the file!");
                 return;
@@ -586,7 +587,7 @@ public class PrimaryController implements Initializable {
             String file_path = pair.getValue();
             File file = new File(file_path);
             TDirectMessage dm = new TDirectMessage(new TMessage(0, App.CL_CFG.MyUser, file.getName(), uuid.toString(), 0), new TUser(0, null, message_to, null, null, 0));
-            Thread td = new Thread(()-> {
+            Thread td = new Thread(() -> {
                 try {
                     ServerController.NewMessage(dm);
                     ServerController.SendFile(file_path, App.CL_CFG.MyUser.getUUsername(), uuid);
@@ -627,7 +628,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void SearchUsers_menuitem(ActionEvent event) {
-        
+
     }
 
     @FXML

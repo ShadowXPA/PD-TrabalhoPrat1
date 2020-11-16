@@ -234,11 +234,13 @@ public final class DatabaseWrapper {
         for (int i = 0; i < DMs.size(); i++) {
             if (DMs.get(i).getUID().equals(user)) {
                 TUser u = DMs.get(i).getMID().getMUID();
+                u.setPassword();
                 if (!users.contains(u)) {
                     users.add(u);
                 }
             } else {
                 TUser u = DMs.get(i).getUID();
+                u.setPassword();
                 if (!users.contains(u)) {
                     users.add(u);
                 }
@@ -324,14 +326,7 @@ public final class DatabaseWrapper {
     }
 
     public int insertDirectMessage(TUser User, TMessage Message) {
-        var temp = User;
-        if (User.getUID() == 0) {
-            temp = getUserByUsername(User.getUUsername());
-            if (temp == null) {
-                temp = getUserByName(User.getUUsername());
-            }
-        }
-        return insert__Message("TDirectMessage", Message, temp.getUID());
+        return insert__Message("TDirectMessage", Message, User.getUID());
     }
 
     private int insert__Message(String Table, TMessage Message, int ID) {
