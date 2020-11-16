@@ -562,9 +562,12 @@ public class PrimaryController implements Initializable {
                 ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Sending Message", "Can´t send the message!");
                 return;
             }
-            String message_from = pair.getValue();
+            String message_to = pair.getKey();
             String message_text = pair.getValue();
-            TDirectMessage dm;
+            TUser user = new TUser(0, null, message_to, null, null, 0);
+            TMessage message = new TMessage(0,App.CL_CFG.MyUser, message_text, null, 0);
+            TDirectMessage dm = new TDirectMessage(message, user);
+            ServerController.NewMessage(dm);
         } catch (Exception ex) {
             ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Sending Message", "Can´t send the message!");
         }
@@ -578,10 +581,22 @@ public class PrimaryController implements Initializable {
                 ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Sending File", "Can´t send the file!");
                 return;
             }
-            String message_from = pair.getValue();
+            UUID uuid = UUID.randomUUID();
+            String message_to = pair.getKey();
             String file_path = pair.getValue();
             File file = new File(file_path);
-            TDirectMessage dm;
+            TDirectMessage dm = new TDirectMessage(new TMessage(0, App.CL_CFG.MyUser, file.getName(), uuid.toString(), 0), new TUser(0, null, message_to, null, null, 0));
+            Thread td = new Thread(()-> {
+                try {
+                    ServerController.NewMessage(dm);
+                    ServerController.SendFile(file_path, App.CL_CFG.MyUser.getUUsername(), uuid);
+                    ClientDialog.ShowDialog(Alert.AlertType.INFORMATION, "Info Dialog", "Info File", "File uploaded!");
+                } catch (IOException ex) {
+                    ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error File", "Can´t send message!");
+                }
+            });
+            td.setDaemon(true);
+            td.start();
         } catch (Exception ex) {
             ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Sending Message", "Can´t send the message!");
         }

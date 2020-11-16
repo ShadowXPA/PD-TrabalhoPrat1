@@ -26,8 +26,6 @@ import pt.isec.deis.lei.pd.trabprat.validation.Validator;
 
 public final class ClientDialog {
 
-    public static File file_to_send = null;
-    
     private ClientDialog() {
     }
 
@@ -148,24 +146,24 @@ public final class ClientDialog {
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
 
-        TextField Message_From = new TextField();
-        Message_From.setPromptText("Message from");
+        TextField Message_To = new TextField();
+        Message_To.setPromptText("Message to");
         TextField Message_Text = new TextField();
         Message_Text.setPromptText("Message text");
 
-        grid.add(new Label("Message from:"), 0, 0);
-        grid.add(Message_From, 1, 0);
+        grid.add(new Label("Message to:"), 0, 0);
+        grid.add(Message_To, 1, 0);
         grid.add(new Label("Message text:"), 0, 1);
         grid.add(Message_Text, 1, 1);
 
         dialog.getDialogPane().setContent(grid);
-        Platform.runLater(() -> Message_From.requestFocus());
+        Platform.runLater(() -> Message_To.requestFocus());
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == BtnCreateType) {
-                if (Message_From.getText().isEmpty() || Message_Text.getText().isEmpty()) {
+                if (Message_To.getText().isEmpty() || Message_Text.getText().isEmpty()) {
                     return null;
                 } else {
-                    return new Pair<>(Message_From.getText(), Message_Text.getText());
+                    return new Pair<>(Message_To.getText(), Message_Text.getText());
                 }
             }
             return null;
@@ -188,8 +186,10 @@ public final class ClientDialog {
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
 
-        TextField Message_From = new TextField();
-        Message_From.setPromptText("Message from");
+        TextField Message_To = new TextField();
+        Message_To.setPromptText("Message to");
+        final TextField File_path = new TextField();
+        File_path.setDisable(true);
         Button btn = new Button();
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -201,26 +201,26 @@ public final class ClientDialog {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Select the file");
                 File file = fileChooser.showOpenDialog(App.CL_CFG.Stage);
-                if(file == null){
+                if (file == null) {
                     return;
                 }
-                file_to_send = file;
+                File_path.setText(file.getAbsolutePath());
             }
         });
-        grid.add(new Label("Message from:"), 0, 0);
-        grid.add(Message_From, 1, 0);
+        grid.add(new Label("Message to:"), 0, 0);
+        grid.add(Message_To, 1, 0);
         grid.add(new Label("File to send:"), 0, 1);
-        grid.add(btn, 1, 1);
-        
+        grid.add(File_path, 1, 1);
+        grid.add(btn, 1, 2);
+
         dialog.getDialogPane().setContent(grid);
-        Platform.runLater(() -> Message_From.requestFocus());
+        Platform.runLater(() -> Message_To.requestFocus());
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == BtnCreateType) {
-                if (Message_From.getText().isEmpty() || file_to_send == null) {
+                if (Message_To.getText().isEmpty() || File_path.getText().isEmpty()) {
                     return null;
                 } else {
-                    File file = file_to_send;
-                    return new Pair<>(Message_From.getText(), file.getAbsolutePath());
+                    return new Pair<>(Message_To.getText(), File_path.getText());
                 }
             }
             return null;
