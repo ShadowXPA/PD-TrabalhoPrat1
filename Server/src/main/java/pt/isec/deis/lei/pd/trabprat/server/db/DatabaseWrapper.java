@@ -324,7 +324,14 @@ public final class DatabaseWrapper {
     }
 
     public int insertDirectMessage(TUser User, TMessage Message) {
-        return insert__Message("TDirectMessage", Message, User.getUID());
+        var temp = User;
+        if (User.getUID() == 0) {
+            temp = getUserByUsername(User.getUUsername());
+            if (temp == null) {
+                temp = getUserByName(User.getUUsername());
+            }
+        }
+        return insert__Message("TDirectMessage", Message, temp.getUID());
     }
 
     private int insert__Message(String Table, TMessage Message, int ID) {
