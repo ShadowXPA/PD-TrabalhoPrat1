@@ -23,8 +23,7 @@ import pt.isec.deis.lei.pd.trabprat.server.config.DefaultSvMsg;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.db.DatabaseWrapper;
 import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
-import pt.isec.deis.lei.pd.trabprat.server.model.Client;
-import pt.isec.deis.lei.pd.trabprat.model.Pair;
+import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
 public class TCPUserHandler implements Runnable {
@@ -171,7 +170,7 @@ public class TCPUserHandler implements Runnable {
                 // OK
                 boolean LoggedIn;
 //                Client c = new Client(info, oOS);
-                var c = new Pair<TUser, ObjectOutputStream>(info, oOS);
+                var c = new GenericPair<TUser, ObjectOutputStream>(info, oOS);
                 synchronized (SV_CFG) {
                     LoggedIn = SV_CFG.ClientListContains(c);
                 }
@@ -181,11 +180,11 @@ public class TCPUserHandler implements Runnable {
                     synchronized (SV_CFG) {
 //                        var users = SV_CFG.ClientList.values().iterator();
                         lp.Users.addAll(SV_CFG.GetAllOnlineUsers());
-                        var channels = SV_CFG.DB.getAllChannels();
+                        var channels = db.getAllChannels();
                         lp.Channels.addAll(channels);
-                        var dms = SV_CFG.DB.getAllDMByUserID(info.getUID());
-                        lp.DMUsers.addAll(SV_CFG.DB.getOtherUserFromDM(dms, info));
-                        var channelUsers = SV_CFG.DB.getAllChannelUsers();
+                        var dms = db.getAllDMByUserID(info.getUID());
+                        lp.DMUsers.addAll(db.getOtherUserFromDM(dms, info));
+                        var channelUsers = db.getAllChannelUsers();
                         lp.ChannelUsers.addAll(channelUsers);
                     }
 
@@ -424,6 +423,7 @@ public class TCPUserHandler implements Runnable {
         TDirectMessage dm = null;
         ArrayList<TChannelMessage> cmL = null;
         ArrayList<TDirectMessage> dmL = null;
+        ArrayList<TUser> dmU = null;
         if (Cmd.Body instanceof TChannelMessage) {
             cm = (TChannelMessage) Cmd.Body;
         } else if (Cmd.Body instanceof TDirectMessage) {
@@ -488,19 +488,24 @@ public class TCPUserHandler implements Runnable {
                 synchronized (SV_CFG) {
                     i += db.insertDirectMessage(dm.getUID(), msg);
                     dmL = db.getAllDMByUserIDAndOtherID(dm.getMID().getMUID().getUID(), dm.getUID().getUID());
+                    dmU = db.getOtherUserFromDM(dmL, dm.getMID().getMUID());
                 }
                 if (i > 0) {
 //                    sendCmd = new Command(ECommand.CMD_CREATED, dmL);
                     // Broadcast new message to all users
                     synchronized (SV_CFG) {
-                        SV_CFG.BroadcastMessage(new Command(ECommand.CMD_CREATED, dmL));
+                        sendCmd = new Command(ECommand.CMD_CREATED, new GenericPair<>(dmL, dmU));
+                        var ou = SV_CFG.GetUser(dm.getUID());
+                        TCPHelper.SendTCPCommand(ou.value, sendCmd);
                     }
                 } else {
                     sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
                 }
             }
         }
-        TCPHelper.SendTCPCommand(oOS, sendCmd);
+        if (sendCmd != null) {
+            TCPHelper.SendTCPCommand(oOS, sendCmd);
+        }
         Main.Log("[Server] to " + IP, "" + ((sendCmd == null) ? ECommand.CMD_CREATED : sendCmd.CMD));
     }
 

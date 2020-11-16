@@ -3,7 +3,7 @@ package pt.isec.deis.lei.pd.trabprat.model;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Pair<K, V> implements Serializable {
+public class GenericPair<K, V> implements Serializable {
 
     public final K key;
     public final V value;
@@ -26,7 +26,7 @@ public class Pair<K, V> implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Pair<?, ?> other = (Pair<?, ?>) obj;
+        final GenericPair<?, ?> other = (GenericPair<?, ?>) obj;
         if (!Objects.equals(this.key, other.key)) {
             return false;
         }
@@ -38,7 +38,7 @@ public class Pair<K, V> implements Serializable {
         return "Pair{" + "key=" + key + ", value=" + value + '}';
     }
 
-    public Pair(K key, V value) {
+    public GenericPair(K key, V value) {
         this.key = key;
         this.value = value;
     }

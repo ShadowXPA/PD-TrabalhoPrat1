@@ -14,6 +14,7 @@ import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
+import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.model.LoginPackage;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
@@ -60,16 +61,13 @@ public class TCPHandler implements Runnable {
                                 App.CL_CFG.DirectMessages = null;
                                 App.CL_CFG.LockCM.notifyAll();
                             }
-                        } else if (((ArrayList<?>) command.Body).get(0) instanceof TDirectMessage
-                                && App.CL_CFG.SelectedChannel instanceof TUser
-                                && (((TUser) App.CL_CFG.SelectedChannel).equals(((ArrayList<TDirectMessage>) command.Body).get(0).getUID())
-                                || (((TUser) App.CL_CFG.SelectedChannel).equals(((ArrayList<TDirectMessage>) command.Body).get(0).getMID().getMUID())))) {
+                        }/* else if (((ArrayList<?>) command.Body).get(0) instanceof TDirectMessage) {
                             synchronized (App.CL_CFG.LockCM) {
                                 App.CL_CFG.DirectMessages = (ArrayList<TDirectMessage>) command.Body;
                                 App.CL_CFG.ChannelMessage = null;
                                 App.CL_CFG.LockCM.notifyAll();
                             }
-                        } else if (((ArrayList<?>) command.Body).get(0) instanceof TChannel) {
+                        }*/ else if (((ArrayList<?>) command.Body).get(0) instanceof TChannel) {
                             synchronized (App.CL_CFG.LockCL) {
                                 App.CL_CFG.ChannelsList = (ArrayList<TChannel>) command.Body;
                                 App.CL_CFG.LockCL.notifyAll();
@@ -80,10 +78,25 @@ public class TCPHandler implements Runnable {
                                 App.CL_CFG.LockDMUsers.notifyAll();
                             }
                         }
+                    } else if (command.Body instanceof GenericPair<?, ?>) {
+                        var body = (GenericPair<ArrayList<TDirectMessage>, ArrayList<TUser>>) command.Body;
+                        if (App.CL_CFG.SelectedChannel instanceof TUser
+                                && (((TUser) App.CL_CFG.SelectedChannel).equals(body.key.get(0).getUID())
+                                || (((TUser) App.CL_CFG.SelectedChannel).equals(body.key.get(0).getMID().getMUID())))) {
+                            synchronized (App.CL_CFG.LockCM) {
+                                App.CL_CFG.DirectMessages = body.key;
+                                App.CL_CFG.ChannelMessage = null;
+                                App.CL_CFG.LockCM.notifyAll();
+                            }
+                        } else {
+                            synchronized (App.CL_CFG.LockDMUsers) {
+                                App.CL_CFG.DMUsers = body.value;
+                                App.CL_CFG.LockDMUsers.notifyAll();
+                            }
+                        }
                     }
                     break;
                 }
-
                 case ECommand.CMD_BAD_REQUEST: {
                     if (command.Body instanceof String) {
                         ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error", (String) command.Body);

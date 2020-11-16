@@ -10,12 +10,11 @@ import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.comparator.ServerComparator;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
-import pt.isec.deis.lei.pd.trabprat.model.Pair;
+import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.server.db.Database;
 import pt.isec.deis.lei.pd.trabprat.server.db.DatabaseWrapper;
-import pt.isec.deis.lei.pd.trabprat.server.model.Client;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
 public class ServerConfig {
@@ -25,15 +24,14 @@ public class ServerConfig {
     public final ServerComparator SvComp;
     public final ArrayList<Server> ServerList;
 //    public final HashMap<Socket, Client> ClientList;
-//    public final HashMap<Socket, GenericPair<TUser, ObjectOutputStream>> Clients;
-    public final HashMap<Socket, Pair<TUser, ObjectOutputStream>> Clients;
+    public final HashMap<Socket, GenericPair<TUser, ObjectOutputStream>> Clients;
     public final InetAddress ExternalIP;
     public final InetAddress InternalIP;
 
 //    public boolean ClientListContains(Client user) {
 //        return ClientList.containsValue(user);
 //    }
-    public boolean ClientListContains(Pair<TUser, ObjectOutputStream> user) {
+    public boolean ClientListContains(GenericPair<TUser, ObjectOutputStream> user) {
         return Clients.containsValue(user);
     }
 
@@ -47,6 +45,25 @@ public class ServerConfig {
                     null, cl.getUPhoto(), cl.getUDate()));
         }
         return temp;
+    }
+
+    public GenericPair<TUser, ObjectOutputStream> GetUser(TUser user) {
+        var temp = new GenericPair<TUser, ObjectOutputStream>(user, null);
+        if (ClientListContains(temp)) {
+            return _GetUser(temp);
+        }
+        return null;
+    }
+
+    private GenericPair<TUser, ObjectOutputStream> _GetUser(GenericPair<TUser, ObjectOutputStream> user) {
+        var users = Clients.values().iterator();
+        while (users.hasNext()) {
+            var i = users.next();
+            if (i.equals(user)) {
+                return i;
+            }
+        }
+        return null;
     }
 
     public void BroadcastOnlineActivity() {
