@@ -627,6 +627,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void SearchUsers_menuitem(ActionEvent event) {
+        
     }
 
     @FXML
