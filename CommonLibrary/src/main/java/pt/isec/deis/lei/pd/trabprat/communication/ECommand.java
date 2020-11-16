@@ -59,6 +59,9 @@ public final class ECommand {
     // The client wants to login to an account
     public static final int CMD_LOGIN = 602;
 
+    // Updated online users list
+    public static final int CMD_ONLINE_USERS = 603;
+
     // The client wants to upload a file
     public static final int CMD_UPLOAD = 700;
 

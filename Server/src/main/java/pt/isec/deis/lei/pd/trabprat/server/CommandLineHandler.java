@@ -12,7 +12,6 @@ import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
-import pt.isec.deis.lei.pd.trabprat.server.model.Client;
 
 public class CommandLineHandler {
 
@@ -99,9 +98,11 @@ public class CommandLineHandler {
         StringBuilder str = new StringBuilder();
         str.append(cmd).append(":\n");
         synchronized (SV_CFG) {
-            var info = SV_CFG.ClientList;
+//            var info = SV_CFG.ClientList;
+            var info = SV_CFG.Clients;
             if (info != null) {
-                for (Client c : info.values()) {
+//                for (Client c : info.values()) {
+                for (var c : info.values()) {
                     str.append(c.toString());
                     str.append("\n");
                 }

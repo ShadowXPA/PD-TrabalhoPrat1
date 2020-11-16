@@ -24,6 +24,7 @@ import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.db.DatabaseWrapper;
 import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
 import pt.isec.deis.lei.pd.trabprat.server.model.Client;
+import pt.isec.deis.lei.pd.trabprat.model.Pair;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
 public class TCPUserHandler implements Runnable {
@@ -169,7 +170,8 @@ public class TCPUserHandler implements Runnable {
             if (user.getUPassword().equals(info.getUPassword())) {
                 // OK
                 boolean LoggedIn;
-                Client c = new Client(info, oOS);
+//                Client c = new Client(info, oOS);
+                var c = new Pair<TUser, ObjectOutputStream>(info, oOS);
                 synchronized (SV_CFG) {
                     LoggedIn = SV_CFG.ClientListContains(c);
                 }
@@ -177,13 +179,8 @@ public class TCPUserHandler implements Runnable {
                     // Send channel list, online users, DMs
                     LoginPackage lp = new LoginPackage(info);
                     synchronized (SV_CFG) {
-                        var users = SV_CFG.ClientList.values().iterator();
-                        while (users.hasNext()) {
-                            TUser cl = users.next().User;
-                            lp.Users.add(new TUser(cl.getUID(),
-                                    cl.getUName(), cl.getUUsername(),
-                                    null, cl.getUPhoto(), cl.getUDate()));
-                        }
+//                        var users = SV_CFG.ClientList.values().iterator();
+                        lp.Users.addAll(SV_CFG.GetAllOnlineUsers());
                         var channels = SV_CFG.DB.getAllChannels();
                         lp.Channels.addAll(channels);
                         var dms = SV_CFG.DB.getAllDMByUserID(info.getUID());
@@ -198,10 +195,12 @@ public class TCPUserHandler implements Runnable {
                     Main.Log("[User: (" + info.getUID() + ") " + info.getUUsername() + "]", "has logged in.");
                     // Add user to the client list
                     synchronized (SV_CFG) {
-                        SV_CFG.ClientList.put(UserSocket, c);
+//                        SV_CFG.ClientList.put(UserSocket, c);
+                        SV_CFG.Clients.put(UserSocket, c);
+                        // Send to other users that the list of users has been updated
+                        SV_CFG.BroadcastOnlineActivity();
                     }
                     // Announce to other servers via multicast
-                    // Send to other users that the list of users has been updated
                 } else {
                     // User already logged in
                     sendCmd = new Command(ECommand.CMD_UNAUTHORIZED, DefaultSvMsg.SV_USER_LOGGED_IN);
@@ -336,7 +335,6 @@ public class TCPUserHandler implements Runnable {
         DatabaseWrapper db;
         TChannel channel = (TChannel) Cmd.Body;
         ArrayList<TChannel> c = null;
-        Command sendCmd;
         int ErrorNumber;
         synchronized (SV_CFG) {
             db = SV_CFG.DB;
@@ -347,13 +345,15 @@ public class TCPUserHandler implements Runnable {
         }
         if (ErrorNumber > 0) {
             // Success
-            sendCmd = new Command(ECommand.CMD_CREATED, c);
+            // Broadcast new channel created to all users
+            synchronized (SV_CFG) {
+                SV_CFG.BroadcastMessage(new Command(ECommand.CMD_CREATED, c));
+            }
         } else {
             // Operation failed
-            sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_CREATE_CHANNEL_FAIL);
+            TCPHelper.SendTCPCommand(oOS, new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_CREATE_CHANNEL_FAIL));
+            Main.Log("[Server] to " + IP, "" + ECommand.CMD_BAD_REQUEST);
         }
-        TCPHelper.SendTCPCommand(oOS, sendCmd);
-        Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
     }
 
     private void HandleUpdateChannel() throws IOException {
@@ -361,7 +361,6 @@ public class TCPUserHandler implements Runnable {
         DatabaseWrapper db;
         TChannelUser cU = (TChannelUser) Cmd.Body;
         ArrayList<TChannel> c = null;
-        Command sendCmd;
         int ErrorNumber;
         if (!cU.getCID().getCUID().equals(cU.getUID())) {
             ErrorNumber = 0;
@@ -374,13 +373,16 @@ public class TCPUserHandler implements Runnable {
         }
         if (ErrorNumber > 0) {
             // Success
-            sendCmd = new Command(ECommand.CMD_UPDATE_CHANNEL, c);
+//            sendCmd = new Command(ECommand.CMD_UPDATE_CHANNEL, c);
+            // Broadcast newly updated channel to all users
+            synchronized (SV_CFG) {
+                SV_CFG.BroadcastMessage(new Command(ECommand.CMD_UPDATE_CHANNEL, c));
+            }
         } else {
             // Operation failed
-            sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_UPDATE_CHANNEL_FAIL);
+            TCPHelper.SendTCPCommand(oOS, new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_UPDATE_CHANNEL_FAIL));
+            Main.Log("[Server] to " + IP, "" + ECommand.CMD_BAD_REQUEST);
         }
-        TCPHelper.SendTCPCommand(oOS, sendCmd);
-        Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
     }
 
     private void HandleDeleteChannel() throws IOException {
@@ -388,7 +390,6 @@ public class TCPUserHandler implements Runnable {
         DatabaseWrapper db;
         TChannelUser cU = (TChannelUser) Cmd.Body;
         ArrayList<TChannel> c = null;
-        Command sendCmd;
         int ErrorNumber;
         if (!cU.getCID().getCUID().equals(cU.getUID())) {
             ErrorNumber = 0;
@@ -401,13 +402,16 @@ public class TCPUserHandler implements Runnable {
         }
         if (ErrorNumber > 0) {
             // Success
-            sendCmd = new Command(ECommand.CMD_DELETE_CHANNEL, c);
+//            sendCmd = new Command(ECommand.CMD_DELETE_CHANNEL, c);
+            // Broadcast newly deleted channel to all users
+            synchronized (SV_CFG) {
+                SV_CFG.BroadcastMessage(new Command(ECommand.CMD_DELETE_CHANNEL, c));
+            }
         } else {
             // Operation failed
-            sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_DELETE_CHANNEL_FAIL);
+            TCPHelper.SendTCPCommand(oOS, new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_DELETE_CHANNEL_FAIL));
+            Main.Log("[Server] to " + IP, "" + ECommand.CMD_BAD_REQUEST);
         }
-        TCPHelper.SendTCPCommand(oOS, sendCmd);
-        Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
     }
 
     private void HandleCreateMessage() throws IOException {
@@ -415,7 +419,7 @@ public class TCPUserHandler implements Runnable {
         // Add message according to the instance of Cmd.Body
         // Send error message if message fails to add
         DatabaseWrapper db;
-        Command sendCmd;
+        Command sendCmd = null;
         TChannelMessage cm = null;
         TDirectMessage dm = null;
         ArrayList<TChannelMessage> cmL = null;
@@ -456,7 +460,11 @@ public class TCPUserHandler implements Runnable {
                     cmL = db.getAllMessagesFromChannelID(cm.getCID().getCID());
                 }
                 if (i > 0) {
-                    sendCmd = new Command(ECommand.CMD_CREATED, cmL);
+//                    sendCmd = new Command(ECommand.CMD_CREATED, cmL);
+                    // Broadcast new message to all users
+                    synchronized (SV_CFG) {
+                        SV_CFG.BroadcastMessage(new Command(ECommand.CMD_CREATED, cmL));
+                    }
                 } else {
                     sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
                 }
@@ -482,14 +490,18 @@ public class TCPUserHandler implements Runnable {
                     dmL = db.getAllDMByUserIDAndOtherID(dm.getMID().getMUID().getUID(), dm.getUID().getUID());
                 }
                 if (i > 0) {
-                    sendCmd = new Command(ECommand.CMD_CREATED, dmL);
+//                    sendCmd = new Command(ECommand.CMD_CREATED, dmL);
+                    // Broadcast new message to all users
+                    synchronized (SV_CFG) {
+                        SV_CFG.BroadcastMessage(new Command(ECommand.CMD_CREATED, dmL));
+                    }
                 } else {
                     sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
                 }
             }
         }
         TCPHelper.SendTCPCommand(oOS, sendCmd);
-        Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
+        Main.Log("[Server] to " + IP, "" + ((sendCmd == null) ? ECommand.CMD_CREATED : sendCmd.CMD));
     }
 
     public TCPUserHandler(Socket UserSocket, ObjectOutputStream oOS, Command Cmd, String IP, ServerConfig SV_CFG) throws IOException {

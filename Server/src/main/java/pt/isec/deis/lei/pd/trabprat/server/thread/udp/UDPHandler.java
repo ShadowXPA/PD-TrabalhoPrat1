@@ -50,7 +50,7 @@ public class UDPHandler implements Runnable {
         Object Accept = null; // Get response via multicast
         ArrayList<Server> body = new ArrayList<>();
         synchronized (SV_CFG) {
-            body.add(new Server(SV_CFG.ExternalIP, DefaultConfig.DEFAULT_UDP_PORT, DefaultConfig.DEFAULT_TCP_PORT, SV_CFG.ClientList.size()));
+            body.add(new Server(SV_CFG.ExternalIP, DefaultConfig.DEFAULT_UDP_PORT, DefaultConfig.DEFAULT_TCP_PORT, SV_CFG.Clients.size()));//SV_CFG.ClientList.size()));
         }
         if (Accept == null) {
             // Accepted

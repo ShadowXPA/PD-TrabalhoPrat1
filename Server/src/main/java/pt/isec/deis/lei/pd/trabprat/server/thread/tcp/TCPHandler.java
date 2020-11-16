@@ -1,11 +1,14 @@
 package pt.isec.deis.lei.pd.trabprat.server.thread.tcp;
 
 import java.io.EOFException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
@@ -51,10 +54,16 @@ public class TCPHandler implements Runnable {
         }
         synchronized (SV_CFG) {
             // Removes client if they were logged in
-            Client client = SV_CFG.ClientList.remove(ClientSocket);
+            //            Client client = SV_CFG.ClientList.remove(ClientSocket);
+            //            if (client != null) {
+            //                Main.Log("[User: (" + client.User.getUID() + ") "
+            //                        + client.User.getUUsername() + "]", "has disconnected.");
+            //            }
+            var client = SV_CFG.Clients.remove(ClientSocket);
             if (client != null) {
-                Main.Log("[User: (" + client.User.getUID() + ") "
-                        + client.User.getUUsername() + "]", "has disconnected.");
+                Main.Log("[User: (" + client.key.getUID() + ") "
+                        + client.key.getUUsername() + "]", "has disconnected.");
+                SV_CFG.BroadcastOnlineActivity();
             }
         }
         Main.Log("Closed connection with", IP);

@@ -52,13 +52,18 @@ public class TCPHandler implements Runnable {
                         ServerController.SendFile(user.getUPhoto(), user.getUUsername(), null);
                         ClientDialog.ShowDialog(Alert.AlertType.INFORMATION, "Information Dialog", "User", "The user has been successfully created!");
                     } else if (command.Body instanceof ArrayList<?>) {
-                        if (((ArrayList<?>) command.Body).get(0) instanceof TChannelMessage) {
+                        if (((ArrayList<?>) command.Body).get(0) instanceof TChannelMessage
+                                && App.CL_CFG.SelectedChannel instanceof TChannel
+                                && ((TChannel) App.CL_CFG.SelectedChannel).equals(((ArrayList<TChannelMessage>) command.Body).get(0).getCID())) {
                             synchronized (App.CL_CFG.LockCM) {
                                 App.CL_CFG.ChannelMessage = (ArrayList<TChannelMessage>) command.Body;
                                 App.CL_CFG.DirectMessages = null;
                                 App.CL_CFG.LockCM.notifyAll();
                             }
-                        } else if (((ArrayList<?>) command.Body).get(0) instanceof TDirectMessage) {
+                        } else if (((ArrayList<?>) command.Body).get(0) instanceof TDirectMessage
+                                && App.CL_CFG.SelectedChannel instanceof TUser
+                                && (((TUser) App.CL_CFG.SelectedChannel).equals(((ArrayList<TDirectMessage>) command.Body).get(0).getUID())
+                                || (((TUser) App.CL_CFG.SelectedChannel).equals(((ArrayList<TDirectMessage>) command.Body).get(0).getMID().getMUID())))) {
                             synchronized (App.CL_CFG.LockCM) {
                                 App.CL_CFG.DirectMessages = (ArrayList<TDirectMessage>) command.Body;
                                 App.CL_CFG.ChannelMessage = null;
@@ -163,6 +168,18 @@ public class TCPHandler implements Runnable {
                                     App.CL_CFG.SelectedChannel = App.CL_CFG.GetChannelByCName(((TChannel) App.CL_CFG.SelectedChannel).getCName());
                                 }
                                 App.CL_CFG.LockCL.notifyAll();
+                            }
+                        }
+                    }
+                    break;
+                }
+                case ECommand.CMD_ONLINE_USERS: {
+                    if (command.Body instanceof ArrayList<?>) {
+                        if (((ArrayList<?>) command.Body).get(0) instanceof TUser) {
+                            synchronized (App.CL_CFG.LockOUsers) {
+                                App.CL_CFG.OnlineUsers = (ArrayList<TUser>) command.Body;
+                                App.CL_CFG.OnlineUsers.remove(App.CL_CFG.MyUser);
+                                App.CL_CFG.LockOUsers.notifyAll();
                             }
                         }
                     }
