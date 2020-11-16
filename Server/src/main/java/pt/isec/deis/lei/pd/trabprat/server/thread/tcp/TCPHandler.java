@@ -1,5 +1,7 @@
 package pt.isec.deis.lei.pd.trabprat.server.thread.tcp;
 
+import java.io.EOFException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -8,12 +10,18 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
+import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
+import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
+import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
+import pt.isec.deis.lei.pd.trabprat.server.model.Client;
+import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
 public class TCPHandler implements Runnable {
 
     private final Socket ClientSocket;
     private final String IP;
+    private final ServerConfig SV_CFG;
 
     @Override
     public void run() {
@@ -28,16 +36,42 @@ public class TCPHandler implements Runnable {
                 // Wait for a read (while (true) keep reading)
                 Command cmd = (Command) oIS.readUnshared();
                 Main.Log(IP + " to [Server]", "" + cmd.CMD);
-                // React accordingly
-                // Send via Multicast every info necessary
+
+                try {
+                    Thread td = new Thread(new TCPUserHandler(ClientSocket, oOS, cmd, IP, SV_CFG));
+                    td.setDaemon(true);
+                    td.start();
+                } catch (Exception ex) {
+                    // Send internal server error
+                    Command cmdErr = new Command(ECommand.CMD_SERVICE_UNAVAILABLE);
+                    TCPHelper.SendTCPCommand(oOS, cmd);
+                    Main.Log("[Server] to " + IP, "" + cmdErr.CMD);
+                }
             }
+        } catch (EOFException ex) {
         } catch (Exception ex) {
-            Logger.getLogger(TCPHandler.class.getName()).log(Level.SEVERE, null, ex);
+            ExceptionHandler.ShowException(ex);
         }
+        synchronized (SV_CFG) {
+            // Removes client if they were logged in
+            //            Client client = SV_CFG.ClientList.remove(ClientSocket);
+            //            if (client != null) {
+            //                Main.Log("[User: (" + client.User.getUID() + ") "
+            //                        + client.User.getUUsername() + "]", "has disconnected.");
+            //            }
+            var client = SV_CFG.Clients.remove(ClientSocket);
+            if (client != null) {
+                Main.Log("[User: (" + client.key.getUID() + ") "
+                        + client.key.getUUsername() + "]", "has disconnected.");
+                SV_CFG.BroadcastOnlineActivity();
+            }
+        }
+        Main.Log("Closed connection with", IP);
     }
 
-    public TCPHandler(Socket ClientSocket, String IP) {
+    public TCPHandler(Socket ClientSocket, String IP, ServerConfig SV_CFG) {
         this.ClientSocket = ClientSocket;
         this.IP = IP;
+        this.SV_CFG = SV_CFG;
     }
 }

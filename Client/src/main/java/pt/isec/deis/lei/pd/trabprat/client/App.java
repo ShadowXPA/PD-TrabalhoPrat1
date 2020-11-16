@@ -1,25 +1,18 @@
 package pt.isec.deis.lei.pd.trabprat.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import pt.isec.deis.lei.pd.trabprat.client.config.ClientConfig;
 import pt.isec.deis.lei.pd.trabprat.client.config.DefaultWindowSizes;
+import pt.isec.deis.lei.pd.trabprat.client.thread.tcp.TCPListener;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
-import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 
 public class App extends Application {
@@ -36,7 +29,13 @@ public class App extends Application {
         stage.show();
     }
 
-    static void setRoot(String fxml) throws IOException {
+    @Override
+    public void stop() throws Exception {
+        super.stop(); //To change body of generated methods, choose Tools | Templates.
+        CL_CFG.getSocket().close();
+    }
+
+    public static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
 
@@ -47,106 +46,39 @@ public class App extends Application {
 
     public static void main(String[] args) {
         CL_CFG = new ClientConfig();
-        Command command = new Command();
-
-        // Connect to server
-        CL_CFG.server = InitializeServerConection(args);
-        SendPacketUDPToServer(CL_CFG.server);
-        command = ReceivePacketUDPFromServer();
+        Command command;
+        DatagramSocket socket;
+        try {
+            // Connect to server
+            CL_CFG.server = Initialize.InitializeServerConection(args);
+        } catch (UnknownHostException ex) {
+            ex.printStackTrace();
+        }
+        socket = Initialize.SendPacketUDPToServer(CL_CFG.server);
+        command = Initialize.ReceivePacketUDPFromServer(socket);
         if (command != null) {
             CL_CFG.ServerList = (ArrayList<Server>) command.Body;
         } else {
             System.exit(1);
         }
 
-        //ConnectToTCP();
-        
+        Initialize.ConnectToTCP();
+        try {
+            //CL_CFG.setSocket(tcpSoc);
+//            Thread thread = new Thread(new TCPListener(CL_CFG.server), "TCPListener");
+            Thread thread = new Thread(new TCPListener(CL_CFG.getSocket(), CL_CFG.getOOS(), CL_CFG.getOIS()));
+            thread.setDaemon(true);
+            thread.start();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
         // Do last
-        launch();
-    }
-
-    public static Server InitializeServerConection(String[] args) {
-        Server server;
-        int port_server;
-        InetAddress ip_server;
         try {
-            ip_server = InetAddress.getByName(args[0]);
-            port_server = Integer.parseInt(args[1]);
-        } catch (Exception ex) {
-            System.out.println("The port has been with errors: \n" + ex.getMessage());
-            return null;
-        }
-        server = new Server(ip_server, port_server, 0);
-        return server;
-    }
-
-    public static void SendPacketUDPToServer(Server server) {
-        Command command = new Command();
-        command.CMD = ECommand.CMD_CONNECT;
-
-        try {
-            DatagramSocket socket = new DatagramSocket();
-
-            ByteArrayOutputStream bAOS = new ByteArrayOutputStream();
-            ObjectOutputStream oOS = new ObjectOutputStream(bAOS);
-            oOS.writeObject(command);
-
-            byte[] buff = bAOS.toByteArray();
-            DatagramPacket packet = new DatagramPacket(buff, buff.length, server.getAddress(), server.getPort());
-
-            socket.send(packet);
+            launch();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    public static Command ReceivePacketUDPFromServer() {
-        byte[] buff;
-        Command command = new Command();
-        ArrayList<Server> aux;
-
-        try {
-            DatagramSocket socket = new DatagramSocket();
-            DatagramPacket packet = new DatagramPacket(new byte[1024], 1024);
-
-            socket.receive(packet);
-
-            buff = packet.getData();
-            ByteArrayInputStream bAIS = new ByteArrayInputStream(buff);
-            ObjectInputStream oIS = new ObjectInputStream(bAIS);
-
-            command = (Command) oIS.readObject();
-            switch (command.CMD) {
-                case ECommand.CMD_ACCEPTED:
-                    return command;
-                case ECommand.CMD_MOVED_PERMANENTLY:
-                    Server server;
-                    aux = (ArrayList<Server>) command.Body;
-                    server = aux.get(0);
-                    SendPacketUDPToServer(server);
-                    return ReceivePacketUDPFromServer();
-                default:
-                    return null;
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
-
-    public static void ConnectToTCP() {
-
-        try {
-            Socket socket = new Socket(CL_CFG.server.getAddress(), CL_CFG.server.getPort());
-            //ObjectOutputStream oOS = new ObjectOutputStream(socket.getOutputStream());
-            //ObjectInputStream oIS = new ObjectInputStream(socket.getInputStream());
-
-            //oOS.writeObject();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
     }
 
 }

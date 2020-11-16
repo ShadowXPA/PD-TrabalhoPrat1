@@ -1,7 +1,9 @@
 package pt.isec.deis.lei.pd.trabprat.communication;
 
 public final class ECommand {
-    private ECommand() {}
+
+    private ECommand() {
+    }
 
     // Ignore
     public static final int CMD_IGNORE = 1;
@@ -27,7 +29,7 @@ public final class ECommand {
     // This and all future requests should be directed to the given IP/Port
     public static final int CMD_MOVED_PERMANENTLY = 301;
 
-    // The server cannot or will not process the request due to an apparent client error (if UDP fails)
+    // The server cannot or will not process the request due to an apparent client error (if UDP fails, etc.)
     public static final int CMD_BAD_REQUEST = 400;
 
     // Similar to 403 Forbidden, but specifically for use when authentication is required and has failed or has not yet been provided
@@ -53,4 +55,34 @@ public final class ECommand {
 
     // The client wants to register an account to the server
     public static final int CMD_REGISTER = 601;
+
+    // The client wants to login to an account
+    public static final int CMD_LOGIN = 602;
+
+    // Updated online users list
+    public static final int CMD_ONLINE_USERS = 603;
+
+    // The client wants to upload a file
+    public static final int CMD_UPLOAD = 700;
+
+    // The client wants to download a file
+    public static final int CMD_DOWNLOAD = 701;
+
+    // The client wants to receive channel messages
+    public static final int CMD_GET_CHANNEL_MESSAGES = 702;
+
+    // The client wants to receive DM messages
+    public static final int CMD_GET_DM_MESSAGES = 703;
+
+    // The client wants to create a channel
+    public static final int CMD_CREATE_CHANNEL = 704;
+
+    // The client wants to update a channel
+    public static final int CMD_UPDATE_CHANNEL = 705;
+
+    // The client wants to delete a channel
+    public static final int CMD_DELETE_CHANNEL = 706;
+
+    // The client wants to create a message
+    public static final int CMD_CREATE_MESSAGE = 707;
 }

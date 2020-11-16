@@ -2,13 +2,18 @@ package pt.isec.deis.lei.pd.trabprat.server.thread.tcp;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
+import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
-import pt.isec.deis.lei.pd.trabprat.server.thread.udp.UDPListener;
+import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 
 public class TCPListener implements Runnable {
+
+    private final ServerConfig SV_CFG;
+
+    public TCPListener(ServerConfig SV_CFG) {
+        this.SV_CFG = SV_CFG;
+    }
 
     @Override
     public void run() {
@@ -21,12 +26,12 @@ public class TCPListener implements Runnable {
                     Socket ClSocket = SvSocket.accept();
                     IP = ClSocket.getInetAddress().getHostAddress() + ":" + ClSocket.getPort();
                     Main.Log("Established connection with", IP);
-                    Thread td = new Thread(new TCPHandler(ClSocket, IP));
+                    Thread td = new Thread(new TCPHandler(ClSocket, IP, SV_CFG));
                     td.setDaemon(true);
                     td.start();
                 }
             } catch (Exception ex) {
-                Logger.getLogger(UDPListener.class.getName()).log(Level.SEVERE, null, ex);
+                ExceptionHandler.ShowException(ex);
             }
         }
     }

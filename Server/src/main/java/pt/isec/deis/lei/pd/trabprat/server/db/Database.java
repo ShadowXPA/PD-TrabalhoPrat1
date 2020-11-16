@@ -8,21 +8,28 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 
 public class Database {
 
     private final String ConnectionString;
+    private final String Host;
+    private final String Port;
+    private final String Schema;
     private final String Username;
     private final String Password;
     private Connection con = null;
+
+    public String getSchema() {
+        return Schema;
+    }
 
     private boolean Connect() {
         try {
             con = DriverManager.getConnection(this.ConnectionString, this.Username, this.Password);
             return true;
         } catch (Exception ex) {
-            System.out.println("Error: " + ex.getMessage());
-            ex.printStackTrace();
+            ExceptionHandler.ShowException(ex);
             this.Disconnect();
             return false;
         }
@@ -30,12 +37,12 @@ public class Database {
 
     private void Disconnect() {
         try {
-            if (!con.isClosed())
+            if (!con.isClosed()) {
                 con.close();
+            }
             con = null;
         } catch (Exception ex) {
-            System.out.println("Error: " + ex.getMessage());
-            ex.printStackTrace();
+            ExceptionHandler.ShowException(ex);
         }
     }
 
@@ -173,7 +180,7 @@ public class Database {
                     int ColumnCount = RSMD.getColumnCount();
                     while (RSet.next()) {
                         HashMap<String, String> temp = new HashMap<>();
-                        for (int i = 1; i < ColumnCount; i++) {
+                        for (int i = 1; i <= ColumnCount; i++) {
                             String Key = RSMD.getColumnLabel(i);
                             String Value = RSet.getString(i);
                             temp.put(Key, Value);
@@ -184,8 +191,7 @@ public class Database {
                 this.Disconnect();
                 return Result;
             } catch (Exception ex) {
-                System.out.println("Error: " + ex.getMessage());
-                ex.printStackTrace();
+                ExceptionHandler.ShowException(ex);
             }
         }
         return null;
@@ -202,17 +208,21 @@ public class Database {
                 con.commit();
                 this.Disconnect();
             } catch (Exception ex) {
-                System.out.println("Error: " + ex.getMessage());
-                ex.printStackTrace();
+                ExceptionHandler.ShowException(ex);
             }
         }
         return i;
     }
 
-    public Database(String ConnectionString, String Username, String Password) throws SQLException, ClassNotFoundException {
+    public Database(String Host, String Port, String Schema, String Username, String Password) throws SQLException, ClassNotFoundException {
 //        Class.forName("com.mysql.cj.jdbc.Driver");
-        this.ConnectionString = ConnectionString;
+        this.Host = Host;
+        this.Port = Port;
+        this.Schema = Schema;
         this.Username = Username;
         this.Password = Password;
+        this.ConnectionString = "jdbc:mysql://" + this.Host + ":" + this.Port + "/" + this.Schema +
+                "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" +
+                "&useSSL=false";
     }
 }

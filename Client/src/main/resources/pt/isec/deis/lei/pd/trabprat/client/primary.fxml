@@ -1,16 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pt.isec.deis.lei.pd.trabprat.client.PrimaryController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pt.isec.deis.lei.pd.trabprat.client.PrimaryController">
    <children>
-      <Label text="Primary View" />
-      <Button fx:id="primaryButton" text="Switch to Secondary View" onAction="#switchToSecondary"/>
+      <MenuBar maxWidth="1280.0" minWidth="1280.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Message">
+            <items>
+              <MenuItem fx:id="MI_Send_Message" mnemonicParsing="false" onAction="#SendMessage_menuitem" text="Send Message" />
+                  <MenuItem fx:id="MI_Send_File" mnemonicParsing="false" onAction="#SendFile_menuitem" text="Send File" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Channel">
+            <items>
+              <MenuItem fx:id="MI_Add_Channel" mnemonicParsing="false" onAction="#AddChannel_menuitem" text="Add" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Search">
+               <items>
+                  <MenuItem fx:id="MI_Search_Users" mnemonicParsing="false" onAction="#SearchUsers_menuitem" text="Search Users" />
+               </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem fx:id="MI_About" mnemonicParsing="false" onAction="#About_menuitem" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <HBox layoutY="25.0" maxHeight="695.0" maxWidth="1280.0" minHeight="695.0" minWidth="1280.0" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <VBox maxWidth="253.6" minWidth="253.6" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Label text="Channel:" />
+                  <ScrollPane fx:id="sp_channel" maxHeight="347.5" maxWidth="253.6" minHeight="330.5" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                     <content>
+                        <VBox fx:id="vboxChannel" maxWidth="254.0" minWidth="252.0" prefHeight="129.0" prefWidth="252.0" />
+                     </content>
+                  </ScrollPane>
+                  <Label text="Direct Message:" />
+                  <ScrollPane fx:id="sp_DM" maxHeight="330.0" maxWidth="253.6" minHeight="330.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                     <content>
+                        <VBox fx:id="vboxDM" maxWidth="252.0" minWidth="252.0" prefHeight="200.0" prefWidth="252.0" />
+                     </content>
+                  </ScrollPane>
+               </children>
+            </VBox>
+            <Separator orientation="VERTICAL" prefHeight="200.0" />
+            <VBox maxHeight="695.0" maxWidth="760.8" minHeight="695.0" minWidth="760.8" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Label text="Messages / Files:" />
+                  <ScrollPane fx:id="sp_main" maxHeight="620.0" maxWidth="760.8" minHeight="620.0" minWidth="760.8" onDragDropped="#OnDragFile_spmain" onDragOver="#OnDragOverFile_spmain" prefHeight="200.0" prefWidth="200.0">
+                     <content>
+                        <VBox fx:id="VBox_Mess_Files" maxWidth="759.0" minWidth="759.0" prefHeight="200.0" prefWidth="759.0" />
+                     </content>
+                  </ScrollPane>
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <TextField fx:id="TFMessage" maxWidth="760.8" minWidth="760.8" onKeyPressed="#OnKeyPressed_tfmessage" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="btnFile" mnemonicParsing="false" onAction="#SendFile" text="File" />
+                        <Button fx:id="btnSend" mnemonicParsing="false" onAction="#SendMessage" text="Send" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <Separator orientation="VERTICAL" prefHeight="200.0" />
+            <VBox maxWidth="253.6" minWidth="253.6" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Label text="Channel info / Direct Message:" />
+                  <ScrollPane fx:id="sp_info" maxHeight="220.0" maxWidth="253.6" minHeight="220.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                     <content>
+                        <VBox fx:id="Channel_DM_Info" maxWidth="252.0" minWidth="252.0" prefHeight="200.0" prefWidth="252.0" />
+                     </content>
+                  </ScrollPane>
+                  <Label text="Online Users:" />
+                  <ScrollPane fx:id="sp_users" maxHeight="440.0" maxWidth="253.6" minHeight="440.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                     <content>
+                        <VBox fx:id="vboxUserOnline" maxWidth="252.0" minWidth="252.0" prefHeight="200.0" prefWidth="252.0" />
+                     </content>
+                  </ScrollPane>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
    </children>
-   <padding>
-      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-   </padding>
-</VBox>
+</Pane>

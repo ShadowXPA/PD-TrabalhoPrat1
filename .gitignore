@@ -45,3 +45,5 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
+*_files/
