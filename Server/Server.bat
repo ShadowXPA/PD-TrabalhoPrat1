@@ -1,1 +1,1 @@
-java -jar target/Server-1.0.0.jar localhost 3306 pd_trab pdtrab PDTrabPrat123
+java -jar target/Server-1.0.0.jar localhost 3306 pd_trab pdtrab PDTrabPrat123 localhost

@@ -17,11 +17,11 @@ public class Main {
         // Catch arguments
         // Initialize database connection
         try {
-            if (args.length <= 4) {
+            if (args.length <= 5) {
                 System.exit(-1);
             }
 
-            SV_CFG = new ServerConfig(InitDatabase(args), DefaultConfig.getExternalIP(), args[0]);
+            SV_CFG = new ServerConfig(InitDatabase(args), DefaultConfig.getExternalIP(), args[4]);
             System.out.println("External IP: " + SV_CFG.ExternalIP);
             // Check for other servers, ask for information if there are other servers already online
 
