@@ -85,4 +85,7 @@ public final class ECommand {
 
     // The client wants to create a message
     public static final int CMD_CREATE_MESSAGE = 707;
+
+    // The client wants a list of users that fully or partially match a certain string
+    public static final int CMD_SEARCH_USERS = 708;
 }
