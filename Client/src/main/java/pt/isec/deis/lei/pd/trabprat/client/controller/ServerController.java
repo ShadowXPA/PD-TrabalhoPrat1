@@ -93,4 +93,9 @@ public final class ServerController {
         Command command = new Command(ECommand.CMD_DELETE_CHANNEL, channel);
         TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
     }
+    
+    public static void SearchUser(String str) throws IOException{
+        Command command = new Command(ECommand.CMD_SEARCH_USERS, str);
+        TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
+    }
 }

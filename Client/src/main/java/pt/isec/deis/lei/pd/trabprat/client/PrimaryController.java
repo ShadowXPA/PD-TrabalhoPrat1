@@ -3,6 +3,7 @@ package pt.isec.deis.lei.pd.trabprat.client;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.UUID;
@@ -386,6 +387,7 @@ public class PrimaryController implements Initializable {
             if (obj == null) {
                 return;
             }
+            SimpleDateFormat sdf = new SimpleDateFormat("EEEEE, MMMMM d, yyyy H:mm");
             for (int i = 0; i < obj.size(); i++) {
                 TMessage msg;
                 if (bool) {
@@ -402,7 +404,7 @@ public class PrimaryController implements Initializable {
                     label_text_message.setMaxWidth(VBox_Mess_Files.getMaxWidth());
                     label_text_message.setWrapText(true);
                     label_name.setText("Message from: " + msg.getMUID().getUName());
-                    label_date.setText("Date: " + msg.getDate().toString());
+                    label_date.setText("Date: " + sdf.format(msg.getDate()));
                     label_text_message.setText("Message: " + msg.getMText());
                     label_space.setText("\n");
                     VBox_Mess_Files.getChildren().add(label_name);
@@ -418,7 +420,7 @@ public class PrimaryController implements Initializable {
                     button.setMinWidth(db);
                     button.setMaxWidth(db);
                     label_name.setText("File from: " + msg.getMUID().getUName());
-                    label_date.setText(msg.getMUID().getDate().toString());
+                    label_date.setText("Date: " + sdf.format(msg.getDate()));
                     button.setText(msg.getMText());
                     button.setId("" + msg.getMID());
                     button.setOnAction(new EventHandler<ActionEvent>() {
@@ -628,7 +630,28 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void SearchUsers_menuitem(ActionEvent event) {
-
+        try{
+            String str = ClientDialog.ShowDialog7();
+            if(str == null){
+                return;
+            }
+            Thread td = new Thread(()->{
+                try{
+                    ServerController.SearchUser(str);
+                    synchronized(App.CL_CFG.LockFo){
+                        App.CL_CFG.LockFo.wait();
+                        ClientDialog.ShowDialog8(App.CL_CFG.FoundUsers);
+                        App.CL_CFG.FoundUsers = null;
+                    }
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
+            });
+            td.setDaemon(true);
+            td.start();
+        }catch(Exception ex){
+            ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Search User", "Can´t search the user!");
+        }
     }
 
     @FXML

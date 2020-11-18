@@ -27,6 +27,9 @@ public class ClientConfig {
     public volatile ArrayList<TChannelMessage> ChannelMessage;
     public final Object LockCM = new Object();
     public volatile ArrayList<TDirectMessage> DirectMessages;
+    //list for found users
+    public ArrayList<TUser>  FoundUsers;
+    public final Object LockFo = new Object();
     public final Object LockCL = new Object();
     public final Object LockDMUsers = new Object();
     public final Object LockOUsers = new Object();

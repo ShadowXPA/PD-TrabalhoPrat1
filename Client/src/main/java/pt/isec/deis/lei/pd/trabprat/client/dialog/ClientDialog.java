@@ -1,11 +1,14 @@
 package pt.isec.deis.lei.pd.trabprat.client.dialog;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Optional;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -14,14 +17,20 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Pair;
 import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.encryption.AES;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
+import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.validation.Validator;
 
 public final class ClientDialog {
@@ -121,7 +130,6 @@ public final class ClientDialog {
     }
 
     public static boolean ShowDialog4() {
-
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Channel Dialog");
         alert.setContentText("Are you sure that want to delete the channel?");
@@ -191,6 +199,7 @@ public final class ClientDialog {
         final TextField File_path = new TextField();
         File_path.setDisable(true);
         Button btn = new Button();
+        btn.setText("Browse...");
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
@@ -230,5 +239,50 @@ public final class ClientDialog {
             return result.get();
         }
         return null;
+    }
+
+    public static String ShowDialog7() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Search User");
+        dialog.setContentText("Enter a name or username:");
+
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            return result.get();
+        }
+        return null;
+    }
+
+    public static void ShowDialog8(ArrayList<TUser> users) {
+        Platform.runLater(() -> {
+            double db_height = 350;
+            double db_width = 250;
+            Stage st = new Stage();
+            st.initModality(Modality.APPLICATION_MODAL);
+            st.setTitle("Found users");
+            ScrollPane sp = new ScrollPane();
+            VBox vb = new VBox();
+            for (int i = 0; i < users.size(); i++) {
+                Label lb_name = new Label(users.get(i).getUName());
+                lb_name.setMinWidth(db_width);
+                lb_name.setMaxWidth(db_width);
+                Label lb_username = new Label(users.get(i).getUUsername());
+                lb_username.setMinWidth(db_width);
+                lb_username.setMaxWidth(db_width);
+                Separator hs = new Separator(Orientation.HORIZONTAL);
+                vb.getChildren().addAll(lb_name, lb_username, hs);
+            }
+            sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            sp.setContent(vb);
+            Scene sc = new Scene(sp);
+            st.setMinHeight(db_height);
+            st.setMinWidth(db_width);
+            st.setMaxHeight(db_height);
+            st.setMaxWidth(db_width);
+            st.setResizable(false);
+            st.setScene(sc);
+            st.showAndWait();
+        });
     }
 }

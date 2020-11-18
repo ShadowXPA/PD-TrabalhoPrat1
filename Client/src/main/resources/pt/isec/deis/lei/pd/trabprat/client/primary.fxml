@@ -14,7 +14,7 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pt.isec.deis.lei.pd.trabprat.client.PrimaryController">
    <children>
-      <MenuBar maxWidth="1280.0" minWidth="1280.0">
+      <MenuBar maxWidth="1280.0" minWidth="1280.0" style="-fx-background-color: #000085;">
         <menus>
           <Menu mnemonicParsing="false" text="Message">
             <items>
@@ -39,18 +39,18 @@
           </Menu>
         </menus>
       </MenuBar>
-      <HBox layoutY="25.0" maxHeight="695.0" maxWidth="1280.0" minHeight="695.0" minWidth="1280.0" prefHeight="100.0" prefWidth="200.0">
+      <HBox layoutY="25.0" maxHeight="695.0" maxWidth="1280.0" minHeight="695.0" minWidth="1280.0" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #004c91;">
          <children>
             <VBox maxWidth="253.6" minWidth="253.6" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Label text="Channel:" />
-                  <ScrollPane fx:id="sp_channel" maxHeight="347.5" maxWidth="253.6" minHeight="330.5" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                  <Label text="Channel:" textFill="WHITE" />
+                  <ScrollPane fx:id="sp_channel" maxHeight="347.5" maxWidth="253.6" minHeight="330.5" minWidth="253.6" opacity="0.85" prefHeight="200.0" prefWidth="200.0">
                      <content>
                         <VBox fx:id="vboxChannel" maxWidth="254.0" minWidth="252.0" prefHeight="129.0" prefWidth="252.0" />
                      </content>
                   </ScrollPane>
-                  <Label text="Direct Message:" />
-                  <ScrollPane fx:id="sp_DM" maxHeight="330.0" maxWidth="253.6" minHeight="330.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                  <Label text="Direct Message:" textFill="WHITE" />
+                  <ScrollPane fx:id="sp_DM" maxHeight="330.0" maxWidth="253.6" minHeight="330.0" minWidth="253.6" opacity="0.85" prefHeight="200.0" prefWidth="200.0">
                      <content>
                         <VBox fx:id="vboxDM" maxWidth="252.0" minWidth="252.0" prefHeight="200.0" prefWidth="252.0" />
                      </content>
@@ -60,8 +60,8 @@
             <Separator orientation="VERTICAL" prefHeight="200.0" />
             <VBox maxHeight="695.0" maxWidth="760.8" minHeight="695.0" minWidth="760.8" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Label text="Messages / Files:" />
-                  <ScrollPane fx:id="sp_main" maxHeight="620.0" maxWidth="760.8" minHeight="620.0" minWidth="760.8" onDragDropped="#OnDragFile_spmain" onDragOver="#OnDragOverFile_spmain" prefHeight="200.0" prefWidth="200.0">
+                  <Label text="Messages / Files:" textFill="WHITE" />
+                  <ScrollPane fx:id="sp_main" maxHeight="620.0" maxWidth="760.8" minHeight="620.0" minWidth="760.8" onDragDropped="#OnDragFile_spmain" onDragOver="#OnDragOverFile_spmain" opacity="0.85" prefHeight="200.0" prefWidth="200.0">
                      <content>
                         <VBox fx:id="VBox_Mess_Files" maxWidth="759.0" minWidth="759.0" prefHeight="200.0" prefWidth="759.0" />
                      </content>
@@ -82,14 +82,14 @@
             <Separator orientation="VERTICAL" prefHeight="200.0" />
             <VBox maxWidth="253.6" minWidth="253.6" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Label text="Channel info / Direct Message:" />
-                  <ScrollPane fx:id="sp_info" maxHeight="220.0" maxWidth="253.6" minHeight="220.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                  <Label text="Channel info / Direct Message:" textFill="WHITE" />
+                  <ScrollPane fx:id="sp_info" maxHeight="220.0" maxWidth="253.6" minHeight="220.0" minWidth="253.6" opacity="0.85" prefHeight="200.0" prefWidth="200.0">
                      <content>
                         <VBox fx:id="Channel_DM_Info" maxWidth="252.0" minWidth="252.0" prefHeight="200.0" prefWidth="252.0" />
                      </content>
                   </ScrollPane>
-                  <Label text="Online Users:" />
-                  <ScrollPane fx:id="sp_users" maxHeight="440.0" maxWidth="253.6" minHeight="440.0" minWidth="253.6" prefHeight="200.0" prefWidth="200.0">
+                  <Label text="Online Users:" textFill="WHITE" />
+                  <ScrollPane fx:id="sp_users" maxHeight="440.0" maxWidth="253.6" minHeight="440.0" minWidth="253.6" opacity="0.85" prefHeight="200.0" prefWidth="200.0">
                      <content>
                         <VBox fx:id="vboxUserOnline" maxWidth="252.0" minWidth="252.0" prefHeight="200.0" prefWidth="252.0" />
                      </content>

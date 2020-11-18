@@ -198,6 +198,12 @@ public class TCPHandler implements Runnable {
                     }
                     break;
                 }
+                case ECommand.CMD_SEARCH_USERS: {
+                    synchronized (App.CL_CFG.LockFo){
+                        App.CL_CFG.FoundUsers = (ArrayList<TUser>) command.Body;
+                        App.CL_CFG.LockFo.notifyAll();
+                    }
+                }
                 default: {
 
                 }
