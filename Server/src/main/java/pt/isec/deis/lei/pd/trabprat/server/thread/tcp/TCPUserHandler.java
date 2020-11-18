@@ -82,6 +82,10 @@ public class TCPUserHandler implements Runnable {
                     HandleCreateMessage();
                     break;
                 }
+                case ECommand.CMD_SEARCH_USERS: {
+                    HandleSearchUsers();
+                    break;
+                }
                 default: {
                     sendCmd = new Command(ECommand.CMD_FORBIDDEN);
                     TCPHelper.SendTCPCommand(oOS, sendCmd);
@@ -517,6 +521,20 @@ public class TCPUserHandler implements Runnable {
             TCPHelper.SendTCPCommand(oOS, sendCmd);
         }
         Main.Log("[Server] to " + IP, "" + ((sendCmd == null) ? ECommand.CMD_CREATED : sendCmd.CMD));
+    }
+
+    private void HandleSearchUsers() throws IOException {
+        DatabaseWrapper db;
+        Command sendCmd;
+        ArrayList<TUser> users;
+        synchronized (SV_CFG) {
+            db = SV_CFG.DB;
+            users = db.findUserByUNameOrUUsername((String) Cmd.Body);
+            users.forEach(u -> ((TUser) u).setPassword());
+        }
+        sendCmd = new Command(ECommand.CMD_SEARCH_USERS, users);
+        TCPHelper.SendTCPCommand(oOS, sendCmd);
+        Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
     }
 
     public TCPUserHandler(Socket UserSocket, ObjectOutputStream oOS, Command Cmd, String IP, ServerConfig SV_CFG) throws IOException {

@@ -36,8 +36,9 @@ public final class DatabaseWrapper {
         return parseUser(info.get(0));
     }
 
-    public ArrayList<TUser> findUserBy(String by, String what) {
-        var info = db.Select("");
+    public ArrayList<TUser> findUserByUNameOrUUsername(String str) {
+        var info = db.Select("select * from tuser where uname like '%"
+                + str + "%' or uusername like '%" + str + "%'");
         ArrayList<TUser> Users = new ArrayList<>();
         for (int i = 0; i < info.size(); i++) {
             Users.add(parseUser(info.get(i)));

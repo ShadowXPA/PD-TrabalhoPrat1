@@ -21,7 +21,7 @@ public class Main {
                 System.exit(-1);
             }
 
-            SV_CFG = new ServerConfig(InitDatabase(args), DefaultConfig.getExternalIP(), args[4]);
+            SV_CFG = new ServerConfig(InitDatabase(args), DefaultConfig.getExternalIP(), args[5]);
             System.out.println("External IP: " + SV_CFG.ExternalIP);
             // Check for other servers, ask for information if there are other servers already online
 
