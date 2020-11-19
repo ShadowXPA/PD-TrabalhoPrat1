@@ -38,11 +38,11 @@ public class MulticastListener implements Runnable {
             Main.Log("Joined Multicast group", DefaultConfig.DEFAULT_MULTICAST_IP + ":" + Port);
             DatagramPacket ReceivedPacket = new DatagramPacket(new byte[DefaultConfig.DEFAULT_UDP_PACKET_SIZE], DefaultConfig.DEFAULT_UDP_PACKET_SIZE);
             // Create heartbeat thread
-            Thread td = new Thread(() -> {
+            Thread td2 = new Thread(() -> {
                 SendHeartbeat(mCS);
             });
-            td.setDaemon(true);
-            td.start();
+            td2.setDaemon(true);
+            td2.start();
             // Listen for multicast packets
             while (true) {
                 ReceivedPacket.setLength(DefaultConfig.DEFAULT_UDP_PACKET_SIZE);
