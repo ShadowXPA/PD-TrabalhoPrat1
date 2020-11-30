@@ -9,6 +9,7 @@ import java.util.HashMap;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.comparator.ServerComparator;
+import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
@@ -27,6 +28,9 @@ public class ServerConfig {
     public final HashMap<Socket, GenericPair<TUser, ObjectOutputStream>> Clients;
     public final InetAddress ExternalIP;
     public final InetAddress InternalIP;
+    public final int MulticastPort;
+    public final int UDPPort;
+    public final int TCPPort;
 
 //    public boolean ClientListContains(Client user) {
 //        return ClientList.containsValue(user);
@@ -98,7 +102,7 @@ public class ServerConfig {
         ServerList.sort(SvComp);
     }
 
-    public ServerConfig(Database DBConnection, String ExternalIP, String InternalIP) throws UnknownHostException {
+    public ServerConfig(Database DBConnection, String ExternalIP, String InternalIP, int MulticastPort, int UDPPort, int TCPPort) throws UnknownHostException {
         this.DBConnection = DBConnection;
         this.DB = new DatabaseWrapper(this.DBConnection);
         this.SvComp = new ServerComparator();
@@ -107,5 +111,8 @@ public class ServerConfig {
         this.ServerList = new ArrayList<>();
 //        this.ClientList = new HashMap<>();
         this.Clients = new HashMap<>();
+        this.MulticastPort = MulticastPort == 0 ? DefaultConfig.DEFAULT_MULTICAST_PORT : MulticastPort;
+        this.UDPPort = UDPPort == 0 ? DefaultConfig.DEFAULT_UDP_PORT : UDPPort;
+        this.TCPPort = TCPPort == 0 ? DefaultConfig.DEFAULT_TCP_PORT : TCPPort;
     }
 }

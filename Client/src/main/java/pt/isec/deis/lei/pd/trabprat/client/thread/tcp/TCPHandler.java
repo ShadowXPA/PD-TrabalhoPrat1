@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
@@ -39,6 +40,12 @@ public class TCPHandler implements Runnable {
     public void run() {
         try {
             switch (command.CMD) {
+                case ECommand.CMD_SERVER_SHUTDOWN: {
+                    ClientDialog.ShowDialog(Alert.AlertType.WARNING, "Warning Dialog", "Server shutdown", "Server has shutdown!\nPlease come back another time.");
+                    // TODO: Fix this, it closes without leaving time for application to close
+                    System.exit(0);
+                    break;
+                }
                 case ECommand.CMD_SERVICE_UNAVAILABLE: {
                     if (command.Body instanceof String) {
                         ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error", (String) command.Body);
@@ -147,21 +154,29 @@ public class TCPHandler implements Runnable {
                 }
                 case ECommand.CMD_DOWNLOAD: {
                     FileChunk fc = (FileChunk) command.Body;
-                    try {
-                        // Write File
-                        String home = System.getProperty("user.home");
-                        try ( FileOutputStream f = new FileOutputStream(home + "/Downloads/" + fc.getUsername(), true)) {
-                            if (fc.getLength() > 0) {
-                                synchronized (f.getChannel()) {
-                                    while (f.getChannel().position() < fc.getOffset()) {
-                                        f.getChannel().wait(10);
+                    if (fc.getFilePart() == null) {
+                        // Done downloading...
+                        ClientDialog.ShowDialog(Alert.AlertType.INFORMATION,
+                                "Information Dialog", "Download",
+                                "The requested file has been successfully downloaded to your Downloads folder:\n'"
+                                + fc.getUsername() + "'");
+                    } else {
+                        try {
+                            // Write File
+                            String home = System.getProperty("user.home");
+                            try ( FileOutputStream f = new FileOutputStream(home + "/Downloads/" + fc.getUsername(), true)) {
+                                if (fc.getLength() > 0) {
+                                    synchronized (f.getChannel()) {
+                                        while (f.getChannel().position() < fc.getOffset()) {
+                                            f.getChannel().wait(10);
+                                        }
                                     }
+                                    f.write(fc.getFilePart(), 0, fc.getLength());
                                 }
-                                f.write(fc.getFilePart(), 0, fc.getLength());
                             }
+                        } catch (Exception ex) {
+                            ExceptionHandler.ShowException(ex);
                         }
-                    } catch (Exception ex) {
-                        ExceptionHandler.ShowException(ex);
                     }
                     break;
                 }
@@ -199,7 +214,7 @@ public class TCPHandler implements Runnable {
                     break;
                 }
                 case ECommand.CMD_SEARCH_USERS: {
-                    synchronized (App.CL_CFG.LockFo){
+                    synchronized (App.CL_CFG.LockFo) {
                         App.CL_CFG.FoundUsers = (ArrayList<TUser>) command.Body;
                         App.CL_CFG.LockFo.notifyAll();
                     }

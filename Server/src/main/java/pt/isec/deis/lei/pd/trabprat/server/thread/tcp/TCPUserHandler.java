@@ -288,6 +288,10 @@ public class TCPUserHandler implements Runnable {
                     Offset += Length;
                     buffer = ExplorerController._ReadFile(Path, Offset, Length);
                 }
+                fc = new FileChunk(null, 0, 0, _Username, null, Extension);
+                sendCmd = new Command(ECommand.CMD_DOWNLOAD, fc);
+                TCPHelper.SendTCPCommand(oOS, sendCmd);
+                Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
             } catch (Exception ex) {
                 sendCmd = new Command(ECommand.CMD_SERVICE_UNAVAILABLE, DefaultSvMsg.SV_DOWNLOAD_FILE_FAIL2);
                 TCPHelper.SendTCPCommand(oOS, sendCmd);

@@ -365,3 +365,113 @@ insert into TDirectMessage (MID, UID) values (97, 7);
 insert into TDirectMessage (MID, UID) values (98, 4);
 insert into TDirectMessage (MID, UID) values (99, 6);
 insert into TDirectMessage (MID, UID) values (100, 2);
+
+
+create schema if not exists pd_trab2;
+use pd_trab2;
+
+drop table if exists TDirectMessage;
+drop table if exists TChannelMessages;
+drop table if exists TChannelUsers;
+drop table if exists TMessage;
+drop table if exists TChannel;
+drop table if exists TUser;
+
+/*
+    UID = User ID
+    UName = User name
+    UUsername = User username
+    UPassword = User password (encrypted password)
+    UPhoto = User photo (path to photo on the server)
+    UDate = User creation date
+*/
+CREATE TABLE IF NOT EXISTS TUser (
+    UID INT AUTO_INCREMENT PRIMARY KEY,
+    UName VARCHAR(50) UNIQUE NOT NULL,
+    UUsername VARCHAR(25) UNIQUE NOT NULL,
+    UPassword VARCHAR(255) NOT NULL,
+    UPhoto VARCHAR(512),
+    UDate BIGINT NOT NULL
+);
+
+/*
+    CID = Channel ID
+    CUID = Channel User ID (User who created the channel)
+    CName = Channel name
+    CDescription = Channel description
+    CPassowrd = Channel password
+    CDate = Channel creation date
+*/
+CREATE TABLE IF NOT EXISTS TChannel (
+    CID INT AUTO_INCREMENT PRIMARY KEY,
+    CUID INT,
+    CName VARCHAR(50) UNIQUE NOT NULL,
+    CDescription VARCHAR(255),
+    CPassword VARCHAR(255),
+    CDate BIGINT NOT NULL,
+    CONSTRAINT FK_CUID FOREIGN KEY (CUID)
+        REFERENCES TUser (UID)
+);
+
+/*
+    MID = Message ID
+    MUID = Author ID (User ID)
+    MText = Message text (In the case of it being a file this will be the original file name)
+    MPath = File path (In case it's a file message)
+    MDate = Message creation date
+*/
+CREATE TABLE IF NOT EXISTS TMessage (
+    MID INT AUTO_INCREMENT PRIMARY KEY,
+    MUID INT,
+    MText VARCHAR(1024) NOT NULL,
+    MPath VARCHAR(512),
+    MDate BIGINT NOT NULL,
+    CONSTRAINT FK_MUID FOREIGN KEY (MUID)
+        REFERENCES TUser (UID)
+);
+
+/*
+    CID = Channel ID (Channel reference)
+    UID = User's in a certain channel (User reference)
+*/
+CREATE TABLE IF NOT EXISTS TChannelUsers (
+    CID INT,
+    UID INT,
+    PRIMARY KEY (CID , UID),
+    CONSTRAINT FK_CUCID FOREIGN KEY (CID)
+        REFERENCES TChannel (CID)
+        ON DELETE CASCADE,
+    CONSTRAINT FK_CUUID FOREIGN KEY (UID)
+        REFERENCES TUser (UID)
+);
+
+/*
+    MID = Message ID (Message reference)
+    CID = Channel in which the message was sent to (Channel reference)
+*/
+CREATE TABLE IF NOT EXISTS TChannelMessages (
+    MID INT PRIMARY KEY,
+    CID INT,
+    CONSTRAINT FK_CMMID FOREIGN KEY (MID)
+        REFERENCES TMessage (MID)
+        ON DELETE CASCADE,
+    CONSTRAINT FK_CMCID FOREIGN KEY (CID)
+        REFERENCES TChannel (CID)
+        ON DELETE CASCADE
+);
+
+/*
+    MID = Message ID (Message reference)
+    UID = Direct message destinatary (User reference)
+*/
+CREATE TABLE IF NOT EXISTS TDirectMessage (
+    MID INT PRIMARY KEY,
+    UID INT,
+    CONSTRAINT FK_DMMID FOREIGN KEY (MID)
+        REFERENCES TMessage (MID)
+        ON DELETE CASCADE,
+    CONSTRAINT FK_DMUIDDest FOREIGN KEY (UID)
+        REFERENCES TUser (UID)
+);
+
+use pd_trab;

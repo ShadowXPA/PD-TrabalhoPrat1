@@ -10,7 +10,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath ${packageClassName} localhost 3306 pd_trab pdtrab PDTrabPrat123</exec.args>
+                <exec.args>-classpath %classpath ${packageClassName} 10.11.14.10 5432 5433 5434 localhost 3306 pd_trab pdtrab PDTrabPrat123</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -24,7 +24,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath ${packageClassName} localhost 3306 pd_trab pdtrab PDTrabPrat123</exec.args>
+                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath ${packageClassName} 10.11.14.10 5432 5433 5434 localhost 3306 pd_trab pdtrab PDTrabPrat123</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -39,7 +39,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath ${packageClassName} localhost 3306 pd_trab pdtrab PDTrabPrat123</exec.args>
+                <exec.args>-classpath %classpath ${packageClassName} 10.11.14.10 5432 5433 5434 localhost 3306 pd_trab pdtrab PDTrabPrat123</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>

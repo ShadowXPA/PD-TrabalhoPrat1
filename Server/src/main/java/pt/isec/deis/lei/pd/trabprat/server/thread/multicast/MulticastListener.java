@@ -37,6 +37,10 @@ public class MulticastListener implements Runnable {
             mCS.joinGroup(new InetSocketAddress(iA, DefaultConfig.DEFAULT_MULTICAST_PORT), nI);
             Main.Log("Joined Multicast group", DefaultConfig.DEFAULT_MULTICAST_IP + ":" + Port);
             DatagramPacket ReceivedPacket = new DatagramPacket(new byte[DefaultConfig.DEFAULT_UDP_PACKET_SIZE], DefaultConfig.DEFAULT_UDP_PACKET_SIZE);
+            // TODO: Synchronize servers
+            synchronized (SV_CFG) {
+                SV_CFG.notifyAll();
+            }
             // Create heartbeat thread
             Thread td2 = new Thread(() -> {
                 SendHeartbeat(mCS);
@@ -50,13 +54,15 @@ public class MulticastListener implements Runnable {
                 IP = ReceivedPacket.getAddress().getHostAddress() + ":" + ReceivedPacket.getPort();
                 Main.Log("Received Multicast Packet from", IP);
 
-                try {
-                    // Create handler threads
-                    Thread td = new Thread(new MulticastHandler(SV_CFG, mCS, ReceivedPacket, IP));
-                    td.setDaemon(true);
-                    td.start();
-                } catch (Exception ex) {
-                    ExceptionHandler.ShowException(ex);
+                if (!IP.equals(SV_CFG.InternalIP.getHostAddress() + ":" + SV_CFG.MulticastPort)) {
+                    try {
+                        // Create handler threads
+                        Thread td = new Thread(new MulticastHandler(SV_CFG, mCS, ReceivedPacket, IP));
+                        td.setDaemon(true);
+                        td.start();
+                    } catch (Exception ex) {
+                        ExceptionHandler.ShowException(ex);
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -65,18 +71,24 @@ public class MulticastListener implements Runnable {
     }
 
     private void SendHeartbeat(final MulticastSocket mCS) {
-        Command cmd;
+        InetAddress iAdd;
+        int udpPort;
+        int tcpPort;
+        synchronized (SV_CFG) {
+            iAdd = SV_CFG.ExternalIP;
+            udpPort = SV_CFG.UDPPort;
+            tcpPort = SV_CFG.TCPPort;
+        }
+        Server sv = new Server(iAdd, udpPort, tcpPort, 0);
+        Command cmd = new Command(ECommand.CMD_HEARTBEAT, sv);
         while (true) {
             try {
                 Thread.sleep(10000);
                 // Clear list
-                int userCount;
                 synchronized (SV_CFG) {
 //                    userCount = SV_CFG.ClientList.size();
-                    userCount = SV_CFG.Clients.size();
+                    sv.setUserCount(SV_CFG.Clients.size());
                 }
-                cmd = new Command(ECommand.CMD_HEARTBEAT, new Server(SV_CFG.ExternalIP,
-                        DefaultConfig.DEFAULT_UDP_PORT, DefaultConfig.DEFAULT_TCP_PORT, userCount));
                 UDPHelper.SendMulticastCommand(mCS, iA, Port, cmd);
             } catch (Exception ex) {
                 ExceptionHandler.ShowException(ex);

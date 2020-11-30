@@ -88,4 +88,7 @@ public final class ECommand {
 
     // The client wants a list of users that fully or partially match a certain string
     public static final int CMD_SEARCH_USERS = 708;
+
+    // The server wants to close and has requested the clients to close
+    public static final int CMD_SERVER_SHUTDOWN = 999;
 }

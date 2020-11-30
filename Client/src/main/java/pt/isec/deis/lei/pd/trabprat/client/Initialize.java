@@ -93,12 +93,11 @@ public final class Initialize {
                 }
                 case ECommand.CMD_MOVED_PERMANENTLY: {
                     Server server;
-                    aux = (ArrayList<Server>) command.Body;
-                    if (aux == null) {
+                    server = (Server) command.Body;
+                    if (server == null) {
                         System.out.println("Não existem mais servidores disponiveis para se conectar!\n");
                         System.exit(1);
                     }
-                    server = aux.get(0);
                     socket.close();
                     socket = SendPacketUDPToServer(server);
                     return ReceivePacketUDPFromServer(socket);

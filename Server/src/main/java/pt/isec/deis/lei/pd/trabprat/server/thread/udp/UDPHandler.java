@@ -47,10 +47,19 @@ public class UDPHandler implements Runnable {
     private void HandleConnect(String IP) throws IOException {
         // Ask other servers via multicast if they have less than 50% of the load (use lock)
         Command cmd;
-        Object Accept = null; // Get response via multicast
+        Server Accept = null; // Get response via multicast
         ArrayList<Server> body = new ArrayList<>();
         synchronized (SV_CFG) {
-            body.add(new Server(SV_CFG.ExternalIP, DefaultConfig.DEFAULT_UDP_PORT, DefaultConfig.DEFAULT_TCP_PORT, SV_CFG.Clients.size()));//SV_CFG.ClientList.size()));
+            Server thisSv = new Server(SV_CFG.ExternalIP, SV_CFG.UDPPort, SV_CFG.TCPPort, SV_CFG.Clients.size());
+            body.add(thisSv);//SV_CFG.ClientList.size()));
+            body.addAll(SV_CFG.ServerList);
+            if (body.size() > 1) {
+                body.sort(SV_CFG.SvComp);
+                Server lowestCapSv = body.get(0);
+                if ((thisSv.getUserCount() * 0.5) >= lowestCapSv.getUserCount()) {
+                    Accept = lowestCapSv;
+                }
+            }
         }
         if (Accept == null) {
             // Accepted
