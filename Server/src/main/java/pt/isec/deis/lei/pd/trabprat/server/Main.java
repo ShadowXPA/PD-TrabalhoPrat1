@@ -7,6 +7,7 @@ package pt.isec.deis.lei.pd.trabprat.server;
 //import java.net.NetworkInterface;
 //import java.util.Scanner;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
@@ -17,6 +18,8 @@ import pt.isec.deis.lei.pd.trabprat.server.thread.tcp.TCPListener;
 import pt.isec.deis.lei.pd.trabprat.server.thread.udp.UDPListener;
 
 public class Main {
+
+    private static final SimpleDateFormat sDF = new SimpleDateFormat("EEEEE, MMMMM d, yyyy H:mm");
 
     public static void main(String[] args) {
 //        String IP = "239.4.5.6";
@@ -83,7 +86,8 @@ public class Main {
 
             SV_CFG = new ServerConfig(InitDatabase(args), DefaultConfig.getExternalIP(), args[0],
                     Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
-            System.out.println("External IP: " + SV_CFG.ExternalIP);
+            System.out.println("External IP: " + SV_CFG.ExternalIP.getHostAddress());
+            System.out.println("Server ID: " + SV_CFG.ServerID);
             // Check for other servers, ask for information if there are other servers already online
             // Thread Multicast
             Thread tdMC = new Thread(new MulticastListener(SV_CFG), "MulticastListener");
@@ -123,7 +127,7 @@ public class Main {
     }
 
     public static void Log(String Prefix, String Message) {
-        System.out.print(new Date().toString() + " ");
+        System.out.print(sDF.format(new Date()) + " ");
         System.out.println(Prefix + ": " + Message);
         System.out.print("Admin: ");
     }

@@ -22,7 +22,7 @@ public class UDPListener implements Runnable {
     public void run() {
         String IP;
         while (true) {
-            try ( DatagramSocket ServerSocket = new DatagramSocket(DefaultConfig.DEFAULT_UDP_PORT)) {
+            try ( DatagramSocket ServerSocket = new DatagramSocket(SV_CFG.UDPPort)) {
                 Main.Log("Bound server UDP socket to", ServerSocket.getLocalSocketAddress().toString() + ":" + ServerSocket.getLocalPort());
                 DatagramPacket ReceivedPacket = new DatagramPacket(new byte[DefaultConfig.DEFAULT_UDP_PACKET_SIZE], DefaultConfig.DEFAULT_UDP_PACKET_SIZE);
 

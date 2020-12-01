@@ -14,12 +14,12 @@ import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 
 public class UDPHandler implements Runnable {
-
+    
     private final DatagramSocket ServerSocket;
     private final DatagramPacket ReceivedPacket;
     private final String IP;
     private final ServerConfig SV_CFG;
-
+    
     @Override
     public void run() {
         try {
@@ -43,14 +43,16 @@ public class UDPHandler implements Runnable {
             ExceptionHandler.ShowException(ex);
         }
     }
-
+    
     private void HandleConnect(String IP) throws IOException {
         // Ask other servers via multicast if they have less than 50% of the load (use lock)
         Command cmd;
         Server Accept = null; // Get response via multicast
         ArrayList<Server> body = new ArrayList<>();
+        Server thisSv;
         synchronized (SV_CFG) {
-            Server thisSv = new Server(SV_CFG.ExternalIP, SV_CFG.UDPPort, SV_CFG.TCPPort, SV_CFG.Clients.size());
+            thisSv = new Server(SV_CFG.ServerID, SV_CFG.ExternalIP, SV_CFG.UDPPort, SV_CFG.TCPPort, SV_CFG.Clients.size());
+            Accept = thisSv;
             body.add(thisSv);//SV_CFG.ClientList.size()));
             body.addAll(SV_CFG.ServerList);
             if (body.size() > 1) {
@@ -61,7 +63,7 @@ public class UDPHandler implements Runnable {
                 }
             }
         }
-        if (Accept == null) {
+        if (thisSv.equals(Accept)) {
             // Accepted
             cmd = new Command(ECommand.CMD_ACCEPTED, body);
             UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket.getAddress(), ReceivedPacket.getPort(), cmd);
@@ -72,7 +74,7 @@ public class UDPHandler implements Runnable {
         }
         Main.Log("[Server] to " + IP, "" + cmd.CMD);
     }
-
+    
     public UDPHandler(DatagramSocket ServerSocket, DatagramPacket ReceivedPacket, String IP, ServerConfig SV_CFG) throws IOException {
         this.ReceivedPacket = new DatagramPacket(ReceivedPacket.getData(),
                 ReceivedPacket.getOffset(), ReceivedPacket.getLength(),

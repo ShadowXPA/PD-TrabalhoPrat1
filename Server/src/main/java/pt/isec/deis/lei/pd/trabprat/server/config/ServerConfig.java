@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.comparator.ServerComparator;
@@ -20,6 +21,7 @@ import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
 public class ServerConfig {
 
+    public final String ServerID;
     public final Database DBConnection;
     public final DatabaseWrapper DB;
     public final ServerComparator SvComp;
@@ -111,8 +113,9 @@ public class ServerConfig {
         this.ServerList = new ArrayList<>();
 //        this.ClientList = new HashMap<>();
         this.Clients = new HashMap<>();
-        this.MulticastPort = MulticastPort == 0 ? DefaultConfig.DEFAULT_MULTICAST_PORT : MulticastPort;
-        this.UDPPort = UDPPort == 0 ? DefaultConfig.DEFAULT_UDP_PORT : UDPPort;
-        this.TCPPort = TCPPort == 0 ? DefaultConfig.DEFAULT_TCP_PORT : TCPPort;
+        this.MulticastPort = (MulticastPort == 0) ? DefaultConfig.DEFAULT_MULTICAST_PORT : MulticastPort;
+        this.UDPPort = (UDPPort == 0) ? DefaultConfig.DEFAULT_UDP_PORT : UDPPort;
+        this.TCPPort = (TCPPort == 0) ? DefaultConfig.DEFAULT_TCP_PORT : TCPPort;
+        this.ServerID = UUID.randomUUID().toString();
     }
 }
