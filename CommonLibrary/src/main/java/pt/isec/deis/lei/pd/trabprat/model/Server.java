@@ -9,7 +9,7 @@ public class Server implements Serializable {
     public final String ServerID;
     private final InetAddress Address;
     private final int UDPPort, TCPPort;
-    private int UserCount;
+    private volatile int UserCount;
 
     public final InetAddress getAddress() {
         return Address;

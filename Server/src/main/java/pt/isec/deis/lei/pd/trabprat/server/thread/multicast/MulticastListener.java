@@ -46,6 +46,7 @@ public class MulticastListener implements Runnable {
             Thread td2 = new Thread(() -> {
                 SendHeartbeat(mCS);
             });
+            td2.setName("Multicast Heartbeat");
             td2.setDaemon(true);
             td2.start();
             // Listen for multicast packets
