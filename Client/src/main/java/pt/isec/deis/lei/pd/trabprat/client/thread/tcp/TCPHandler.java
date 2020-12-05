@@ -17,6 +17,7 @@ import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
 import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.model.LoginPackage;
+import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TDirectMessage;
@@ -218,9 +219,16 @@ public class TCPHandler implements Runnable {
                         App.CL_CFG.FoundUsers = (ArrayList<TUser>) command.Body;
                         App.CL_CFG.LockFo.notifyAll();
                     }
+                    break;
+                }
+                case ECommand.CMD_UPDATE_SERVERS: {
+                    synchronized (App.CL_CFG.LockSL) {
+                        App.CL_CFG.ServerList = (ArrayList<Server>) command.Body;
+                    }
+                    break;
                 }
                 default: {
-
+                    break;
                 }
             }
         } catch (Exception ex) {

@@ -33,7 +33,7 @@ public final class Initialize {
             ip_server = InetAddress.getByName("127.0.0.1");
             port_server = DefaultConfig.DEFAULT_UDP_PORT;
         }
-        server = new Server(null, ip_server, port_server, 0, 0);
+        server = new Server(null, 0, ip_server, port_server, 0, 0);
         return server;
     }
 

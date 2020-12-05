@@ -38,6 +38,10 @@ public class MulticastListener implements Runnable {
             mCS.joinGroup(new InetSocketAddress(iA, Port), nI);
             Main.Log("Joined Multicast group", DefaultConfig.DEFAULT_MULTICAST_IP + ":" + Port);
             DatagramPacket ReceivedPacket = new DatagramPacket(new byte[DefaultConfig.DEFAULT_UDP_PACKET_SIZE], DefaultConfig.DEFAULT_UDP_PACKET_SIZE);
+            synchronized (SV_CFG) {
+                SV_CFG.MCSocket = mCS;
+                SV_CFG.MCAddress = iA;
+            }
             // TODO: Synchronize servers
             synchronized (SV_CFG) {
                 SV_CFG.notifyAll();
@@ -82,26 +86,32 @@ public class MulticastListener implements Runnable {
         int udpPort;
         int tcpPort;
         String serverID;
+        long serverStart;
         synchronized (SV_CFG) {
             iAdd = SV_CFG.ExternalIP;
             udpPort = SV_CFG.UDPPort;
             tcpPort = SV_CFG.TCPPort;
             serverID = SV_CFG.ServerID;
+            serverStart = SV_CFG.ServerStart;
         }
-        Server sv = new Server(serverID, iAdd, udpPort, tcpPort, 0);
+        Server sv = new Server(serverID, serverStart, iAdd, udpPort, tcpPort, 0);
         GenericPair<String, Server> svP = new GenericPair<>(SV_CFG.ServerID, sv);
         Command cmd = new Command(ECommand.CMD_HEARTBEAT, svP);
         while (true) {
             try {
-                Thread.sleep(30000);
-                // Clear list
                 synchronized (SV_CFG) {
                     svP.value.setUserCount(SV_CFG.Clients.size());
+                    SV_CFG.ServerList.forEach(s -> s.setAlive(false));
 //                    Server sv = new Server(serverID, iAdd, udpPort, tcpPort, SV_CFG.Clients.size());
 //                    GenericPair<String, Server> svP = new GenericPair<>(sv.ServerID, sv);
 //                    Command cmd = new Command(ECommand.CMD_HEARTBEAT, svP);
                 }
                 UDPHelper.SendMulticastCommand(mCS, iA, Port, cmd);
+                Thread.sleep(30000);
+                synchronized (SV_CFG) {
+                    SV_CFG.RemoveDeadServers();
+                    SV_CFG.BroadcastServerList();
+                }
             } catch (Exception ex) {
                 ExceptionHandler.ShowException(ex);
             }

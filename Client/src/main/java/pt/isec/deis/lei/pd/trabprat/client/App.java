@@ -57,7 +57,9 @@ public class App extends Application {
         socket = Initialize.SendPacketUDPToServer(CL_CFG.server);
         command = Initialize.ReceivePacketUDPFromServer(socket);
         if (command != null) {
-            CL_CFG.ServerList = (ArrayList<Server>) command.Body;
+            synchronized (CL_CFG.LockSL) {
+                CL_CFG.ServerList = (ArrayList<Server>) command.Body;
+            }
         } else {
             System.exit(1);
         }

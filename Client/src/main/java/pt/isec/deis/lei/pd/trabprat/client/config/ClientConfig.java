@@ -17,6 +17,7 @@ import pt.isec.deis.lei.pd.trabprat.model.TUser;
 public class ClientConfig {
 
     public ArrayList<Server> ServerList;
+    public final Object LockSL = new Object();
     public ArrayList<TUser> OnlineUsers;
     //List of channels
     public ArrayList<TChannel> ChannelsList;

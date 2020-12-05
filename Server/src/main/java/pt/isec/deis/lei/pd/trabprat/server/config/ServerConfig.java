@@ -1,10 +1,13 @@
 package pt.isec.deis.lei.pd.trabprat.server.config;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
@@ -18,10 +21,12 @@ import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.server.db.Database;
 import pt.isec.deis.lei.pd.trabprat.server.db.DatabaseWrapper;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
+import pt.isec.deis.lei.pd.trabprat.thread.udp.UDPHelper;
 
 public class ServerConfig {
 
     public final String ServerID;
+    public final long ServerStart;
     public final Database DBConnection;
     public final DatabaseWrapper DB;
     public final ServerComparator SvComp;
@@ -33,6 +38,8 @@ public class ServerConfig {
     public final int MulticastPort;
     public final int UDPPort;
     public final int TCPPort;
+    public MulticastSocket MCSocket;
+    public InetAddress MCAddress;
 
 //    public boolean ClientListContains(Client user) {
 //        return ClientList.containsValue(user);
@@ -78,6 +85,11 @@ public class ServerConfig {
         BroadcastMessage(newCmd);
     }
 
+    public void BroadcastServerList() {
+        var newCmd = new Command(ECommand.CMD_UPDATE_SERVERS, ServerList);
+        BroadcastMessage(newCmd);
+    }
+
     public void BroadcastMessage(Command cmd) {
         var users = Clients.values().iterator();
         while (users.hasNext()) {
@@ -96,12 +108,25 @@ public class ServerConfig {
             ServerList.add(s);
         } else {
             ServerList.get(Index).setUserCount(s.getUserCount());
+            ServerList.get(Index).setAlive(true);
         }
         SortServerList();
     }
 
     public void SortServerList() {
         ServerList.sort(SvComp);
+    }
+
+    public void RemoveDeadServers() {
+        ServerList.removeIf(s -> !s.isAlive());
+    }
+
+    public void MulticastMessage(Command cmd) {
+        try {
+            UDPHelper.SendMulticastCommand(MCSocket, MCAddress, MulticastPort, cmd);
+        } catch (IOException ex) {
+            ExceptionHandler.ShowException(ex);
+        }
     }
 
     public ServerConfig(Database DBConnection, String ExternalIP, String InternalIP, int MulticastPort, int UDPPort, int TCPPort) throws UnknownHostException {
@@ -117,5 +142,6 @@ public class ServerConfig {
         this.UDPPort = (UDPPort == 0) ? DefaultConfig.DEFAULT_UDP_PORT : UDPPort;
         this.TCPPort = (TCPPort == 0) ? DefaultConfig.DEFAULT_TCP_PORT : TCPPort;
         this.ServerID = UUID.randomUUID().toString();
+        this.ServerStart = (new Date()).getTime();
     }
 }

@@ -7,9 +7,19 @@ import java.util.Objects;
 public class Server implements Serializable {
 
     public final String ServerID;
+    public final long ServerStart;
     private final InetAddress Address;
     private final int UDPPort, TCPPort;
     private volatile int UserCount;
+    private boolean Alive;
+
+    public boolean isAlive() {
+        return Alive;
+    }
+
+    public void setAlive(boolean Alive) {
+        this.Alive = Alive;
+    }
 
     public final InetAddress getAddress() {
         return Address;
@@ -62,11 +72,13 @@ public class Server implements Serializable {
         return "Server{" + "ServerID=" + ServerID + ", Address=" + Address.getHostAddress() + ", UDPPort=" + UDPPort + ", TCPPort=" + TCPPort + ", UserCount=" + UserCount + '}';
     }
 
-    public Server(String ServerID, InetAddress Address, int UDPPort, int TCPPort, int UserCount) {
+    public Server(String ServerID, long ServerStart, InetAddress Address, int UDPPort, int TCPPort, int UserCount) {
         this.ServerID = ServerID;
+        this.ServerStart = ServerStart;
         this.Address = Address;
         this.UDPPort = UDPPort;
         this.TCPPort = TCPPort;
         this.setUserCount(UserCount);
+        this.Alive = true;
     }
 }

@@ -89,6 +89,19 @@ public final class ECommand {
     // The client wants a list of users that fully or partially match a certain string
     public static final int CMD_SEARCH_USERS = 708;
 
+    // The server updates the client's server list
+    public static final int CMD_UPDATE_SERVERS = 799;
+
+    // The server is asking if other servers are awake
+    public static final int CMD_HELLO = 900;
+
+    // The server is asking the specific server for synchronization
+    public static final int CMD_SYNC = 901;
+
+    // The server is sending/recieving synchronization packets
+    public static final int CMD_SYNC_DB = 902;
+    public static final int CMD_SYNC_F = 903;
+
     // The server wants to close and has requested the clients to close
     public static final int CMD_SERVER_SHUTDOWN = 999;
 }
