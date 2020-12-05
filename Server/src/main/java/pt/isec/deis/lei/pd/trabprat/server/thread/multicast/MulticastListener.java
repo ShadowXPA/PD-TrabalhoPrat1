@@ -37,12 +37,12 @@ public class MulticastListener implements Runnable {
             NetworkInterface nI = NetworkInterface.getByInetAddress(this.InternalIP);
             mCS.joinGroup(new InetSocketAddress(iA, Port), nI);
             Main.Log("Joined Multicast group", DefaultConfig.DEFAULT_MULTICAST_IP + ":" + Port);
-            DatagramPacket ReceivedPacket = new DatagramPacket(new byte[DefaultConfig.DEFAULT_UDP_PACKET_SIZE], DefaultConfig.DEFAULT_UDP_PACKET_SIZE);
             synchronized (SV_CFG) {
                 SV_CFG.MCSocket = mCS;
                 SV_CFG.MCAddress = iA;
             }
             // TODO: Synchronize servers
+            
             synchronized (SV_CFG) {
                 SV_CFG.notifyAll();
             }
@@ -54,14 +54,12 @@ public class MulticastListener implements Runnable {
             td2.setDaemon(true);
             td2.start();
             // Listen for multicast packets
-            Command cmd;
-            String SvID;
             while (true) {
-                ReceivedPacket.setLength(DefaultConfig.DEFAULT_UDP_PACKET_SIZE);
+                DatagramPacket ReceivedPacket = new DatagramPacket(new byte[DefaultConfig.DEFAULT_UDP_PACKET_SIZE], DefaultConfig.DEFAULT_UDP_PACKET_SIZE);
                 mCS.receive(ReceivedPacket);
                 IP = ReceivedPacket.getAddress().getHostAddress() + ":" + ReceivedPacket.getPort();
-                cmd = UDPHelper.ReadMulticastCommand(ReceivedPacket);
-                SvID = ((GenericPair<String, ?>) cmd.Body).key;
+                Command cmd = UDPHelper.ReadMulticastCommand(ReceivedPacket);
+                String SvID = ((GenericPair<String, ?>) cmd.Body).key;
 
                 if (!SvID.equals(SV_CFG.ServerID)) {
                     Main.Log("Received Multicast Packet from", IP);
@@ -101,7 +99,7 @@ public class MulticastListener implements Runnable {
             try {
                 synchronized (SV_CFG) {
                     svP.value.setUserCount(SV_CFG.Clients.size());
-                    SV_CFG.ServerList.forEach(s -> s.setAlive(false));
+                    SV_CFG.SetServersDead();
 //                    Server sv = new Server(serverID, iAdd, udpPort, tcpPort, SV_CFG.Clients.size());
 //                    GenericPair<String, Server> svP = new GenericPair<>(sv.ServerID, sv);
 //                    Command cmd = new Command(ECommand.CMD_HEARTBEAT, svP);

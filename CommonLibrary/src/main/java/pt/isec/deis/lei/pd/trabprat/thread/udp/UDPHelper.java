@@ -30,7 +30,6 @@ public final class UDPHelper {
 //            ExceptionHandler.ShowException(ex);
 //        }
 //    }
-
     public static Command ReadUDPCommand(DatagramPacket ReceivedPacket) throws IOException, ClassNotFoundException {
         ByteArrayInputStream bA = new ByteArrayInputStream(ReceivedPacket.getData(), 0, ReceivedPacket.getLength());
         ObjectInputStream oI = new ObjectInputStream(bA);
@@ -65,6 +64,7 @@ public final class UDPHelper {
     }
 
     public static void SendMulticastCommand(MulticastSocket Socket, InetAddress Address, int Port, Command cmd) throws IOException {
+//        SendUDPCommand(Socket, Address, Port, cmd);
         ByteArrayOutputStream baOS3 = new ByteArrayOutputStream();
         ObjectOutputStream oOS3 = new ObjectOutputStream(baOS3);
         oOS3.writeUnshared(cmd);

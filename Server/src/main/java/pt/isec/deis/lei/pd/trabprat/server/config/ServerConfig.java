@@ -117,6 +117,10 @@ public class ServerConfig {
         ServerList.sort(SvComp);
     }
 
+    public void SetServersDead() {
+        ServerList.forEach(s -> s.setAlive(false));
+    }
+
     public void RemoveDeadServers() {
         ServerList.removeIf(s -> !s.isAlive());
     }
