@@ -33,6 +33,7 @@ public class ServerConfig {
     public final ArrayList<Server> ServerList;
 //    public final HashMap<Socket, Client> ClientList;
     public final HashMap<Socket, GenericPair<TUser, ObjectOutputStream>> Clients;
+    public final ArrayList<TUser> OtherSvClients;
     public final InetAddress ExternalIP;
     public final InetAddress InternalIP;
     public final int MulticastPort;
@@ -53,10 +54,9 @@ public class ServerConfig {
         var users = Clients.values().iterator();
         while (users.hasNext()) {
             var cl = users.next().key;//User;
-            temp.add(new TUser(cl.getUID(),
-                    cl.getUName(), cl.getUUsername(),
-                    null, cl.getUPhoto(), cl.getUDate()));
+            temp.add(cl);
         }
+        temp.addAll(OtherSvClients);
         return temp;
     }
 
@@ -142,6 +142,7 @@ public class ServerConfig {
         this.ServerList = new ArrayList<>();
 //        this.ClientList = new HashMap<>();
         this.Clients = new HashMap<>();
+        this.OtherSvClients = new ArrayList<>();
         this.MulticastPort = (MulticastPort == 0) ? DefaultConfig.DEFAULT_MULTICAST_PORT : MulticastPort;
         this.UDPPort = (UDPPort == 0) ? DefaultConfig.DEFAULT_UDP_PORT : UDPPort;
         this.TCPPort = (TCPPort == 0) ? DefaultConfig.DEFAULT_TCP_PORT : TCPPort;

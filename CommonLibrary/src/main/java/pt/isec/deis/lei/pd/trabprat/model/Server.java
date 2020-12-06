@@ -72,6 +72,10 @@ public class Server implements Serializable {
         return "Server{" + "ServerID=" + ServerID + ", Address=" + Address.getHostAddress() + ", UDPPort=" + UDPPort + ", TCPPort=" + TCPPort + ", UserCount=" + UserCount + '}';
     }
 
+    public Server(String ServerID) {
+        this(ServerID, 0, null, 0, 0, 0);
+    }
+
     public Server(String ServerID, long ServerStart, InetAddress Address, int UDPPort, int TCPPort, int UserCount) {
         this.ServerID = ServerID;
         this.ServerStart = ServerStart;

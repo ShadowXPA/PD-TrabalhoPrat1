@@ -24,11 +24,10 @@ public class UDPListener implements Runnable {
         while (true) {
             try ( DatagramSocket ServerSocket = new DatagramSocket(SV_CFG.UDPPort)) {
                 Main.Log("Bound server UDP socket to", ServerSocket.getLocalSocketAddress().toString() + ":" + ServerSocket.getLocalPort());
-                DatagramPacket ReceivedPacket = new DatagramPacket(new byte[DefaultConfig.DEFAULT_UDP_PACKET_SIZE], DefaultConfig.DEFAULT_UDP_PACKET_SIZE);
 
                 while (true) {
                     // Receive UDP packet
-                    ReceivedPacket.setLength(DefaultConfig.DEFAULT_UDP_PACKET_SIZE);
+                    DatagramPacket ReceivedPacket = new DatagramPacket(new byte[DefaultConfig.DEFAULT_UDP_PACKET_SIZE], DefaultConfig.DEFAULT_UDP_PACKET_SIZE);
                     ServerSocket.receive(ReceivedPacket);
                     IP = ReceivedPacket.getAddress().getHostAddress() + ":" + ReceivedPacket.getPort();
                     Main.Log("Received UDP Packet from", IP);

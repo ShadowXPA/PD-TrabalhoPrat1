@@ -7,6 +7,7 @@ import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
+import pt.isec.deis.lei.pd.trabprat.comparator.ServerStartComparator;
 import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
@@ -17,10 +18,13 @@ import pt.isec.deis.lei.pd.trabprat.thread.udp.UDPHelper;
 
 public class MulticastListener implements Runnable {
 
+    private final int ServerLookupTimeout = 1000;
+    private final int ServerHeartbeatTimeout = 10000;
+    private final int ServerDBSyncTimeout = 5000;
     private final ServerConfig SV_CFG;
     private final InetAddress InternalIP;
     private InetAddress iA;
-    private int Port;
+    private final int Port;
 
     public MulticastListener(ServerConfig SV_CFG) {
         this.SV_CFG = SV_CFG;
@@ -40,10 +44,40 @@ public class MulticastListener implements Runnable {
             synchronized (SV_CFG) {
                 SV_CFG.MCSocket = mCS;
                 SV_CFG.MCAddress = iA;
-            }
-            // TODO: Synchronize servers
-            
-            synchronized (SV_CFG) {
+                // TODO: Synchronize servers
+                Server thisSv = new Server(SV_CFG.ServerID, SV_CFG.ServerStart,
+                        SV_CFG.ExternalIP, SV_CFG.UDPPort, SV_CFG.TCPPort, 0);
+                try {
+                    Main.Log("[Server]", "Looking for other servers online...");
+                    UDPHelper.SendMulticastCommand(mCS, iA, Port,
+                            new Command(ECommand.CMD_HELLO,
+                                    new GenericPair<>(SV_CFG.ServerID,
+                                            thisSv)));
+                    SV_CFG.wait(ServerLookupTimeout);
+                } catch (Exception ex) {
+                } finally {
+                    Main.Log("[Server]", "Seems like no other server is running...");
+                }
+
+                if (!SV_CFG.ServerList.isEmpty()) {
+                    SV_CFG.ServerList.sort(new ServerStartComparator());
+                    SV_CFG.SortServerList();
+                    Main.Log("[Server]", "Synchronizing...");
+                    // Initiate synchronization
+                    Server syncSv = SV_CFG.ServerList.get(0);
+                    // Erase DB and files
+                    SV_CFG.DB.devEraseDatabase();
+                    // Ask server for synchronization
+                    UDPHelper.SendUDPCommand(mCS, syncSv.getAddress(),
+                            syncSv.getUDPPort(), new Command(ECommand.CMD_SYNC,
+                            new GenericPair<>(SV_CFG.ServerID, thisSv)));
+                    // Wait
+                    synchronized (SV_CFG.DB) {
+                        SV_CFG.DB.wait(ServerDBSyncTimeout);
+                    }
+                    Main.Log("[Server]", "Synchronization finished...");
+                }
+
                 SV_CFG.notifyAll();
             }
             // Create heartbeat thread
@@ -63,7 +97,6 @@ public class MulticastListener implements Runnable {
 
                 if (!SvID.equals(SV_CFG.ServerID)) {
                     Main.Log("Received Multicast Packet from", IP);
-                    Main.Log("Server ID", SvID);
                     try {
                         // Create handler threads
                         Thread td = new Thread(new MulticastHandler(SV_CFG, mCS, ReceivedPacket, SvID, cmd));
@@ -105,7 +138,7 @@ public class MulticastListener implements Runnable {
 //                    Command cmd = new Command(ECommand.CMD_HEARTBEAT, svP);
                 }
                 UDPHelper.SendMulticastCommand(mCS, iA, Port, cmd);
-                Thread.sleep(30000);
+                Thread.sleep(ServerHeartbeatTimeout);
                 synchronized (SV_CFG) {
                     SV_CFG.RemoveDeadServers();
                     SV_CFG.BroadcastServerList();

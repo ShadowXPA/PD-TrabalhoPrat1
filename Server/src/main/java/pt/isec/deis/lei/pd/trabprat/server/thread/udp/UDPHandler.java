@@ -8,9 +8,12 @@ import java.util.ArrayList;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
+import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
+import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
+import pt.isec.deis.lei.pd.trabprat.server.model.SyncDBPackage;
 
 public class UDPHandler implements Runnable {
 
@@ -24,12 +27,28 @@ public class UDPHandler implements Runnable {
         try {
             // Read command
             Command cmd = UDPHelper.ReadUDPCommand(ReceivedPacket);
-            Main.Log(IP + " to [Server]", "" + cmd.CMD);
+            Main.Log("[" + IP + "]", "" + cmd.CMD);
 
             // React accordingly
             switch (cmd.CMD) {
                 case ECommand.CMD_CONNECT: {
                     HandleConnect(IP);
+                    break;
+                }
+                case ECommand.CMD_HELLO: {
+                    HandleHello(cmd);
+                    break;
+                }
+                case ECommand.CMD_SYNC: {
+                    HandleSync(cmd);
+                    break;
+                }
+                case ECommand.CMD_SYNC_DB: {
+                    HandleSyncDB(cmd);
+                    break;
+                }
+                case ECommand.CMD_SYNC_F: {
+                    HandleSyncFile(cmd);
                     break;
                 }
                 default: {
@@ -75,11 +94,81 @@ public class UDPHandler implements Runnable {
     }
 
     public UDPHandler(DatagramSocket ServerSocket, DatagramPacket ReceivedPacket, String IP, ServerConfig SV_CFG) throws IOException {
-        this.ReceivedPacket = new DatagramPacket(ReceivedPacket.getData(),
-                ReceivedPacket.getOffset(), ReceivedPacket.getLength(),
-                ReceivedPacket.getAddress(), ReceivedPacket.getPort());
+        this.ReceivedPacket = ReceivedPacket;
         this.ServerSocket = ServerSocket;
         this.IP = IP;
         this.SV_CFG = SV_CFG;
+    }
+
+    private void HandleHello(Command cmd) {
+        GenericPair<String, Server> gp = (GenericPair<String, Server>) cmd.Body;
+        Server sv = gp.value;
+        Main.Log("Found server", sv.ServerID);
+        synchronized (SV_CFG) {
+            if (!SV_CFG.ServerList.contains(sv) && !sv.ServerID.equals(SV_CFG.ServerID)) {
+                SV_CFG.ServerList.add(sv);
+            }
+        }
+    }
+
+    private void HandleSync(Command cmd) throws IOException {
+        GenericPair<String, Server> gp = (GenericPair<String, Server>) cmd.Body;
+        Server sv = gp.value;
+        synchronized (SV_CFG) {
+            var db = SV_CFG.DB;
+            var users = db.getAllUsers();
+            var messages = db.getAllMessages();
+            var channels = db.getAllChannels();
+            var channelUsers = db.getAllChannelUsers();
+            var channelMessages = db.getAllChannelMessages();
+            var directMessages = db.getAllDirectMessages();
+            ArrayList<GenericPair<Integer, Integer>> cU = new ArrayList<>();
+            ArrayList<GenericPair<Integer, Integer>> cM = new ArrayList<>();
+            ArrayList<GenericPair<Integer, Integer>> dM = new ArrayList<>();
+            channelUsers.forEach(c -> cU.add(new GenericPair<>(c.getCID().getCID(), c.getUID().getUID())));
+            channelMessages.forEach(c -> cM.add(new GenericPair<>(c.getMID().getMID(), c.getCID().getCID())));
+            directMessages.forEach(c -> dM.add(new GenericPair<>(c.getMID().getMID(), c.getUID().getUID())));
+            GenericPair<String, SyncDBPackage> syncPack = new GenericPair<>(SV_CFG.ServerID, new SyncDBPackage(users,
+                    messages, channels, cU, cM, dM));
+            UDPHelper.SendUDPCommand(ServerSocket, sv.getAddress(), sv.getUDPPort(),
+                    new Command(ECommand.CMD_SYNC_DB, syncPack));
+            // TODO: Send Files
+        }
+    }
+
+    private void HandleSyncDB(Command cmd) {
+        GenericPair<String, SyncDBPackage> gp = (GenericPair<String, SyncDBPackage>) cmd.Body;
+        Server sv = new Server(gp.key);
+        SyncDBPackage dbPack = gp.value;
+        synchronized (SV_CFG) {
+            if (SV_CFG.ServerList.contains(sv)) {
+                // Insert into the DB everything needed
+                var db = SV_CFG.DB;
+                dbPack.Users.forEach(u -> db.devInsertUser(u));
+                dbPack.Channels.forEach(c -> db.devInsertChannel(c));
+                dbPack.Messages.forEach(m -> db.devInsertMessage(m));
+                dbPack.ChannelUsers.forEach(cu -> db.devInsertChannelUser(cu.key, cu.value));
+                dbPack.ChannelMessages.forEach(cm -> db.devInsertChannelMessage(cm.value, cm.key));
+                dbPack.DirectMessages.forEach(dm -> db.devInsertDirectMessage(dm.value, dm.key));
+            } else {
+                Main.Log("[Warning]", "Server '" + gp.key + "' not found");
+            }
+            synchronized (SV_CFG.DB) {
+                SV_CFG.DB.notifyAll();
+            }
+        }
+    }
+
+    private void HandleSyncFile(Command cmd) {
+        GenericPair<String, FileChunk> gp = (GenericPair<String, FileChunk>) cmd.Body;
+        Server sv = new Server(gp.key);
+        FileChunk fc = gp.value;
+        synchronized (SV_CFG) {
+            if (SV_CFG.ServerList.contains(sv)) {
+
+            } else {
+                Main.Log("[Warning]", "Server '" + gp.key + "' not found");
+            }
+        }
     }
 }

@@ -35,16 +35,12 @@ public class MulticastHandler implements Runnable {
     public void run() {
         try {
             // Read command
-            Main.Log(SvID + " to [Server]", "" + cmd);
+            Main.Log("[" + SvID + "]", "" + cmd.CMD);
 
             // React accordingly
             switch (cmd.CMD) {
                 case ECommand.CMD_HELLO: {
                     HandleHello(cmd);
-                    break;
-                }
-                case ECommand.CMD_SYNC: {
-                    HandleSync(cmd);
                     break;
                 }
                 case ECommand.CMD_HEARTBEAT: {
@@ -71,16 +67,13 @@ public class MulticastHandler implements Runnable {
 
     private void HandleHello(Command cmd) throws IOException {
         GenericPair<String, Server> v;
+        Server s = ((GenericPair<String, Server>) cmd.Body).value;
         synchronized (SV_CFG) {
             v = new GenericPair<>(SV_CFG.ServerID, new Server(SV_CFG.ServerID,
                     SV_CFG.ServerStart, SV_CFG.ExternalIP, SV_CFG.UDPPort,
                     SV_CFG.TCPPort, SV_CFG.Clients.size()));
         }
-        UDPHelper.SendMulticastCommand(mCS, ReceivedPacket.getAddress(),
-                ReceivedPacket.getPort(), new Command(ECommand.CMD_HELLO, v));
-    }
-
-    private void HandleSync(Command cmd) {
-        // Send CMD_SYNC_DB then CMD_SYNC_F
+        UDPHelper.SendUDPCommand(mCS, s.getAddress(),
+                s.getUDPPort(), new Command(ECommand.CMD_HELLO, v));
     }
 }

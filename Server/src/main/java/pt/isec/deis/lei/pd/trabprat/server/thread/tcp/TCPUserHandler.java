@@ -174,6 +174,7 @@ public class TCPUserHandler implements Runnable {
                 // OK
                 boolean LoggedIn;
 //                Client c = new Client(info, oOS);
+                info.setPassword();
                 var c = new GenericPair<TUser, ObjectOutputStream>(info, oOS);
                 synchronized (SV_CFG) {
                     LoggedIn = SV_CFG.ClientListContains(c);
@@ -512,7 +513,9 @@ public class TCPUserHandler implements Runnable {
                         dmU = db.getOtherUserFromDM(db.getAllDMByUserID(dm.getUID().getUID()), dm.getUID());
                         sendCmd = new Command(ECommand.CMD_CREATED, new GenericPair<>(dmL, dmU));
                         var ou = SV_CFG.GetUser(dm.getUID());
-                        TCPHelper.SendTCPCommand(ou.value, sendCmd);
+                        if (ou != null) {
+                            TCPHelper.SendTCPCommand(ou.value, sendCmd);
+                        }
                         dmU = db.getOtherUserFromDM(db.getAllDMByUserID(dm.getMID().getMUID().getUID()), dm.getMID().getMUID());
                         sendCmd.Body = new GenericPair<>(dmL, dmU);
                     }

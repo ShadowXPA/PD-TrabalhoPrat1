@@ -88,7 +88,12 @@ public class Main {
                     Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
             System.out.println("External IP: " + SV_CFG.ExternalIP.getHostAddress());
             System.out.println("Server ID: " + SV_CFG.ServerID);
+            // Create threads
             // Check for other servers, ask for information if there are other servers already online
+            // Thread Listen UDP
+            Thread tdUDP = new Thread(new UDPListener(SV_CFG), "UDPListener");
+            tdUDP.setDaemon(true);
+            tdUDP.start();
             // Thread Multicast
             Thread tdMC = new Thread(new MulticastListener(SV_CFG), "MulticastListener");
             tdMC.setDaemon(true);
@@ -96,12 +101,6 @@ public class Main {
             synchronized (SV_CFG) {
                 SV_CFG.wait();
             }
-
-            // Create threads
-            // Thread Listen UDP
-            Thread tdUDP = new Thread(new UDPListener(SV_CFG), "UDPListener");
-            tdUDP.setDaemon(true);
-            tdUDP.start();
             // Thread Listen TCP
             Thread tdTCP = new Thread(new TCPListener(SV_CFG), "TCPListener");
             tdTCP.setDaemon(true);

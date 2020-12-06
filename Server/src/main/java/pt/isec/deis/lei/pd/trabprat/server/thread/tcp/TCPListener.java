@@ -2,7 +2,6 @@ package pt.isec.deis.lei.pd.trabprat.server.thread.tcp;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;

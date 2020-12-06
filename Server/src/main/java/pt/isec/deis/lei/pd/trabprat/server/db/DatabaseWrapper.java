@@ -81,7 +81,7 @@ public final class DatabaseWrapper {
     }
 
     public ArrayList<TMessage> getAllMessages() {
-        var info = db.Select("select * from tmessages order by mdate");
+        var info = db.Select("select * from tmessage order by mdate");
         if (info == null || info.isEmpty()) {
             return null;
         }
@@ -198,6 +198,15 @@ public final class DatabaseWrapper {
         return messages;
     }
 
+    public ArrayList<TChannelMessage> getAllChannelMessages() {
+        var info = db.Select("select * from tchannelmessages");
+        ArrayList<TChannelMessage> messages = new ArrayList<>();
+        for (int i = 0; i < info.size(); i++) {
+            messages.add(parseChannelMessage(info.get(i)));
+        }
+        return messages;
+    }
+
     private TChannelMessage parseChannelMessage(HashMap<String, String> Set) {
         TChannel CID = getChannelByID(Integer.parseInt(Set.get("CID")));
         TMessage MID = getMessageByID(Integer.parseInt(Set.get("MID")));
@@ -250,6 +259,15 @@ public final class DatabaseWrapper {
         return users;
     }
 
+    public ArrayList<TDirectMessage> getAllDirectMessages() {
+        var info = db.Select("select * from tdirectmessage");
+        ArrayList<TDirectMessage> DMs = new ArrayList<>();
+        for (int i = 0; i < info.size(); i++) {
+            DMs.add(parseDirectMessage(info.get(i)));
+        }
+        return DMs;
+    }
+
     private TDirectMessage parseDirectMessage(HashMap<String, String> Set) {
         TMessage mid = getMessageByID(Integer.parseInt(Set.get("MID")));
         TUser receiver = getUserByID(Integer.parseInt(Set.get("UID")));
@@ -257,47 +275,21 @@ public final class DatabaseWrapper {
     }
 
     public int insertUser(TUser User) {
-        String uphoto = "null";
-        if (User.getUPhoto() != null) {
-            uphoto = "'" + User.getUPhoto().replace("'", "''") + "'";
-        }
-        return db.Insert("TUser",
-                new ArrayList<>(List.of("0",
-                        "'" + User.getUName().replace("'", "''") + "'",
-                        "'" + User.getUUsername().replace("'", "''") + "'",
-                        "'" + User.getUPassword().replace("'", "''") + "'",
-                        uphoto,
-                        "" + new Date().getTime())));
+        return devInsertUser(new TUser(0, User.getUName(),
+                User.getUUsername(), User.getUPassword(),
+                User.getUPhoto(), new Date().getTime()));
     }
 
     public int insertMessage(TMessage Message) {
-        String mpath = "null";
-        if (Message.getMPath() != null) {
-            mpath = "'" + Message.getMPath().replace("'", "''") + "'";
-        }
-        return db.Insert("TMessage",
-                new ArrayList<>(List.of("0",
-                        "" + Message.getMUID().getUID(),
-                        "'" + Message.getMText().replace("'", "''") + "'",
-                        mpath,
-                        "" + new Date().getTime())));
+        return devInsertMessage(new TMessage(0,
+                Message.getMUID(), Message.getMText(),
+                Message.getMPath(), new Date().getTime()));
     }
 
     public int insertChannel(TChannel Channel) {
-        String cdesc = "null", cpass = "null";
-        if (Channel.getCDescription() != null) {
-            cdesc = "'" + Channel.getCDescription().replace("'", "''") + "'";
-        }
-        if (Channel.getCPassword() != null) {
-            cpass = "'" + Channel.getCPassword().replace("'", "''") + "'";
-        }
-        return db.Insert("TChannel",
-                new ArrayList<>(List.of("0",
-                        "" + Channel.getCUID().getUID(),
-                        "'" + Channel.getCName().replace("'", "''") + "'",
-                        cdesc,
-                        cpass,
-                        "" + new Date().getTime())));
+        return devInsertChannel(new TChannel(0, Channel.getCUID(),
+                Channel.getCName(), Channel.getCDescription(),
+                Channel.getCPassword(), new Date().getTime()));
     }
 
     public int updateChannel(TChannel Channel) {
@@ -317,9 +309,7 @@ public final class DatabaseWrapper {
     }
 
     public int insertChannelUser(TChannel Channel, TUser User) {
-        return db.Insert("TChannelUsers",
-                new ArrayList<>(List.of("" + Channel.getCID(),
-                        "" + User.getUID())));
+        return devInsertChannelUser(Channel.getCID(), User.getUID());
     }
 
     public int insertChannelMessage(TChannel Channel, TMessage Message) {
@@ -334,10 +324,81 @@ public final class DatabaseWrapper {
         int i = insertMessage(Message);
         if (i > 0) {
             int MID = getLastMessage().getMID();
-            i += db.Insert(Table,
-                    new ArrayList<>(List.of("" + MID,
-                            "" + ID)));
+            i += devInsert__(Table, MID, ID);
         }
+        return i;
+    }
+
+    public int devInsertUser(TUser User) {
+        String uphoto = "null";
+        if (User.getUPhoto() != null) {
+            uphoto = "'" + User.getUPhoto().replace("'", "''") + "'";
+        }
+        return db.Insert("TUser",
+                new ArrayList<>(List.of("" + User.getUID(),
+                        "'" + User.getUName().replace("'", "''") + "'",
+                        "'" + User.getUUsername().replace("'", "''") + "'",
+                        "'" + User.getUPassword().replace("'", "''") + "'",
+                        uphoto,
+                        "" + User.getUDate())));
+    }
+
+    public int devInsertMessage(TMessage Message) {
+        String mpath = "null";
+        if (Message.getMPath() != null) {
+            mpath = "'" + Message.getMPath().replace("'", "''") + "'";
+        }
+        return db.Insert("TMessage",
+                new ArrayList<>(List.of("" + Message.getMID(),
+                        "" + Message.getMUID().getUID(),
+                        "'" + Message.getMText().replace("'", "''") + "'",
+                        mpath,
+                        "" + Message.getMDate())));
+    }
+
+    public int devInsertChannel(TChannel Channel) {
+        String cdesc = "null", cpass = "null";
+        if (Channel.getCDescription() != null) {
+            cdesc = "'" + Channel.getCDescription().replace("'", "''") + "'";
+        }
+        if (Channel.getCPassword() != null) {
+            cpass = "'" + Channel.getCPassword().replace("'", "''") + "'";
+        }
+        return db.Insert("TChannel",
+                new ArrayList<>(List.of("" + Channel.getCID(),
+                        "" + Channel.getCUID().getUID(),
+                        "'" + Channel.getCName().replace("'", "''") + "'",
+                        cdesc,
+                        cpass,
+                        "" + Channel.getCDate())));
+    }
+
+    public int devInsertChannelUser(int Channel, int User) {
+        return devInsert__("TChannelUsers", Channel, User);
+    }
+
+    public int devInsertChannelMessage(int Channel, int Message) {
+        return devInsert__("TChannelMessages", Message, Channel);
+    }
+
+    public int devInsertDirectMessage(int User, int Message) {
+        return devInsert__("TDirectMessage", Message, User);
+    }
+
+    private int devInsert__(String Table, int ID1, int ID2) {
+        return db.Insert(Table,
+                new ArrayList<>(List.of("" + ID1,
+                        "" + ID2)));
+    }
+
+    public int devEraseDatabase() {
+        int i = 0;
+        i += db.Delete("DELETE FROM TDirectMessage");
+        i += db.Delete("DELETE FROM TChannelMessages");
+        i += db.Delete("DELETE FROM TChannelUsers");
+        i += db.Delete("DELETE FROM TMessage");
+        i += db.Delete("DELETE FROM TChannel");
+        i += db.Delete("DELETE FROM TUser");
         return i;
     }
 
