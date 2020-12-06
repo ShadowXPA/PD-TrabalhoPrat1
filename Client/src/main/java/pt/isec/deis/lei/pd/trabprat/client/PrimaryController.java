@@ -227,12 +227,6 @@ public class PrimaryController implements Initializable {
                 button.setMinWidth(db);
                 button.setMaxWidth(db);
                 button.setText(App.CL_CFG.OnlineUsers.get(i).getUName());
-                button.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent t) {
-                        buttonUsersOnline((Button) t.getSource());
-                    }
-                });
                 vboxUserOnline.getChildren().add(button);
             }
             sp_users.setContent(vboxUserOnline);
@@ -264,10 +258,6 @@ public class PrimaryController implements Initializable {
         } catch (Exception ex) {
             ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error", "Channel", ex.getMessage());
         }
-    }
-
-    public void buttonUsersOnline(Button button) {
-        //TODO
     }
 
     public void InfoChannel(Object channel) {

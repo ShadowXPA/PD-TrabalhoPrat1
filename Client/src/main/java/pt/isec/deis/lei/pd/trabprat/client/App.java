@@ -69,6 +69,7 @@ public class App extends Application {
             //CL_CFG.setSocket(tcpSoc);
 //            Thread thread = new Thread(new TCPListener(CL_CFG.server), "TCPListener");
             Thread thread = new Thread(new TCPListener(CL_CFG.getSocket(), CL_CFG.getOOS(), CL_CFG.getOIS()));
+            thread.setName("TCP_Listener");
             thread.setDaemon(true);
             thread.start();
         } catch (IOException ex) {
