@@ -3,7 +3,13 @@
 */
 
 create schema if not exists pd_trab;
+create schema if not exists pd_trab2;
 use pd_trab;
+
+drop user if exists 'pdtrab';
+create user if not exists 'pdtrab'@'%' identified by 'PDTrabPrat123';
+grant all privileges on pd_trab.* to 'pdtrab';
+grant all privileges on pd_trab2.* to 'pdtrab';
 
 drop table if exists TDirectMessage;
 drop table if exists TChannelMessages;
@@ -366,8 +372,6 @@ insert into TDirectMessage (MID, UID) values (98, 4);
 insert into TDirectMessage (MID, UID) values (99, 6);
 insert into TDirectMessage (MID, UID) values (100, 2);
 
-
-create schema if not exists pd_trab2;
 use pd_trab2;
 
 drop table if exists TDirectMessage;
