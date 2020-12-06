@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 
@@ -37,8 +38,14 @@ public class TCPListener implements Runnable {
                 }
             }
         } catch (Exception ex) {
+            //voltar a ligar
             ExceptionHandler.ShowException(ex);
+            if (!App.CL_CFG.closing && !App.CL_CFG.ServerList.isEmpty()) {
+                App.CL_CFG.server = App.CL_CFG.ServerList.get(0);
+                App.connectionToServer(null);
+            }else{
+                System.exit(-1);
+            }
         }
     }
-
 }

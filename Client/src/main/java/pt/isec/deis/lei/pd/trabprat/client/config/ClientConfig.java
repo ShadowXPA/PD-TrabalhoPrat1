@@ -44,6 +44,7 @@ public class ClientConfig {
     private ObjectInputStream OIS;  //ObjectInputStream para o TCP
     private String Username;
     private boolean LoggedIn = false;
+    public volatile boolean closing = false;
 
     public String getUsername() {
         return this.Username;

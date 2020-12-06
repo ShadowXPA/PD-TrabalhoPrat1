@@ -26,11 +26,21 @@ public class App extends Application {
         scene = new Scene(loadFXML("Login"), DefaultWindowSizes.DEFAULT_LOGIN_WIDTH, DefaultWindowSizes.DEFAULT_LOGIN_HEIGHT);
         stage.setScene(scene);
         stage.setResizable(false);
+        stage.setOnCloseRequest(e->{
+            e.consume();
+            //stage.close();
+            try {
+                this.stop();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
         stage.show();
     }
 
     @Override
     public void stop() throws Exception {
+        CL_CFG.closing = true;
         CL_CFG.getSocket().close();
         super.stop(); //To change body of generated methods, choose Tools | Templates.
     }
@@ -46,13 +56,25 @@ public class App extends Application {
 
     public static void main(String[] args) {
         CL_CFG = new ClientConfig();
+        connectionToServer(args);
+        // Do last
+        try {
+            launch();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static void connectionToServer(String[] args) {
         Command command;
         DatagramSocket socket;
-        try {
-            // Connect to server
-            CL_CFG.server = Initialize.InitializeServerConection(args);
-        } catch (UnknownHostException ex) {
-            ex.printStackTrace();
+        if (args != null) {
+            try {
+                // Connect to server
+                CL_CFG.server = Initialize.InitializeServerConection(args);
+            } catch (UnknownHostException ex) {
+                ex.printStackTrace();
+            }
         }
         socket = Initialize.SendPacketUDPToServer(CL_CFG.server);
         command = Initialize.ReceivePacketUDPFromServer(socket);
@@ -63,23 +85,14 @@ public class App extends Application {
         } else {
             System.exit(1);
         }
-
         Initialize.ConnectToTCP();
         try {
             //CL_CFG.setSocket(tcpSoc);
 //            Thread thread = new Thread(new TCPListener(CL_CFG.server), "TCPListener");
             Thread thread = new Thread(new TCPListener(CL_CFG.getSocket(), CL_CFG.getOOS(), CL_CFG.getOIS()));
-            thread.setName("TCP_Listener");
             thread.setDaemon(true);
             thread.start();
         } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        // Do last
-        try {
-            launch();
-        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
