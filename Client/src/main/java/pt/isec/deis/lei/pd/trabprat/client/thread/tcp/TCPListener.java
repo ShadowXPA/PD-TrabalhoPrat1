@@ -25,9 +25,10 @@ public class TCPListener implements Runnable {
         try {
             boolean Continue = true;
             while (Continue) {
+                cmd = (Command) oIS.readUnshared();
+                System.out.println("Command from server: " + cmd);
+
                 try {
-                    cmd = (Command) oIS.readUnshared();
-                    System.out.println("Command from server: " + cmd);
                     Thread td = new Thread(new TCPHandler(socket, oOS, oIS, cmd));
                     td.setDaemon(true);
                     td.start();

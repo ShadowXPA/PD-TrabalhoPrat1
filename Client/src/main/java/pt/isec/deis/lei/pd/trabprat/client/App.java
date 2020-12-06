@@ -31,8 +31,8 @@ public class App extends Application {
 
     @Override
     public void stop() throws Exception {
-        super.stop(); //To change body of generated methods, choose Tools | Templates.
         CL_CFG.getSocket().close();
+        super.stop(); //To change body of generated methods, choose Tools | Templates.
     }
 
     public static void setRoot(String fxml) throws IOException {
