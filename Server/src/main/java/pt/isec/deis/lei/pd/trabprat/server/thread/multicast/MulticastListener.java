@@ -67,6 +67,7 @@ public class MulticastListener implements Runnable {
                     Server syncSv = SV_CFG.ServerList.get(0);
                     // Erase DB and files
                     SV_CFG.DB.devEraseDatabase();
+                    
                     // Ask server for synchronization
                     UDPHelper.SendUDPCommand(mCS, syncSv.getAddress(),
                             syncSv.getUDPPort(), new Command(ECommand.CMD_SYNC,

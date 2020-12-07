@@ -1,5 +1,7 @@
 package pt.isec.deis.lei.pd.trabprat.server.thread.udp;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import pt.isec.deis.lei.pd.trabprat.thread.udp.UDPHelper;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -13,6 +15,7 @@ import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
+import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
 import pt.isec.deis.lei.pd.trabprat.server.model.SyncDBPackage;
 
 public class UDPHandler implements Runnable {
@@ -133,6 +136,18 @@ public class UDPHandler implements Runnable {
             UDPHelper.SendUDPCommand(ServerSocket, sv.getAddress(), sv.getUDPPort(),
                     new Command(ECommand.CMD_SYNC_DB, syncPack));
             // TODO: Send Files
+            String BaseDir = SV_CFG.DBConnection.getSchema() + ExplorerController.BASE_DIR;
+            File AvatarDir = new File(BaseDir + ExplorerController.AVATAR_SUBDIR);
+            File[] AvatarFiles = AvatarDir.listFiles();
+            for (var f : AvatarFiles) {
+                int offset = 0;
+                int length = 0;
+                String path = f.getPath();
+                String fileName = path.substring(path.lastIndexOf("\\") + 1, path.lastIndexOf("."));
+                String extension = path.substring(path.lastIndexOf("."));
+                
+                FileChunk fc = new FileChunk(null, offset, length, fileName, null, extension);
+            }
         }
     }
 
@@ -159,13 +174,20 @@ public class UDPHandler implements Runnable {
         }
     }
 
-    private void HandleSyncFile(Command cmd) {
+    private void HandleSyncFile(Command cmd) throws IOException, FileNotFoundException, InterruptedException {
         GenericPair<String, FileChunk> gp = (GenericPair<String, FileChunk>) cmd.Body;
         Server sv = new Server(gp.key);
         FileChunk fc = gp.value;
         synchronized (SV_CFG) {
             if (SV_CFG.ServerList.contains(sv)) {
-
+                // Write file
+                boolean hasGUID = (fc.getGUID() != null);
+                ExplorerController.WriteFile(SV_CFG.DBConnection.getSchema(),
+                        !hasGUID ? ExplorerController.AVATAR_SUBDIR : ExplorerController.FILES_SUBDIR,
+                        !hasGUID ? fc.getUsername() + fc.getExtension() : fc.getGUID().toString() + fc.getExtension(),
+                        fc.getFilePart(),
+                        fc.getOffset(),
+                        fc.getLength());
             } else {
                 Main.Log("[Warning]", "Server '" + gp.key + "' not found");
             }

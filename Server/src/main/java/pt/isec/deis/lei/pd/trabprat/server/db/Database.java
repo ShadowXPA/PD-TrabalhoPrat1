@@ -223,6 +223,6 @@ public class Database {
         this.Password = Password;
         this.ConnectionString = "jdbc:mysql://" + this.Host + ":" + this.Port + "/" + this.Schema +
                 "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" +
-                "&useSSL=false";
+                "&useSSL=false&allowPublicKeyRetrieval=true";
     }
 }

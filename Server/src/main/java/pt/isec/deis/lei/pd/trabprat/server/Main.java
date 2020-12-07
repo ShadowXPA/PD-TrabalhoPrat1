@@ -22,56 +22,6 @@ public class Main {
     private static final SimpleDateFormat sDF = new SimpleDateFormat("EEEEE, MMMMM d, yyyy H:mm");
 
     public static void main(String[] args) {
-//        String IP = "239.4.5.6";
-//        int Port = 5432;
-//        try {
-//            try ( MulticastSocket mS = new MulticastSocket(Port)) {
-//                InetAddress address = InetAddress.getByName(IP);
-//                NetworkInterface nI = NetworkInterface.getByInetAddress(InetAddress.getByName("10.11.14.7"));
-//                mS.setTimeToLive(100);
-////                mS.setNetworkInterface(nI);
-////                mS.joinGroup(address);
-//                mS.joinGroup(new InetSocketAddress(address, Port), nI);
-//                Scanner sc = new Scanner(System.in);
-//                System.out.println("Username: ");
-//                String username = sc.nextLine();
-//
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        DatagramPacket dP = new DatagramPacket(new byte[1024], 1024);
-//                        try {
-//                            while (true) {
-//                                dP.setLength(1024);
-//                                mS.receive(dP);
-//                                String raw = new String(dP.getData(), 0, dP.getLength());
-//                                System.out.println(dP.getAddress().getHostAddress()
-//                                        + ":" + dP.getPort() + ": " + raw);
-//                            }
-//                        } catch (Exception ex) {
-//                            ex.printStackTrace();
-//                        }
-//                    }
-//                }).start();
-//
-//                while (true) {
-//                    String msg = sc.nextLine();
-//
-//                    if (msg.equals("exit")) {
-//                        break;
-//                    }
-//
-//                    msg = "[" + username + "]: " + msg;
-//                    DatagramPacket dP = new DatagramPacket(msg.getBytes(), msg.getBytes().length,
-//                            address, Port);
-//                    mS.send(dP);
-//                }
-//
-//                mS.leaveGroup(address);
-//            }
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
         ServerConfig SV_CFG;
         // Catch arguments
         // Initialize database connection
