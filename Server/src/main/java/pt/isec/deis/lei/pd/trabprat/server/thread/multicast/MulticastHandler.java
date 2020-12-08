@@ -64,6 +64,10 @@ public class MulticastHandler implements Runnable {
                     HandleLogin(cmd);
                     break;
                 }
+                case ECommand.CMD_LOGOUT: {
+                    HandleLogout(cmd);
+                    break;
+                }
                 case ECommand.CMD_UPLOAD: {
                     HandleUpload(cmd);
                     break;
@@ -219,6 +223,17 @@ public class MulticastHandler implements Runnable {
             // Broadcast to server users
             var c = SV_CFG.DB.getAllChannels();
             SV_CFG.BroadcastMessage(new Command(ECommand.CMD_UPDATE_CHANNEL, c));
+        }
+    }
+
+    private void HandleLogout(Command cmd) {
+        // CMD_LOGOUT (TUser)
+        GenericPair<String, TUser> gp = (GenericPair<String, TUser>) cmd.Body;
+        TUser user = gp.value;
+        // Remove from OtherSvUsers list
+        synchronized (SV_CFG) {
+            SV_CFG.OtherSvClients.remove(user);
+            SV_CFG.BroadcastOnlineActivity();
         }
     }
 }

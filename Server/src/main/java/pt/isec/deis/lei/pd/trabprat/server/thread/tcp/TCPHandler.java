@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
+import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.model.Client;
@@ -54,16 +55,13 @@ public class TCPHandler implements Runnable {
         }
         synchronized (SV_CFG) {
             // Removes client if they were logged in
-            //            Client client = SV_CFG.ClientList.remove(ClientSocket);
-            //            if (client != null) {
-            //                Main.Log("[User: (" + client.User.getUID() + ") "
-            //                        + client.User.getUUsername() + "]", "has disconnected.");
-            //            }
             var client = SV_CFG.Clients.remove(ClientSocket);
             if (client != null) {
                 Main.Log("[User: (" + client.key.getUID() + ") "
                         + client.key.getUUsername() + "]", "has disconnected.");
                 SV_CFG.BroadcastOnlineActivity();
+                SV_CFG.MulticastMessage(new Command(ECommand.CMD_LOGOUT,
+                        new GenericPair<>(SV_CFG.ServerID, client.key)));
             }
         }
         Main.Log("Closed connection with", IP);
