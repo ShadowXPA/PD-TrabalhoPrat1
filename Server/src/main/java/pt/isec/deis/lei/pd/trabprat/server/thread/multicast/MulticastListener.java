@@ -1,5 +1,6 @@
 package pt.isec.deis.lei.pd.trabprat.server.thread.multicast;
 
+import java.io.File;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -14,6 +15,7 @@ import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
+import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
 import pt.isec.deis.lei.pd.trabprat.thread.udp.UDPHelper;
 
 public class MulticastListener implements Runnable {
@@ -67,7 +69,17 @@ public class MulticastListener implements Runnable {
                     Server syncSv = SV_CFG.ServerList.get(0);
                     // Erase DB and files
                     SV_CFG.DB.devEraseDatabase();
-                    
+                    String BaseDir = SV_CFG.DBConnection.getSchema() + ExplorerController.BASE_DIR;
+                    File AvatarDir = new File(BaseDir + ExplorerController.AVATAR_SUBDIR);
+                    File[] AvatarFiles = AvatarDir.listFiles();
+                    for (File f : AvatarFiles) {
+                        f.delete();
+                    }
+                    File FilesDir = new File(BaseDir + ExplorerController.FILES_SUBDIR);
+                    File[] FilesFiles = FilesDir.listFiles();
+                    for (File f : FilesFiles) {
+                        f.delete();
+                    }
                     // Ask server for synchronization
                     UDPHelper.SendUDPCommand(mCS, syncSv.getAddress(),
                             syncSv.getUDPPort(), new Command(ECommand.CMD_SYNC,

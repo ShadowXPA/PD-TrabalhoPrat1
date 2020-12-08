@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.ArrayList;
+import java.util.UUID;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
+import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
 import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
@@ -135,19 +137,41 @@ public class UDPHandler implements Runnable {
                     messages, channels, cU, cM, dM));
             UDPHelper.SendUDPCommand(ServerSocket, sv.getAddress(), sv.getUDPPort(),
                     new Command(ECommand.CMD_SYNC_DB, syncPack));
-            // TODO: Send Files
             String BaseDir = SV_CFG.DBConnection.getSchema() + ExplorerController.BASE_DIR;
             File AvatarDir = new File(BaseDir + ExplorerController.AVATAR_SUBDIR);
             File[] AvatarFiles = AvatarDir.listFiles();
-            for (var f : AvatarFiles) {
-                int offset = 0;
-                int length = 0;
-                String path = f.getPath();
-                String fileName = path.substring(path.lastIndexOf("\\") + 1, path.lastIndexOf("."));
-                String extension = path.substring(path.lastIndexOf("."));
-                
-                FileChunk fc = new FileChunk(null, offset, length, fileName, null, extension);
+            HandleSync_SendFileHelper(sv, AvatarFiles, true);
+            File FilesDir = new File(BaseDir + ExplorerController.FILES_SUBDIR);
+            File[] FilesFiles = FilesDir.listFiles();
+            HandleSync_SendFileHelper(sv, FilesFiles, false);
+        }
+    }
+
+    private void HandleSync_SendFileHelper(Server sv, File[] files, boolean avatar) throws IOException {
+        for (var f : files) {
+            FileChunk fc;
+            Command sendCmd;
+            int Length = DefaultConfig.DEFAULT_UDP_PACKET_SIZE;
+            int Offset = 0;
+            String path = f.getPath();
+            String fileName = path.substring(path.lastIndexOf("\\") + 1, path.lastIndexOf("."));
+            UUID guid = avatar ? null : UUID.fromString(fileName);
+            int extIndex = path.lastIndexOf(".");
+            String extension = "";
+            if (extIndex != -1) {
+                extension = path.substring(extIndex);
             }
+            byte[] buffer = ExplorerController._ReadFile(path, Offset, Length);
+            while (buffer.length > 0) {
+                fc = new FileChunk(buffer, Offset, buffer.length, fileName, guid, extension);
+                sendCmd = new Command(ECommand.CMD_SYNC_F, new GenericPair<>(SV_CFG.ServerID, fc));
+                UDPHelper.SendUDPCommand(ServerSocket, sv.getAddress(), sv.getUDPPort(), sendCmd);
+                Offset += Length;
+                buffer = ExplorerController._ReadFile(path, Offset, Length);
+            }
+            fc = new FileChunk(null, 0, 0, fileName, guid, extension);
+            sendCmd = new Command(ECommand.CMD_SYNC_F, new GenericPair<>(SV_CFG.ServerID, fc));
+            UDPHelper.SendUDPCommand(ServerSocket, sv.getAddress(), sv.getUDPPort(), sendCmd);
         }
     }
 
