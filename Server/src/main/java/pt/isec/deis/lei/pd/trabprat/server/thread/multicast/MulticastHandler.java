@@ -24,12 +24,10 @@ public class MulticastHandler implements Runnable {
 
     private final ServerConfig SV_CFG;
     private final MulticastSocket mCS;
-    private final DatagramPacket ReceivedPacket;
     private final String SvID;
     private final Command cmd;
 
-    public MulticastHandler(ServerConfig SV_CFG, MulticastSocket mCS, DatagramPacket ReceivedPacket, String SvID, Command cmd) {
-        this.ReceivedPacket = ReceivedPacket;
+    public MulticastHandler(ServerConfig SV_CFG, MulticastSocket mCS, String SvID, Command cmd) {
         this.SV_CFG = SV_CFG;
         this.mCS = mCS;
         this.SvID = SvID;
@@ -40,7 +38,9 @@ public class MulticastHandler implements Runnable {
     public void run() {
         try {
             // Read command
-            Main.Log("[" + SvID + "]", "" + cmd.CMD);
+            if (cmd.CMD != ECommand.CMD_HEARTBEAT) {
+                Main.Log("[" + SvID + "]", "" + cmd.CMD);
+            }
 
             // React accordingly
             switch (cmd.CMD) {

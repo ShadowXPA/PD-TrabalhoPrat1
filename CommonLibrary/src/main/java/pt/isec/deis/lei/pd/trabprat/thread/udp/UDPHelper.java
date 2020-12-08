@@ -31,8 +31,7 @@ public final class UDPHelper {
 //        }
 //    }
     public static Command ReadUDPCommand(DatagramPacket ReceivedPacket) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream bA = new ByteArrayInputStream(ReceivedPacket.getData(), 0, ReceivedPacket.getLength());
-        ObjectInputStream oI = new ObjectInputStream(bA);
+        ObjectInputStream oI = new ObjectInputStream(new ByteArrayInputStream(ReceivedPacket.getData(), 0, ReceivedPacket.getLength()));
         return (Command) oI.readUnshared();
 //        baIS = new ByteArrayInputStream(ReceivedPacket.getData(), 0, ReceivedPacket.getLength());
 //        oIS = new ObjectInputStream(baIS);
@@ -58,8 +57,8 @@ public final class UDPHelper {
 
     public static Command ReadMulticastCommand(DatagramPacket ReceivedPacket) throws IOException, ClassNotFoundException {
         return ReadUDPCommand(ReceivedPacket);
-//        baIS2 = new ByteArrayInputStream(ReceivedPacket.getData(), 0, ReceivedPacket.getLength());
-//        oIS2 = new ObjectInputStream(baIS2);
+//        ByteArrayInputStream baIS2 = new ByteArrayInputStream(ReceivedPacket.getData(), 0, ReceivedPacket.getLength());
+//        ObjectInputStream oIS2 = new ObjectInputStream(baIS2);
 //        return (Command) oIS2.readUnshared();
     }
 

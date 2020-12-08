@@ -109,10 +109,9 @@ public class MulticastListener implements Runnable {
                 String SvID = ((GenericPair<String, ?>) cmd.Body).key;
 
                 if (!SvID.equals(SV_CFG.ServerID)) {
-                    Main.Log("Received Multicast Packet from", IP);
                     try {
                         // Create handler threads
-                        Thread td = new Thread(new MulticastHandler(SV_CFG, mCS, ReceivedPacket, SvID, cmd));
+                        Thread td = new Thread(new MulticastHandler(SV_CFG, mCS, SvID, cmd));
                         td.setDaemon(true);
                         td.start();
                     } catch (Exception ex) {

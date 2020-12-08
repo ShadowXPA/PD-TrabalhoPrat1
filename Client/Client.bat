@@ -1,1 +1,1 @@
-java --module-path "target\lib" --add-modules javafx.controls,javafx.fxml -jar target/Client-1.0.0.jar 10.11.14.10 5433
+java --module-path "target\lib" --add-modules javafx.controls,javafx.fxml -jar target/Client-1.0.0.jar 192.168.1.70 5433

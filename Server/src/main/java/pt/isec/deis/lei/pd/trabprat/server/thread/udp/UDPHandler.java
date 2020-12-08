@@ -6,6 +6,7 @@ import pt.isec.deis.lei.pd.trabprat.thread.udp.UDPHelper;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.UUID;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
@@ -23,22 +24,26 @@ import pt.isec.deis.lei.pd.trabprat.server.model.SyncDBPackage;
 public class UDPHandler implements Runnable {
 
     private final DatagramSocket ServerSocket;
-    private final DatagramPacket ReceivedPacket;
+    private final InetAddress Address;
+    private final int Port;
+    private final Command cmd;
     private final String IP;
     private final ServerConfig SV_CFG;
 
-    public UDPHandler(DatagramSocket ServerSocket, DatagramPacket ReceivedPacket, String IP, ServerConfig SV_CFG) throws IOException {
-        this.ReceivedPacket = ReceivedPacket;
+    public UDPHandler(DatagramSocket ServerSocket, InetAddress Address, int Port, String IP, ServerConfig SV_CFG, Command cmd) {
         this.ServerSocket = ServerSocket;
+        this.Address = Address;
+        this.Port = Port;
         this.IP = IP;
         this.SV_CFG = SV_CFG;
+        this.cmd = cmd;
     }
 
     @Override
     public void run() {
         try {
             // Read command
-            Command cmd = UDPHelper.ReadUDPCommand(ReceivedPacket);
+//            Command cmd = UDPHelper.ReadUDPCommand(ReceivedPacket);
             Main.Log("[" + IP + "]", "" + cmd.CMD);
 
             // React accordingly
@@ -68,7 +73,7 @@ public class UDPHandler implements Runnable {
                 }
                 default: {
                     // Send CMD_FORBIDDEN command
-                    UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket.getAddress(), ReceivedPacket.getPort(), new Command(ECommand.CMD_FORBIDDEN));
+                    UDPHelper.SendUDPCommand(ServerSocket, Address, Port, new Command(ECommand.CMD_FORBIDDEN));
                     break;
                 }
             }
@@ -99,11 +104,11 @@ public class UDPHandler implements Runnable {
         if (thisSv.equals(Accept)) {
             // Accepted
             cmd = new Command(ECommand.CMD_ACCEPTED, body);
-            UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket.getAddress(), ReceivedPacket.getPort(), cmd);
+            UDPHelper.SendUDPCommand(ServerSocket, Address, Port, cmd);
         } else {
             // Rejected
             cmd = new Command(ECommand.CMD_MOVED_PERMANENTLY, Accept);
-            UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket.getAddress(), ReceivedPacket.getPort(), cmd);
+            UDPHelper.SendUDPCommand(ServerSocket, Address, Port, cmd);
         }
         Main.Log("[Server] to " + IP, "" + cmd.CMD);
     }
@@ -172,7 +177,7 @@ public class UDPHandler implements Runnable {
                 Offset += Length;
                 buffer = ExplorerController._ReadFile(path, Offset, Length);
             }
-            fc = new FileChunk(null, 0, 0, fileName, guid, extension);
+            fc = new FileChunk(buffer, Offset, buffer.length, fileName, guid, extension);
             sendCmd = new Command(ECommand.CMD_SYNC_F, new GenericPair<>(SV_CFG.ServerID, fc));
             UDPHelper.SendUDPCommand(ServerSocket, sv.getAddress(), sv.getUDPPort(), sendCmd);
         }
