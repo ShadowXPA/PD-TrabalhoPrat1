@@ -273,9 +273,11 @@ public class PrimaryController implements Initializable {
                 }
                 if (channel instanceof TChannel) {
                     int num_users = 0;
-                    for (int i = 0; i < App.CL_CFG.ChannelUsers.size(); i++) {
-                        if (App.CL_CFG.ChannelUsers.get(i).getCID().equals(channel)) {
-                            num_users++;
+                    synchronized (App.CL_CFG.LockCU) {
+                        for (int i = 0; i < App.CL_CFG.ChannelUsers.size(); i++) {
+                            if (App.CL_CFG.ChannelUsers.get(i).getCID().equals(channel)) {
+                                num_users++;
+                            }
                         }
                     }
                     label_description.setWrapText(true);
@@ -620,26 +622,26 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void SearchUsers_menuitem(ActionEvent event) {
-        try{
+        try {
             String str = ClientDialog.ShowDialog7();
-            if(str == null){
+            if (str == null) {
                 return;
             }
-            Thread td = new Thread(()->{
-                try{
+            Thread td = new Thread(() -> {
+                try {
                     ServerController.SearchUser(str);
-                    synchronized(App.CL_CFG.LockFo){
+                    synchronized (App.CL_CFG.LockFo) {
                         App.CL_CFG.LockFo.wait();
                         ClientDialog.ShowDialog8(App.CL_CFG.FoundUsers);
                         App.CL_CFG.FoundUsers = null;
                     }
-                }catch (Exception ex){
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             });
             td.setDaemon(true);
             td.start();
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Search User", "Can´t search the user!");
         }
     }

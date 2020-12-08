@@ -24,6 +24,7 @@ public class ClientConfig {
     public ArrayList<TUser> DMUsers;
     //list of users connected to channels
     public ArrayList<TChannelUser> ChannelUsers;
+    public final Object LockCU = new Object();
     //list of messages from the channel
     public volatile ArrayList<TChannelMessage> ChannelMessage;
     public final Object LockCM = new Object();

@@ -20,6 +20,7 @@ import pt.isec.deis.lei.pd.trabprat.model.LoginPackage;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
+import pt.isec.deis.lei.pd.trabprat.model.TChannelUser;
 import pt.isec.deis.lei.pd.trabprat.model.TDirectMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 
@@ -199,6 +200,12 @@ public class TCPHandler implements Runnable {
                                 App.CL_CFG.LockCL.notifyAll();
                             }
                         }
+                    }
+                    break;
+                }
+                case ECommand.CMD_UPDATE_CHANNEL_USERS: {
+                    synchronized (App.CL_CFG.LockCU) {
+                        App.CL_CFG.ChannelUsers = (ArrayList<TChannelUser>) command.Body;
                     }
                     break;
                 }
