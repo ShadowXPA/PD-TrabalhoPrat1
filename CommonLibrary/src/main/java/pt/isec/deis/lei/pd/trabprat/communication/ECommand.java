@@ -92,6 +92,9 @@ public final class ECommand {
     // The server updates the client's server list
     public static final int CMD_UPDATE_SERVERS = 799;
 
+    // The server is telling other servers that it's closing
+    public static final int CMD_BYE = 899;
+
     // The server is asking if other servers are awake
     public static final int CMD_HELLO = 900;
 

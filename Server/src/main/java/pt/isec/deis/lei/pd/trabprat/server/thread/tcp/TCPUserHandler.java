@@ -273,7 +273,7 @@ public class TCPUserHandler implements Runnable {
             // Send file to user
             FileChunk fc;
             try {
-                String BaseDir = SV_CFG.DBConnection.getSchema() + ExplorerController.BASE_DIR + "/";
+                String BaseDir = SV_CFG.DBConnection.getSchema() + ExplorerController.BASE_DIR + "\\";
                 Path = BaseDir + Path;
                 int extIndex = Path.lastIndexOf(".");
                 String Extension = "";

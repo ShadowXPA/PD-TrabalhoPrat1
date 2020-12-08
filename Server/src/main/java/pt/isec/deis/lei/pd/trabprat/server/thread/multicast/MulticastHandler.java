@@ -43,6 +43,10 @@ public class MulticastHandler implements Runnable {
                     HandleHello(cmd);
                     break;
                 }
+                case ECommand.CMD_BYE: {
+                    HandleBye(cmd);
+                    break;
+                }
                 case ECommand.CMD_HEARTBEAT: {
                     HandleHeartbeat(cmd);
                     break;
@@ -75,5 +79,12 @@ public class MulticastHandler implements Runnable {
         }
         UDPHelper.SendUDPCommand(mCS, s.getAddress(),
                 s.getUDPPort(), new Command(ECommand.CMD_HELLO, v));
+    }
+
+    private void HandleBye(Command cmd) {
+        Server s = ((GenericPair<String, Server>) cmd.Body).value;
+        synchronized (SV_CFG) {
+            SV_CFG.ServerList.remove(s);
+        }
     }
 }

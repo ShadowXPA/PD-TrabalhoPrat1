@@ -20,6 +20,7 @@ import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.server.db.Database;
 import pt.isec.deis.lei.pd.trabprat.server.db.DatabaseWrapper;
+import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 import pt.isec.deis.lei.pd.trabprat.thread.udp.UDPHelper;
 
@@ -148,5 +149,6 @@ public class ServerConfig {
         this.TCPPort = (TCPPort == 0) ? DefaultConfig.DEFAULT_TCP_PORT : TCPPort;
         this.ServerID = UUID.randomUUID().toString();
         this.ServerStart = (new Date()).getTime();
+        ExplorerController.CreateBaseDirectories(this.DBConnection.getSchema());
     }
 }
