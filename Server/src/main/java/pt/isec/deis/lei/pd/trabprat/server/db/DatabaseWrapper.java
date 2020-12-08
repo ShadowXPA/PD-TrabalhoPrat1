@@ -58,6 +58,14 @@ public final class DatabaseWrapper {
         return Users;
     }
 
+    public TUser getLastUser() {
+        var info = db.Select("select * from TUser order by UID desc limit 1");
+        if (info == null || info.isEmpty()) {
+            return null;
+        }
+        return parseUser(info.get(0));
+    }
+
     private TUser parseUser(HashMap<String, String> Set) {
         int uid = Integer.parseInt(Set.get("UID"));
         String uname = Set.get("UName");
@@ -135,6 +143,14 @@ public final class DatabaseWrapper {
             Channels.add(parseChannel(info.get(i)));
         }
         return Channels;
+    }
+
+    public TChannel getLastChannel() {
+        var info = db.Select("select * from TChannel order by CID desc limit 1");
+        if (info == null || info.isEmpty()) {
+            return null;
+        }
+        return parseChannel(info.get(0));
     }
 
     private TChannel parseChannel(HashMap<String, String> Set) {

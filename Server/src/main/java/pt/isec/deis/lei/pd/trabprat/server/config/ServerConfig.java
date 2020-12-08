@@ -47,7 +47,7 @@ public class ServerConfig {
 //        return ClientList.containsValue(user);
 //    }
     public boolean ClientListContains(GenericPair<TUser, ObjectOutputStream> user) {
-        return Clients.containsValue(user);
+        return (Clients.containsValue(user) || OtherSvClients.contains(user.key));
     }
 
     public ArrayList<TUser> GetAllOnlineUsers() {

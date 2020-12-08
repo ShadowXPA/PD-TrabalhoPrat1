@@ -27,6 +27,13 @@ public class UDPHandler implements Runnable {
     private final String IP;
     private final ServerConfig SV_CFG;
 
+    public UDPHandler(DatagramSocket ServerSocket, DatagramPacket ReceivedPacket, String IP, ServerConfig SV_CFG) throws IOException {
+        this.ReceivedPacket = ReceivedPacket;
+        this.ServerSocket = ServerSocket;
+        this.IP = IP;
+        this.SV_CFG = SV_CFG;
+    }
+
     @Override
     public void run() {
         try {
@@ -54,6 +61,9 @@ public class UDPHandler implements Runnable {
                 }
                 case ECommand.CMD_SYNC_F: {
                     HandleSyncFile(cmd);
+                    break;
+                }
+                case ECommand.CMD_FORBIDDEN: {
                     break;
                 }
                 default: {
@@ -96,13 +106,6 @@ public class UDPHandler implements Runnable {
             UDPHelper.SendUDPCommand(ServerSocket, ReceivedPacket.getAddress(), ReceivedPacket.getPort(), cmd);
         }
         Main.Log("[Server] to " + IP, "" + cmd.CMD);
-    }
-
-    public UDPHandler(DatagramSocket ServerSocket, DatagramPacket ReceivedPacket, String IP, ServerConfig SV_CFG) throws IOException {
-        this.ReceivedPacket = ReceivedPacket;
-        this.ServerSocket = ServerSocket;
-        this.IP = IP;
-        this.SV_CFG = SV_CFG;
     }
 
     private void HandleHello(Command cmd) {

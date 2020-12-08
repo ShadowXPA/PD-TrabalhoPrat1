@@ -136,9 +136,11 @@ public class TCPUserHandler implements Runnable {
                 String fullDir = DBName + ExplorerController.BASE_DIR + ExplorerController.AVATAR_SUBDIR + "/"
                         + user.getUUsername() + extension;
                 TUser insUser = new TUser(0, user.getUName(), user.getUUsername(), user.getUPassword(), fullDir, 0);
+                TUser lastUser;
                 int inserted;
                 synchronized (SV_CFG) {
                     inserted = db.insertUser(insUser);
+                    lastUser = db.getLastUser();
                 }
                 if (inserted <= 0) {
                     // Tell client, server couldn't register
@@ -152,6 +154,10 @@ public class TCPUserHandler implements Runnable {
                     Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
                     // After created, the client should send the photo asynchronously
                     // Announce to other servers via multicast
+                    synchronized (SV_CFG) {
+                        SV_CFG.MulticastMessage(new Command(ECommand.CMD_CREATED,
+                                new GenericPair<>(SV_CFG.ServerID, lastUser)));
+                    }
                 }
             }
         }
@@ -203,8 +209,10 @@ public class TCPUserHandler implements Runnable {
                         SV_CFG.Clients.put(UserSocket, c);
                         // Send to other users that the list of users has been updated
                         SV_CFG.BroadcastOnlineActivity();
+                        // Announce to other servers via multicast
+                        SV_CFG.MulticastMessage(new Command(ECommand.CMD_LOGIN,
+                                new GenericPair<>(SV_CFG.ServerID, info)));
                     }
-                    // Announce to other servers via multicast
                 } else {
                     // User already logged in
                     sendCmd = new Command(ECommand.CMD_UNAUTHORIZED, DefaultSvMsg.SV_USER_LOGGED_IN);
@@ -245,6 +253,10 @@ public class TCPUserHandler implements Runnable {
                         fc.getOffset(),
                         fc.getLength());
                 // Send through multicast
+                synchronized (SV_CFG) {
+                    SV_CFG.MulticastMessage(new Command(ECommand.CMD_UPLOAD,
+                            new GenericPair<>(SV_CFG.ServerID, fc)));
+                }
             } catch (Exception ex) {
                 ExceptionHandler.ShowException(ex);
             }
@@ -317,6 +329,9 @@ public class TCPUserHandler implements Runnable {
             db = SV_CFG.DB;
             if (!db.doesUserBelongToChannel(cU.getCID(), cU.getUID())) {
                 db.insertChannelUser(cU.getCID(), cU.getUID());
+                // Send through multicast
+                SV_CFG.MulticastMessage(new Command(ECommand.CMD_GET_CHANNEL_MESSAGES,
+                        new GenericPair<>(SV_CFG.ServerID, cU)));
             }
             messages.addAll(db.getAllMessagesFromChannelID(cU.getCID().getCID()));
         }
@@ -344,25 +359,26 @@ public class TCPUserHandler implements Runnable {
         // Insert channel into database
         DatabaseWrapper db;
         TChannel channel = (TChannel) Cmd.Body;
-        ArrayList<TChannel> c = null;
+        ArrayList<TChannel> c;
+        TChannel lastChannel;
         int ErrorNumber;
         synchronized (SV_CFG) {
             db = SV_CFG.DB;
             ErrorNumber = db.insertChannel(channel);
             if (ErrorNumber > 0) {
+                // Success
                 c = db.getAllChannels();
-            }
-        }
-        if (ErrorNumber > 0) {
-            // Success
-            // Broadcast new channel created to all users
-            synchronized (SV_CFG) {
+                lastChannel = db.getLastChannel();
+                // Broadcast new channel created to all users
                 SV_CFG.BroadcastMessage(new Command(ECommand.CMD_CREATED, c));
+                // Send through multicast
+                SV_CFG.MulticastMessage(new Command(ECommand.CMD_CREATED,
+                        new GenericPair<>(SV_CFG.ServerID, lastChannel)));
+            } else {
+                // Operation failed
+                TCPHelper.SendTCPCommand(oOS, new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_CREATE_CHANNEL_FAIL));
+                Main.Log("[Server] to " + IP, "" + ECommand.CMD_BAD_REQUEST);
             }
-        } else {
-            // Operation failed
-            TCPHelper.SendTCPCommand(oOS, new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_CREATE_CHANNEL_FAIL));
-            Main.Log("[Server] to " + IP, "" + ECommand.CMD_BAD_REQUEST);
         }
     }
 
@@ -370,28 +386,28 @@ public class TCPUserHandler implements Runnable {
         // Update channel if user is owner
         DatabaseWrapper db;
         TChannelUser cU = (TChannelUser) Cmd.Body;
-        ArrayList<TChannel> c = null;
+        ArrayList<TChannel> c;
+        TChannel updatedChannel;
         int ErrorNumber;
-        if (!cU.getCID().getCUID().equals(cU.getUID())) {
-            ErrorNumber = 0;
-        } else {
+        if (cU.getCID().getCUID().equals(cU.getUID())) {
             synchronized (SV_CFG) {
                 db = SV_CFG.DB;
                 ErrorNumber = db.updateChannel(cU.getCID());
-                c = db.getAllChannels();
+                if (ErrorNumber > 0) {
+                    // Success
+                    c = db.getAllChannels();
+                    updatedChannel = db.getChannelByID(cU.getCID().getCID());
+                    // Broadcast newly updated channel to all users
+                    SV_CFG.BroadcastMessage(new Command(ECommand.CMD_UPDATE_CHANNEL, c));
+                    // Send through multicast
+                    SV_CFG.MulticastMessage(new Command(ECommand.CMD_UPDATE_CHANNEL,
+                            new GenericPair<>(SV_CFG.ServerID, updatedChannel)));
+                } else {
+                    // Operation failed
+                    TCPHelper.SendTCPCommand(oOS, new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_UPDATE_CHANNEL_FAIL));
+                    Main.Log("[Server] to " + IP, "" + ECommand.CMD_BAD_REQUEST);
+                }
             }
-        }
-        if (ErrorNumber > 0) {
-            // Success
-//            sendCmd = new Command(ECommand.CMD_UPDATE_CHANNEL, c);
-            // Broadcast newly updated channel to all users
-            synchronized (SV_CFG) {
-                SV_CFG.BroadcastMessage(new Command(ECommand.CMD_UPDATE_CHANNEL, c));
-            }
-        } else {
-            // Operation failed
-            TCPHelper.SendTCPCommand(oOS, new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_UPDATE_CHANNEL_FAIL));
-            Main.Log("[Server] to " + IP, "" + ECommand.CMD_BAD_REQUEST);
         }
     }
 
@@ -399,29 +415,28 @@ public class TCPUserHandler implements Runnable {
         // Delete channel if user is owner
         DatabaseWrapper db;
         TChannelUser cU = (TChannelUser) Cmd.Body;
-        ArrayList<TChannel> c = null;
+        ArrayList<TChannel> c;
         int ErrorNumber;
-        if (!cU.getCID().getCUID().equals(cU.getUID())) {
-            ErrorNumber = 0;
-        } else {
+        if (cU.getCID().getCUID().equals(cU.getUID())) {
             synchronized (SV_CFG) {
                 db = SV_CFG.DB;
                 ErrorNumber = db.deleteChannel(cU.getCID());
-                c = db.getAllChannels();
+                if (ErrorNumber > 0) {
+                    // Success
+                    c = db.getAllChannels();
+                    // Broadcast newly deleted channel to all users
+                    SV_CFG.BroadcastMessage(new Command(ECommand.CMD_DELETE_CHANNEL, c));
+                    // Send through multicast
+                    SV_CFG.MulticastMessage(new Command(ECommand.CMD_DELETE_CHANNEL,
+                            new GenericPair<>(SV_CFG.ServerID, cU.getCID().getCID())));
+                } else {
+                    // Operation failed
+                    TCPHelper.SendTCPCommand(oOS, new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_DELETE_CHANNEL_FAIL));
+                    Main.Log("[Server] to " + IP, "" + ECommand.CMD_BAD_REQUEST);
+                }
             }
         }
-        if (ErrorNumber > 0) {
-            // Success
-//            sendCmd = new Command(ECommand.CMD_DELETE_CHANNEL, c);
-            // Broadcast newly deleted channel to all users
-            synchronized (SV_CFG) {
-                SV_CFG.BroadcastMessage(new Command(ECommand.CMD_DELETE_CHANNEL, c));
-            }
-        } else {
-            // Operation failed
-            TCPHelper.SendTCPCommand(oOS, new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_DELETE_CHANNEL_FAIL));
-            Main.Log("[Server] to " + IP, "" + ECommand.CMD_BAD_REQUEST);
-        }
+
     }
 
     private void HandleCreateMessage() throws IOException {
@@ -432,9 +447,10 @@ public class TCPUserHandler implements Runnable {
         Command sendCmd = null;
         TChannelMessage cm = null;
         TDirectMessage dm = null;
-        ArrayList<TChannelMessage> cmL = null;
-        ArrayList<TDirectMessage> dmL = null;
-        ArrayList<TUser> dmU = null;
+        ArrayList<TChannelMessage> cmL;
+        ArrayList<TDirectMessage> dmL;
+        ArrayList<TUser> dmU;
+        TMessage lastMessage;
         if (Cmd.Body instanceof TChannelMessage) {
             cm = (TChannelMessage) Cmd.Body;
         } else if (Cmd.Body instanceof TDirectMessage) {
@@ -468,16 +484,18 @@ public class TCPUserHandler implements Runnable {
                 }
                 synchronized (SV_CFG) {
                     i += db.insertChannelMessage(cm.getCID(), msg);
-                    cmL = db.getAllMessagesFromChannelID(cm.getCID().getCID());
-                }
-                if (i > 0) {
-//                    sendCmd = new Command(ECommand.CMD_CREATED, cmL);
-                    // Broadcast new message to all users
-                    synchronized (SV_CFG) {
+                    if (i > 0) {
+                        cmL = db.getAllMessagesFromChannelID(cm.getCID().getCID());
+                        lastMessage = db.getLastMessage();
+                        TChannelMessage lastCM = new TChannelMessage(cm.getCID(), lastMessage);
+                        // Broadcast new message to all users
                         SV_CFG.BroadcastMessage(new Command(ECommand.CMD_CREATED, cmL));
+                        // Send through multicast
+                        SV_CFG.MulticastMessage(new Command(ECommand.CMD_CREATED,
+                                new GenericPair<>(SV_CFG.ServerID, lastCM)));
+                    } else {
+                        sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
                     }
-                } else {
-                    sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
                 }
             } else {
                 // Direct Message
@@ -506,12 +524,11 @@ public class TCPUserHandler implements Runnable {
                     }
                     dm = new TDirectMessage(msg, temp);
                     i += db.insertDirectMessage(dm.getUID(), msg);
-                    dmL = db.getAllDMByUserIDAndOtherID(dm.getMID().getMUID().getUID(), dm.getUID().getUID());
-                }
-                if (i > 0) {
-//                    sendCmd = new Command(ECommand.CMD_CREATED, dmL);
-                    // Broadcast new message to all users
-                    synchronized (SV_CFG) {
+                    if (i > 0) {
+                        lastMessage = db.getLastMessage();
+                        TDirectMessage lastDM = new TDirectMessage(lastMessage, dm.getUID());
+                        dmL = db.getAllDMByUserIDAndOtherID(dm.getMID().getMUID().getUID(), dm.getUID().getUID());
+                        // Broadcast new message to all users
                         dmU = db.getOtherUserFromDM(db.getAllDMByUserID(dm.getUID().getUID()), dm.getUID());
                         sendCmd = new Command(ECommand.CMD_CREATED, new GenericPair<>(dmL, dmU));
                         var ou = SV_CFG.GetUser(dm.getUID());
@@ -520,9 +537,12 @@ public class TCPUserHandler implements Runnable {
                         }
                         dmU = db.getOtherUserFromDM(db.getAllDMByUserID(dm.getMID().getMUID().getUID()), dm.getMID().getMUID());
                         sendCmd.Body = new GenericPair<>(dmL, dmU);
+                        // Send through multicast
+                        SV_CFG.MulticastMessage(new Command(ECommand.CMD_CREATED,
+                                new GenericPair<>(SV_CFG.ServerID, lastDM)));
+                    } else {
+                        sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
                     }
-                } else {
-                    sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
                 }
             }
         }
