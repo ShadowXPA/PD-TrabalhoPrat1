@@ -124,16 +124,16 @@ CREATE TABLE IF NOT EXISTS TDirectMessage (
     TUser Dummy Data
     https://mockaroo.com/
 */
-insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (1, 'Junina Winter', 'jwinter0', 'HvwT6osnO0M/pyh4SFp3hA==', 'pd_trab_files/avatar/default.png', 1447607218000);
-insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (2, 'Desi Strongman', 'dstrongman1', 'HvwT6osnO0M/pyh4SFp3hA==', 'pd_trab_files/avatar/default.png', 1447607218000);
-insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (3, 'Giffard Bernlin', 'gbernlin2', 'HvwT6osnO0M/pyh4SFp3hA==', 'pd_trab_files/avatar/default.png', 1447607218000);
-insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (4, 'Nissie Ledwidge', 'nledwidge3', 'HvwT6osnO0M/pyh4SFp3hA==', 'pd_trab_files/avatar/default.png', 1447607218000);
-insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (5, 'Lena Cauley', 'lcauley4', 'HvwT6osnO0M/pyh4SFp3hA==', 'pd_trab_files/avatar/default.png', 1447607218000);
-insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (6, 'Aluino Sawney', 'asawney5', 'HvwT6osnO0M/pyh4SFp3hA==', 'pd_trab_files/avatar/default.png', 1447607218000);
-insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (7, 'Lou Matchell', 'lmatchell6', 'HvwT6osnO0M/pyh4SFp3hA==', 'pd_trab_files/avatar/default.png', 1447607218000);
-insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (8, 'Betti Benditt', 'bbenditt7', 'HvwT6osnO0M/pyh4SFp3hA==', 'pd_trab_files/avatar/default.png', 1447607218000);
-insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (9, 'Harold Latchmore', 'hlatchmore8', 'HvwT6osnO0M/pyh4SFp3hA==', 'pd_trab_files/avatar/default.png', 1447607218000);
-insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (10, 'Philippine Cornewell', 'pcornewell9', 'HvwT6osnO0M/pyh4SFp3hA==', 'pd_trab_files/avatar/default.png', 1447607218000);
+insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (1, 'Junina Winter', 'jwinter0', 'HvwT6osnO0M/pyh4SFp3hA==', 'avatar/default.png', 1447607218000);
+insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (2, 'Desi Strongman', 'dstrongman1', 'HvwT6osnO0M/pyh4SFp3hA==', 'avatar/default.png', 1447607218000);
+insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (3, 'Giffard Bernlin', 'gbernlin2', 'HvwT6osnO0M/pyh4SFp3hA==', 'avatar/default.png', 1447607218000);
+insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (4, 'Nissie Ledwidge', 'nledwidge3', 'HvwT6osnO0M/pyh4SFp3hA==', 'avatar/default.png', 1447607218000);
+insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (5, 'Lena Cauley', 'lcauley4', 'HvwT6osnO0M/pyh4SFp3hA==', 'avatar/default.png', 1447607218000);
+insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (6, 'Aluino Sawney', 'asawney5', 'HvwT6osnO0M/pyh4SFp3hA==', 'avatar/default.png', 1447607218000);
+insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (7, 'Lou Matchell', 'lmatchell6', 'HvwT6osnO0M/pyh4SFp3hA==', 'avatar/default.png', 1447607218000);
+insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (8, 'Betti Benditt', 'bbenditt7', 'HvwT6osnO0M/pyh4SFp3hA==', 'avatar/default.png', 1447607218000);
+insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (9, 'Harold Latchmore', 'hlatchmore8', 'HvwT6osnO0M/pyh4SFp3hA==', 'avatar/default.png', 1447607218000);
+insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (10, 'Philippine Cornewell', 'pcornewell9', 'HvwT6osnO0M/pyh4SFp3hA==', 'avatar/default.png', 1447607218000);
 
 /*
     TChannel Dummy Data
@@ -150,7 +150,7 @@ insert into TChannel (CID, CUID, CName, CDescription, CPassword, CDate) values (
     https://mockaroo.com/
 */
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (1, 3, 'Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo.', null, 1533897033920);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (2, 4, 'Praesent lectus. Vestibulum quam sapien, varius ut, blandit non, interdum in, ante.', 'pd_trab_files/avatar/default.png', 1508689424151);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (2, 4, 'helloworld.txt', 'files/9fbe699b-8f1c-490b-b08b-06a4a156be13.txt', 1508689424151);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (3, 4, 'In hac habitasse platea dictumst. Morbi vestibulum, velit id pretium iaculis, diam erat fermentum justo, nec condimentum neque sapien placerat ante.', null, 1596150225823);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (4, 9, 'Integer a nibh.', null, 1502227070573);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (5, 2, 'Integer tincidunt ante vel ipsum.', null, 1604267931168);
@@ -162,14 +162,14 @@ insert into TMessage (MID, MUID, MText, MPath, MDate) values (10, 10, 'Suspendis
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (11, 3, 'Curabitur gravida nisi at nibh. In hac habitasse platea dictumst.', null, 1544347703610);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (12, 5, 'Nunc nisl.', null, 1507553033002);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (13, 10, 'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec pharetra, magna vestibulum aliquet ultrices, erat tortor sollicitudin mi, sit amet lobortis sapien sapien non mi. Integer ac neque.', null, 1510778840749);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (14, 4, 'Fusce congue, diam id ornare imperdiet, sapien urna pretium nisl, ut volutpat sapien arcu sed augue. Aliquam erat volutpat.', 'pd_trab_files/avatar/default.png', 1594229019918);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (14, 4, 'alpha.txt', 'files/11a9aee0-f3b0-4062-98f3-c85e85ba19e4.txt', 1594229019918);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (15, 8, 'Praesent lectus. Vestibulum quam sapien, varius ut, blandit non, interdum in, ante.', null, 1601995953351);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (16, 6, 'Nullam porttitor lacus at turpis. Donec posuere metus vitae ipsum.', null, 1544405784246);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (17, 9, 'Pellentesque at nulla.', null, 1568812381462);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (18, 8, 'Aenean auctor gravida sem.', 'pd_trab_files/avatar/default.png', 1567573333079);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (18, 8, 'guids.txt', 'files/dd331510-dbce-4f3d-8737-8801db74d568.txt', 1567573333079);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (19, 7, 'Nam dui.', null, 1483984154507);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (20, 5, 'Proin interdum mauris non ligula pellentesque ultrices.', null, 1596843096098);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (21, 7, 'Nunc rhoncus dui vel sem.', 'pd_trab_files/avatar/default.png', 1588638847459);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (21, 7, 'alpha.txt', 'files/11a9aee0-f3b0-4062-98f3-c85e85ba19e4.txt', 1588638847459);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (22, 6, 'Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.', null, 1563805614778);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (23, 6, 'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel est. Donec odio justo, sollicitudin ut, suscipit a, feugiat et, eros.', null, 1487657142761);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (24, 10, 'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel est. Donec odio justo, sollicitudin ut, suscipit a, feugiat et, eros.', null, 1506789089458);
@@ -179,7 +179,7 @@ insert into TMessage (MID, MUID, MText, MPath, MDate) values (27, 6, 'Aenean auc
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (28, 6, 'Nulla neque libero, convallis eget, eleifend luctus, ultricies eu, nibh. Quisque id justo sit amet sapien dignissim vestibulum.', null, 1562599000878);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (29, 10, 'Morbi ut odio.', null, 1503174442824);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (30, 1, 'Cras pellentesque volutpat dui.', null, 1547367686049);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (31, 1, 'Praesent blandit. Nam nulla.', 'pd_trab_files/avatar/default.png', 1514452984916);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (31, 1, 'alpha.txt', 'files/11a9aee0-f3b0-4062-98f3-c85e85ba19e4.txt', 1514452984916);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (32, 4, 'Proin risus. Praesent lectus.', null, 1487436146784);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (33, 10, 'In est risus, auctor sed, tristique in, tempus sit amet, sem.', null, 1598623219627);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (34, 9, 'In hac habitasse platea dictumst.', null, 1588025231223);
@@ -193,30 +193,30 @@ insert into TMessage (MID, MUID, MText, MPath, MDate) values (41, 10, 'Donec ut 
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (42, 4, 'Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.', null, 1513102625595);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (43, 10, 'Vestibulum rutrum rutrum neque. Aenean auctor gravida sem.', null, 1499111952952);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (44, 8, 'Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.', null, 1491537248110);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (45, 8, 'Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo.', 'pd_trab_files/avatar/default.png', 1481550396553);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (45, 8, 'guids.txt', 'files/dd331510-dbce-4f3d-8737-8801db74d568.txt', 1481550396553);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (46, 7, 'In hac habitasse platea dictumst. Maecenas ut massa quis augue luctus tincidunt.', null, 1574567982194);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (47, 7, 'Curabitur in libero ut massa volutpat convallis.', null, 1496749800377);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (48, 8, 'Duis mattis egestas metus. Aenean fermentum.', null, 1548634514013);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (49, 7, 'Nunc rhoncus dui vel sem. Sed sagittis.', null, 1565544110756);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (50, 6, 'Integer non velit.', null, 1561514333612);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (51, 2, 'In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat.', 'pd_trab_files/avatar/default.png', 1557302649322);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (52, 7, 'Fusce consequat. Nulla nisl.', 'pd_trab_files/avatar/default.png', 1564396457447);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (51, 2, 'helloworld.txt', 'files/9fbe699b-8f1c-490b-b08b-06a4a156be13.txt', 1557302649322);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (52, 7, 'alpha.txt', 'files/11a9aee0-f3b0-4062-98f3-c85e85ba19e4.txt', 1564396457447);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (53, 2, 'Sed sagittis.', null, 1590576318669);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (54, 8, 'Fusce consequat.', null, 1590771310908);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (55, 10, 'Nulla neque libero, convallis eget, eleifend luctus, ultricies eu, nibh. Quisque id justo sit amet sapien dignissim vestibulum.', null, 1500920682211);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (56, 6, 'Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus.', null, 1516841700208);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (57, 2, 'Praesent blandit. Nam nulla.', null, 1543575801108);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (58, 6, 'Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat.', 'pd_trab_files/avatar/default.png', 1599357073004);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (58, 6, 'helloworld.txt', 'files/9fbe699b-8f1c-490b-b08b-06a4a156be13.txt', 1599357073004);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (59, 7, 'Duis at velit eu est congue elementum.', null, 1569408761332);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (60, 3, 'Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.', null, 1596882297742);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (61, 3, 'Duis consequat dui nec nisi volutpat eleifend.', null, 1481389844449);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (62, 10, 'Fusce consequat. Nulla nisl.', null, 1494718709404);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (63, 4, 'Duis at velit eu est congue elementum.', 'pd_trab_files/avatar/default.png', 1599756193077);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (63, 4, 'helloworld.txt', 'files/9fbe699b-8f1c-490b-b08b-06a4a156be13.txt', 1599756193077);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (64, 1, 'Maecenas pulvinar lobortis est. Phasellus sit amet erat.', null, 1528413883096);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (65, 9, 'Donec diam neque, vestibulum eget, vulputate ut, ultrices vel, augue.', 'pd_trab_files/avatar/default.png', 1570056093512);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (66, 9, 'Etiam pretium iaculis justo. In hac habitasse platea dictumst.', 'pd_trab_files/avatar/default.png', 1532666034839);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (65, 9, 'helloworld.txt', 'files/9fbe699b-8f1c-490b-b08b-06a4a156be13.txt', 1570056093512);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (66, 9, 'guids.txt', 'files/dd331510-dbce-4f3d-8737-8801db74d568.txt', 1532666034839);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (67, 3, 'Etiam vel augue. Vestibulum rutrum rutrum neque.', null, 1515991261254);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (68, 6, 'Nullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum.', 'pd_trab_files/avatar/default.png', 1565264147937);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (68, 6, 'alpha.txt', 'files/11a9aee0-f3b0-4062-98f3-c85e85ba19e4.txt', 1565264147937);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (69, 7, 'Nulla ut erat id mauris vulputate elementum. Nullam varius.', null, 1568911399346);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (70, 3, 'Duis consequat dui nec nisi volutpat eleifend.', null, 1492400138356);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (71, 9, 'Pellentesque eget nunc. Donec quis orci eget orci vehicula condimentum.', null, 1557553145883);
@@ -232,14 +232,14 @@ insert into TMessage (MID, MUID, MText, MPath, MDate) values (80, 1, 'Pellentesq
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (81, 3, 'Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.', null, 1496594360148);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (82, 5, 'Morbi ut odio.', null, 1508624063555);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (83, 10, 'In sagittis dui vel nisl. Duis ac nibh.', null, 1551446024041);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (84, 7, 'Nunc rhoncus dui vel sem.', 'pd_trab_files/avatar/default.png', 1514383020954);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (84, 7, 'guids.txt', 'files/dd331510-dbce-4f3d-8737-8801db74d568.txt', 1514383020954);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (85, 4, 'Aenean lectus.', null, 1596207894179);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (86, 5, 'Nulla tellus. In sagittis dui vel nisl.', 'pd_trab_files/avatar/default.png', 1538576274304);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (86, 5, 'helloworld.txt', 'files/9fbe699b-8f1c-490b-b08b-06a4a156be13.txt', 1538576274304);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (87, 6, 'Duis bibendum.', null, 1528533275088);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (88, 6, 'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec pharetra, magna vestibulum aliquet ultrices, erat tortor sollicitudin mi, sit amet lobortis sapien sapien non mi.', 'pd_trab_files/avatar/default.png', 1552172805839);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (88, 6, 'alpha.txt', 'files/11a9aee0-f3b0-4062-98f3-c85e85ba19e4.txt', 1552172805839);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (89, 8, 'Nullam varius. Nulla facilisi.', null, 1596797940166);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (90, 1, 'In hac habitasse platea dictumst.', null, 1498206411180);
-insert into TMessage (MID, MUID, MText, MPath, MDate) values (91, 7, 'In hac habitasse platea dictumst. Maecenas ut massa quis augue luctus tincidunt.', 'pd_trab_files/avatar/default.png', 1584746956917);
+insert into TMessage (MID, MUID, MText, MPath, MDate) values (91, 7, 'guids.txt', 'files/dd331510-dbce-4f3d-8737-8801db74d568.txt', 1584746956917);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (92, 2, 'Aenean auctor gravida sem.', null, 1567289102803);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (93, 6, 'Sed accumsan felis. Ut at dolor quis odio consequat varius.', null, 1487109605455);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (94, 1, 'Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat.', null, 1565165630709);
