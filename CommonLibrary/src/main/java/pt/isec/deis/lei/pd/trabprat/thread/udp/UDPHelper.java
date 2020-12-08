@@ -32,7 +32,7 @@ public final class UDPHelper {
 //    }
     public static Command ReadUDPCommand(DatagramPacket ReceivedPacket) throws IOException, ClassNotFoundException {
         ObjectInputStream oI = new ObjectInputStream(new ByteArrayInputStream(ReceivedPacket.getData(), 0, ReceivedPacket.getLength()));
-        return (Command) oI.readUnshared();
+        return (Command) oI.readObject();
 //        baIS = new ByteArrayInputStream(ReceivedPacket.getData(), 0, ReceivedPacket.getLength());
 //        oIS = new ObjectInputStream(baIS);
 //        return (Command) oIS.readUnshared();
