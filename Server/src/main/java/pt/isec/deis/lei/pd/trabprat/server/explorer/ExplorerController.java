@@ -11,9 +11,9 @@ public final class ExplorerController {
     private ExplorerController() {
     }
 
-    public static final String BASE_DIR = "_files";
-    public static final String AVATAR_SUBDIR = "/avatar";
-    public static final String FILES_SUBDIR = "/files";
+    public static final String BASE_DIR = "_files/";
+    public static final String AVATAR_SUBDIR = "avatar";
+    public static final String FILES_SUBDIR = "files";
 
     public static void CreateBaseDirectories(String DBName) {
         String BaseDir = DBName + BASE_DIR;

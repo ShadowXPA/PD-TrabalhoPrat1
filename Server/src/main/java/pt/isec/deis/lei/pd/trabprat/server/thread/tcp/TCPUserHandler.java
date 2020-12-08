@@ -285,7 +285,7 @@ public class TCPUserHandler implements Runnable {
             // Send file to user
             FileChunk fc;
             try {
-                String BaseDir = SV_CFG.DBConnection.getSchema() + ExplorerController.BASE_DIR + "\\";
+                String BaseDir = SV_CFG.DBConnection.getSchema() + ExplorerController.BASE_DIR;
                 Path = BaseDir + Path;
                 int extIndex = Path.lastIndexOf(".");
                 String Extension = "";
@@ -329,6 +329,8 @@ public class TCPUserHandler implements Runnable {
             db = SV_CFG.DB;
             if (!db.doesUserBelongToChannel(cU.getCID(), cU.getUID())) {
                 db.insertChannelUser(cU.getCID(), cU.getUID());
+                var cUs = db.getAllChannelUsers();
+                SV_CFG.BroadcastMessage(new Command(ECommand.CMD_UPDATE_CHANNEL_USERS, cUs));
                 // Send through multicast
                 SV_CFG.MulticastMessage(new Command(ECommand.CMD_GET_CHANNEL_MESSAGES,
                         new GenericPair<>(SV_CFG.ServerID, cU)));
@@ -474,8 +476,7 @@ public class TCPUserHandler implements Runnable {
                         Extension = cm.getMID().getMText().substring(extIndex);
                     }
                     synchronized (SV_CFG) {
-                        String BaseDir = SV_CFG.DBConnection.getSchema() + ExplorerController.BASE_DIR;
-                        String InternalPath = BaseDir + ExplorerController.FILES_SUBDIR
+                        String InternalPath = ExplorerController.FILES_SUBDIR
                                 + "/" + cm.getMID().getMPath() + Extension;
                         msg = new TMessage(0, cm.getMID().getMUID(), cm.getMID().getMText(), InternalPath, 0);
                     }
@@ -506,8 +507,7 @@ public class TCPUserHandler implements Runnable {
                         Extension = dm.getMID().getMText().substring(extIndex);
                     }
                     synchronized (SV_CFG) {
-                        String BaseDir = SV_CFG.DBConnection.getSchema() + ExplorerController.BASE_DIR;
-                        String InternalPath = BaseDir + ExplorerController.FILES_SUBDIR
+                        String InternalPath = ExplorerController.FILES_SUBDIR
                                 + "/" + dm.getMID().getMPath() + Extension;
                         msg = new TMessage(0, dm.getMID().getMUID(), dm.getMID().getMText(), InternalPath, 0);
                     }

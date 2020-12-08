@@ -321,7 +321,11 @@ public final class DatabaseWrapper {
     }
 
     public int deleteChannel(TChannel Channel) {
-        return db.Delete("DELETE FROM TChannel WHERE CID = " + Channel.getCID());
+        return devDeleteChannel(Channel.getCID());
+    }
+
+    public int devDeleteChannel(int CID) {
+        return db.Delete("DELETE FROM TChannel WHERE CID = " + CID);
     }
 
     public int insertChannelUser(TChannel Channel, TUser User) {

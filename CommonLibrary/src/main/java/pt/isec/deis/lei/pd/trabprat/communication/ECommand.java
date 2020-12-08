@@ -92,6 +92,9 @@ public final class ECommand {
     // The client wants a list of users that fully or partially match a certain string
     public static final int CMD_SEARCH_USERS = 708;
 
+    // The server sends an updated list of the channel users
+    public static final int CMD_UPDATE_CHANNEL_USERS = 709;
+
     // The server updates the client's server list
     public static final int CMD_UPDATE_SERVERS = 799;
 

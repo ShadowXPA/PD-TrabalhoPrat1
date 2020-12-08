@@ -171,6 +171,8 @@ public class MulticastHandler implements Runnable {
         TChannelUser cU = gp.value;
         synchronized (SV_CFG) {
             SV_CFG.DB.devInsertChannelUser(cU.getCID().getCID(), cU.getUID().getUID());
+            var cUs = SV_CFG.DB.getAllChannelUsers();
+            SV_CFG.BroadcastMessage(new Command(ECommand.CMD_UPDATE_CHANNEL_USERS, cUs));
         }
     }
 
@@ -214,15 +216,15 @@ public class MulticastHandler implements Runnable {
     }
 
     private void HandleDeleteChannel(Command cmd) {
-        // CMD_DELETE_CHANNEL (TChannel)
-        GenericPair<String, TChannel> gp = (GenericPair<String, TChannel>) cmd.Body;
-        TChannel channel = gp.value;
+        // CMD_DELETE_CHANNEL (int)
+        GenericPair<String, Integer> gp = (GenericPair<String, Integer>) cmd.Body;
+        int channel = gp.value;
         // Delete from database
         synchronized (SV_CFG) {
-            SV_CFG.DB.deleteChannel(channel);
+            SV_CFG.DB.devDeleteChannel(channel);
             // Broadcast to server users
             var c = SV_CFG.DB.getAllChannels();
-            SV_CFG.BroadcastMessage(new Command(ECommand.CMD_UPDATE_CHANNEL, c));
+            SV_CFG.BroadcastMessage(new Command(ECommand.CMD_DELETE_CHANNEL, c));
         }
     }
 
