@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import pt.isec.deis.lei.pd.trabprat.thread.udp.UDPHelper;
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -43,10 +42,8 @@ public class UDPHandler implements Runnable {
     public void run() {
         try {
             // Read command
-//            Command cmd = UDPHelper.ReadUDPCommand(ReceivedPacket);
             Main.Log("[" + IP + "]", "" + cmd.CMD);
 
-            // React accordingly
             switch (cmd.CMD) {
                 case ECommand.CMD_CONNECT: {
                     HandleConnect(IP);
@@ -213,10 +210,6 @@ public class UDPHandler implements Runnable {
         synchronized (SV_CFG) {
             if (SV_CFG.ServerList.contains(sv)) {
                 // Write file
-//                System.out.println("File: " + fc.getUsername());
-//                System.out.println("Offset: " + fc.getOffset());
-//                System.out.println("Length: " + fc.getLength());
-//                System.out.println("-------------------------");
                 boolean hasGUID = (fc.getGUID() != null);
                 ExplorerController.WriteFile(SV_CFG.DBConnection.getSchema(),
                         !hasGUID ? ExplorerController.AVATAR_SUBDIR : ExplorerController.FILES_SUBDIR,

@@ -1,6 +1,5 @@
 package pt.isec.deis.lei.pd.trabprat.server.db;
 
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;

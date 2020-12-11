@@ -46,7 +46,6 @@ public class MulticastListener implements Runnable {
             synchronized (SV_CFG) {
                 SV_CFG.MCSocket = mCS;
                 SV_CFG.MCAddress = iA;
-                // TODO: Synchronize servers
                 Server thisSv = new Server(SV_CFG.ServerID, SV_CFG.ServerStart,
                         SV_CFG.ExternalIP, SV_CFG.UDPPort, SV_CFG.TCPPort, 0);
                 try {
@@ -145,9 +144,6 @@ public class MulticastListener implements Runnable {
                 synchronized (SV_CFG) {
                     svP.value.setUserCount(SV_CFG.Clients.size());
                     SV_CFG.SetServersDead();
-//                    Server sv = new Server(serverID, iAdd, udpPort, tcpPort, SV_CFG.Clients.size());
-//                    GenericPair<String, Server> svP = new GenericPair<>(sv.ServerID, sv);
-//                    Command cmd = new Command(ECommand.CMD_HEARTBEAT, svP);
                 }
                 UDPHelper.SendMulticastCommand(mCS, iA, Port, cmd);
                 Thread.sleep(ServerHeartbeatTimeout);

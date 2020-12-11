@@ -32,7 +32,6 @@ public class ServerConfig {
     public final DatabaseWrapper DB;
     public final ServerComparator SvComp;
     public final ArrayList<Server> ServerList;
-//    public final HashMap<Socket, Client> ClientList;
     public final HashMap<Socket, GenericPair<TUser, ObjectOutputStream>> Clients;
     public final ArrayList<TUser> OtherSvClients;
     public final InetAddress ExternalIP;
@@ -43,9 +42,6 @@ public class ServerConfig {
     public MulticastSocket MCSocket;
     public InetAddress MCAddress;
 
-//    public boolean ClientListContains(Client user) {
-//        return ClientList.containsValue(user);
-//    }
     public boolean ClientListContains(GenericPair<TUser, ObjectOutputStream> user) {
         return (Clients.containsValue(user) || OtherSvClients.contains(user.key));
     }
@@ -141,7 +137,6 @@ public class ServerConfig {
         this.ExternalIP = InetAddress.getByName(ExternalIP);
         this.InternalIP = InetAddress.getByName(InternalIP);
         this.ServerList = new ArrayList<>();
-//        this.ClientList = new HashMap<>();
         this.Clients = new HashMap<>();
         this.OtherSvClients = new ArrayList<>();
         this.MulticastPort = (MulticastPort == 0) ? DefaultConfig.DEFAULT_MULTICAST_PORT : MulticastPort;

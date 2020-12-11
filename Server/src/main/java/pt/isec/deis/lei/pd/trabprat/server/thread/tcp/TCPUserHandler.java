@@ -39,7 +39,6 @@ public class TCPUserHandler implements Runnable {
         // React accordingly
         // If logging in add user to clientlist
         // Send via Multicast every info necessary
-        Command sendCmd;
         try {
             switch (Cmd.CMD) {
                 case ECommand.CMD_REGISTER: {
@@ -87,7 +86,7 @@ public class TCPUserHandler implements Runnable {
                     break;
                 }
                 default: {
-                    sendCmd = new Command(ECommand.CMD_FORBIDDEN);
+                    Command sendCmd = new Command(ECommand.CMD_FORBIDDEN);
                     TCPHelper.SendTCPCommand(oOS, sendCmd);
                     Main.Log("[Server] to " + IP, "" + sendCmd.CMD);
                     break;
@@ -179,7 +178,6 @@ public class TCPUserHandler implements Runnable {
             if (user.getUPassword().equals(info.getUPassword())) {
                 // OK
                 boolean LoggedIn;
-//                Client c = new Client(info, oOS);
                 info.setPassword();
                 var c = new GenericPair<TUser, ObjectOutputStream>(info, oOS);
                 synchronized (SV_CFG) {
@@ -189,7 +187,6 @@ public class TCPUserHandler implements Runnable {
                     // Send channel list, online users, DMs
                     LoginPackage lp = new LoginPackage(info);
                     synchronized (SV_CFG) {
-//                        var users = SV_CFG.ClientList.values().iterator();
                         lp.Users.addAll(SV_CFG.GetAllOnlineUsers());
                         var channels = db.getAllChannels();
                         lp.Channels.addAll(channels);
@@ -205,7 +202,6 @@ public class TCPUserHandler implements Runnable {
                     Main.Log("[User: (" + info.getUID() + ") " + info.getUUsername() + "]", "has logged in.");
                     // Add user to the client list
                     synchronized (SV_CFG) {
-//                        SV_CFG.ClientList.put(UserSocket, c);
                         SV_CFG.Clients.put(UserSocket, c);
                         // Send to other users that the list of users has been updated
                         SV_CFG.BroadcastOnlineActivity();

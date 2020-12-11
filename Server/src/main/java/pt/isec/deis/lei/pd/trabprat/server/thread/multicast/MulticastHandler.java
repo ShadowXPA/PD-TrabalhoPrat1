@@ -41,7 +41,6 @@ public class MulticastHandler implements Runnable {
                 Main.Log("[" + SvID + "]", "" + cmd.CMD);
             }
 
-            // React accordingly
             switch (cmd.CMD) {
                 case ECommand.CMD_HELLO: {
                     HandleHello(cmd);
