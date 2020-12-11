@@ -12,7 +12,6 @@ import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
-import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelUser;
 import pt.isec.deis.lei.pd.trabprat.model.TMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;

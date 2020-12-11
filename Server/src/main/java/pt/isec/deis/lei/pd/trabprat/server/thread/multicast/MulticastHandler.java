@@ -1,7 +1,6 @@
 package pt.isec.deis.lei.pd.trabprat.server.thread.multicast;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.MulticastSocket;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
