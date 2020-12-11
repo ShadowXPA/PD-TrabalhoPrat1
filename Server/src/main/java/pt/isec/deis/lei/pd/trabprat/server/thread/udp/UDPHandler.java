@@ -213,6 +213,10 @@ public class UDPHandler implements Runnable {
         synchronized (SV_CFG) {
             if (SV_CFG.ServerList.contains(sv)) {
                 // Write file
+//                System.out.println("File: " + fc.getUsername());
+//                System.out.println("Offset: " + fc.getOffset());
+//                System.out.println("Length: " + fc.getLength());
+//                System.out.println("-------------------------");
                 boolean hasGUID = (fc.getGUID() != null);
                 ExplorerController.WriteFile(SV_CFG.DBConnection.getSchema(),
                         !hasGUID ? ExplorerController.AVATAR_SUBDIR : ExplorerController.FILES_SUBDIR,

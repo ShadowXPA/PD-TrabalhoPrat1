@@ -45,6 +45,9 @@ public final class ClientDialog {
             alert.setHeaderText(Header);
             alert.setContentText(Description);
             alert.showAndWait();
+            synchronized (App.CL_CFG.Stage) {
+                App.CL_CFG.Stage.notifyAll();
+            }
         });
     }
 

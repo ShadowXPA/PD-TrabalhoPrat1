@@ -29,7 +29,7 @@ public class UDPListener implements Runnable {
 
                 while (true) {
                     // Receive UDP packet
-                    DatagramPacket ReceivedPacket = new DatagramPacket(new byte[DefaultConfig.DEFAULT_UDP_PACKET_SIZE], DefaultConfig.DEFAULT_UDP_PACKET_SIZE);
+                    DatagramPacket ReceivedPacket = new DatagramPacket(new byte[DefaultConfig.DEFAULT_UDP_PACKET_SIZE + 2048], DefaultConfig.DEFAULT_UDP_PACKET_SIZE + 2048);
                     ServerSocket.receive(ReceivedPacket);
                     IP = ReceivedPacket.getAddress().getHostAddress() + ":" + ReceivedPacket.getPort();
                     Main.Log("Received UDP Packet from", IP);

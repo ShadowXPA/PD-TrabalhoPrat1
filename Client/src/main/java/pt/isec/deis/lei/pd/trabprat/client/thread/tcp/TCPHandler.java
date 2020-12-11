@@ -44,8 +44,10 @@ public class TCPHandler implements Runnable {
             switch (command.CMD) {
                 case ECommand.CMD_SERVER_SHUTDOWN: {
                     ClientDialog.ShowDialog(Alert.AlertType.WARNING, "Warning Dialog", "Server shutdown", "Server has shutdown!\nPlease come back another time.");
-                    // TODO: Fix this, it closes without leaving time for application to close
-                    System.exit(0);
+                    synchronized (App.CL_CFG.Stage) {
+                        App.CL_CFG.Stage.wait();
+                    }
+                    Platform.exit();
                     break;
                 }
                 case ECommand.CMD_SERVICE_UNAVAILABLE: {
