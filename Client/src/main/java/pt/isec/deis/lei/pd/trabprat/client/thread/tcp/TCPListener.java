@@ -38,7 +38,7 @@ public class TCPListener implements Runnable {
                 }
             }
         } catch (Exception ex) {
-            //voltar a ligar
+            //Mecanismo Failover
             ExceptionHandler.ShowException(ex);
             if (!App.CL_CFG.closing && !App.CL_CFG.ServerList.isEmpty()) {
                 App.CL_CFG.server = App.CL_CFG.ServerList.get(0);

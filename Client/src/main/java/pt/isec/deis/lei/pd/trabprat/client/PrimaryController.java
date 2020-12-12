@@ -74,12 +74,8 @@ public class PrimaryController implements Initializable {
     @FXML
     private MenuItem MI_About;
 
-    /**
-     * Initializes the controller class.
-     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
         Thread[] threads = new Thread[]{
             new Thread(() -> {
                 TdChannel();
@@ -445,7 +441,6 @@ public class PrimaryController implements Initializable {
     @FXML
     public void SendMessage(ActionEvent event) {
         if (App.CL_CFG.SelectedChannel == null) {
-            ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Select Channel", "Select a channel to send a message!");
             return;
         }
         String text_message = TFMessage.getText();
@@ -554,7 +549,6 @@ public class PrimaryController implements Initializable {
         try {
             Pair<String, String> pair = ClientDialog.ShowDialog5();
             if (pair == null) {
-                ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Sending Message", "Can´t send the message!");
                 return;
             }
             String message_to = pair.getKey();
@@ -573,7 +567,6 @@ public class PrimaryController implements Initializable {
         try {
             Pair<String, String> pair = ClientDialog.ShowDialog6();
             if (pair == null) {
-                ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Sending File", "Can´t send the file!");
                 return;
             }
             UUID uuid = UUID.randomUUID();
@@ -603,7 +596,6 @@ public class PrimaryController implements Initializable {
             TChannel channel;
             channel = ClientDialog.ShowDialog3(true);
             if (channel == null) {
-                ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Channel Creation", "Can´t create the new channel!");
                 return;
             }
             Thread td = new Thread(() -> {

@@ -25,6 +25,7 @@ public class App extends Application {
         CL_CFG.Stage = stage;
         scene = new Scene(loadFXML("Login"), DefaultWindowSizes.DEFAULT_LOGIN_WIDTH, DefaultWindowSizes.DEFAULT_LOGIN_HEIGHT);
         stage.setScene(scene);
+        stage.setTitle("Slackovski");
         stage.setResizable(false);
         stage.setOnCloseRequest(e->{
             e.consume();
