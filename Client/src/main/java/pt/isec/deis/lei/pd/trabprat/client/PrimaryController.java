@@ -260,6 +260,9 @@ public class PrimaryController implements Initializable {
         Platform.runLater(() -> {
             Label label_description = new Label();
             Label label_num_users = new Label();
+            Label label_name_channel = new Label();
+            label_name_channel.setStyle("-fx-font-weight: bold; -fx-font-size: 14");
+            Label label_other = new Label();
             Label label_num_messages = new Label();
             Label label_num_files = new Label();
             try {
@@ -277,10 +280,16 @@ public class PrimaryController implements Initializable {
                         }
                     }
                     label_description.setWrapText(true);
+                    label_name_channel.setText(((TChannel) channel).getCName());
+                    Channel_DM_Info.getChildren().add(label_name_channel);
                     label_description.setText("Description: " + ((TChannel) channel).getCDescription());
                     Channel_DM_Info.getChildren().add(label_description);
                     label_num_users.setText("Number of users: " + String.valueOf(num_users));
                     Channel_DM_Info.getChildren().add(label_num_users);
+                }else{
+                    TUser aux = (TUser)channel;
+                    label_name_channel.setText(aux.getUName());
+                    Channel_DM_Info.getChildren().add(label_name_channel);
                 }
                 int[] array;
                 if (channel instanceof TChannel) {
@@ -290,6 +299,7 @@ public class PrimaryController implements Initializable {
                 }
                 label_num_messages.setText("Number of messages: " + String.valueOf(array[0]));
                 label_num_files.setText("Number of files: " + String.valueOf(array[1]));
+                
                 Channel_DM_Info.getChildren().add(label_num_messages);
                 Channel_DM_Info.getChildren().add(label_num_files);
                 if (App.CL_CFG.SelectedChannel instanceof TChannel && ((TChannel) App.CL_CFG.SelectedChannel).getCUID().equals(App.CL_CFG.MyUser)) {
@@ -391,7 +401,9 @@ public class PrimaryController implements Initializable {
                     label_text_message.setMinWidth(VBox_Mess_Files.getMaxWidth());
                     label_text_message.setMaxWidth(VBox_Mess_Files.getMaxWidth());
                     label_text_message.setWrapText(true);
-                    label_name.setText("Message from: " + msg.getMUID().getUName());
+                    
+                    label_name.setText(msg.getMUID().getUName());
+                    label_name.setStyle("-fx-font-weight: bold; -fx-font-size: 14");
                     label_date.setText("Date: " + sdf.format(msg.getDate()));
                     label_text_message.setText("Message: " + msg.getMText());
                     label_space.setText("\n");
@@ -407,7 +419,8 @@ public class PrimaryController implements Initializable {
                     double db = VBox_Mess_Files.getMaxWidth() / 4.0;
                     button.setMinWidth(db);
                     button.setMaxWidth(db);
-                    label_name.setText("File from: " + msg.getMUID().getUName());
+                    label_name.setText(msg.getMUID().getUName());
+                    label_name.setStyle("-fx-font-weight: bold; -fx-font-size: 14");
                     label_date.setText("Date: " + sdf.format(msg.getDate()));
                     button.setText(msg.getMText());
                     button.setId("" + msg.getMID());
