@@ -83,7 +83,7 @@
                            <graphic>
                               <ImageView fitHeight="25.0" fitWidth="25.0">
                                  <image>
-                                    <Image url="@images.jpg" />
+                                    <Image url="@send_file.jpg" />
                                  </image>
                               </ImageView>
                            </graphic></Button>
@@ -91,7 +91,7 @@
                            <graphic>
                               <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@send.png" />
+                                    <Image url="@send_message.png" />
                                  </image>
                               </ImageView>
                            </graphic></Button>
