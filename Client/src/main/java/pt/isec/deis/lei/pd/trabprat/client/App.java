@@ -29,7 +29,6 @@ public class App extends Application {
         stage.setResizable(false);
         stage.setOnCloseRequest(e->{
             e.consume();
-            //stage.close();
             try {
                 this.stop();
             } catch (Exception ex) {
@@ -58,7 +57,6 @@ public class App extends Application {
     public static void main(String[] args) {
         CL_CFG = new ClientConfig();
         connectionToServer(args);
-        // Do last
         try {
             launch();
         } catch (Exception ex) {
@@ -71,7 +69,7 @@ public class App extends Application {
         DatagramSocket socket;
         if (args != null) {
             try {
-                // Connect to server
+                //Connect to server with UDP
                 CL_CFG.server = Initialize.InitializeServerConection(args);
             } catch (UnknownHostException ex) {
                 ex.printStackTrace();
@@ -88,8 +86,7 @@ public class App extends Application {
         }
         Initialize.ConnectToTCP();
         try {
-            //CL_CFG.setSocket(tcpSoc);
-//            Thread thread = new Thread(new TCPListener(CL_CFG.server), "TCPListener");
+            //Thread for TCP listener
             Thread thread = new Thread(new TCPListener(CL_CFG.getSocket(), CL_CFG.getOOS(), CL_CFG.getOIS()));
             thread.setDaemon(true);
             thread.start();

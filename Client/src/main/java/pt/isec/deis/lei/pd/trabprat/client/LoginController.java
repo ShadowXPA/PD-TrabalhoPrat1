@@ -31,15 +31,10 @@ public class LoginController implements Initializable {
     private Button BtnLogin;
     @FXML
     private Hyperlink HypRegister;
-
     private static Scene scene;
 
-    /**
-     * Initializes the controller class.
-     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
     }
 
     @FXML
@@ -49,6 +44,7 @@ public class LoginController implements Initializable {
             String Password = PFPassword.getText();
             boolean bool = true;
 
+            //usa o validator para verificar o utilizador com REGEX
             if (!Validator.Username(Username)) {
                 bool = false;
                 ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Username Error", "The username is invalid!");
@@ -56,6 +52,7 @@ public class LoginController implements Initializable {
             } else {
                 TFUsername.setStyle("-fx-border-color: none");
             }
+            //usa o validator para verificar a password com REGEX
             if (!Validator.Password(Password)) {
                 bool = false;
                 ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Password Error", "The passwords need to have one upper case letter, one small case letter, one number and a minimum of 6 characters!");
@@ -63,14 +60,17 @@ public class LoginController implements Initializable {
             } else {
                 PFPassword.setStyle("-fx-border-color: none");
             }
+            //Encriptação da password
             Password = AES.Encrypt(Password);
             if (bool) {
                 boolean accepted = false;
+                //Envio do login para o server
                 ServerController.Login(new TUser(0, "", Username, Password, "", 0));
                 synchronized (App.CL_CFG) {
                     App.CL_CFG.wait();
                     accepted = App.CL_CFG.isLoggedIn();
                 }
+                //Verifica se o user existe e está tudo correto
                 if (accepted) {
                     App.CL_CFG.Stage.setWidth(DefaultWindowSizes.DEFAULT_MAIN_WIDTH);
                     App.CL_CFG.Stage.setHeight(DefaultWindowSizes.DEFAULT_MAIN_HEIGHT);

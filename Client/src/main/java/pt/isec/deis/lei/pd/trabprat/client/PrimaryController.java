@@ -76,6 +76,7 @@ public class PrimaryController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        //Threadas para tratar das varias janelas da janela principal
         Thread[] threads = new Thread[]{
             new Thread(() -> {
                 TdChannel();
@@ -103,6 +104,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void TdChannel() {
+        //Atualiza a channel list
         while (true) {
             synchronized (App.CL_CFG.LockCL) {
                 try {
@@ -117,6 +119,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void TdMessages() {
+        //Atualiza as channel messages
         while (true) {
             synchronized (App.CL_CFG.LockCM) {
                 try {
@@ -133,6 +136,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void TdDM() {
+        //Atualiza a lista de DMUsers
         while (true) {
             synchronized (App.CL_CFG.LockDMUsers) {
                 try {
@@ -146,6 +150,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void TdOnlineUsers() {
+        //Atualiza a lista dos Users online
         while (true) {
             synchronized (App.CL_CFG.LockOUsers) {
                 try {
@@ -159,6 +164,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void ScrollPanes() {
+        //coloca as barras de scroll
         sp_main.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         sp_main.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         sp_channel.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -169,10 +175,12 @@ public class PrimaryController implements Initializable {
         sp_info.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         sp_users.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         sp_users.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        //faz o scroll automaticamente ser colocado nas ultimas mensagens
         sp_main.vvalueProperty().bind(VBox_Mess_Files.heightProperty());
     }
 
     public void VBox_ChannelList() {
+        //trata da lista de canais
         Platform.runLater(() -> {
             vboxChannel.getChildren().removeAll(vboxChannel.getChildren());
             for (int i = 0; i < App.CL_CFG.ChannelsList.size(); i++) {
@@ -194,6 +202,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void VBox_DMUsers() {
+        //Trata dos DM users
         Platform.runLater(() -> {
             vboxDM.getChildren().removeAll(vboxDM.getChildren());
             for (int i = 0; i < App.CL_CFG.DMUsers.size(); i++) {
@@ -215,6 +224,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void VBox_UsersOnline() {
+        //Trata dos users online
         Platform.runLater(() -> {
             vboxUserOnline.getChildren().removeAll(vboxUserOnline.getChildren());
             for (int i = 0; i < App.CL_CFG.OnlineUsers.size(); i++) {
@@ -230,14 +240,17 @@ public class PrimaryController implements Initializable {
     }
 
     public void buttonChannels(Button button) {
+        //Butoes dos diversos canais
         try {
             String ChannelName = button.getText();
             var channel = App.CL_CFG.GetChannelByCName(ChannelName);
             App.CL_CFG.SelectedChannel = channel;
+            //Verifica se o user pertence ao canal ou se este é o dono
             boolean bool = ClientDialog.ShowDialog2(channel);
             if (!bool) {
                 ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error", "Channel Password", "Password is invalid!");
             } else {
+                //mensagens do canal
                 ServerController.ChannelMessages();
             }
         } catch (Exception ex) {
@@ -246,10 +259,12 @@ public class PrimaryController implements Initializable {
     }
 
     public void buttonDMUsers(Button button) {
+        //butoes dos diversos DM users
         try {
             String DMChannel = button.getText();
             var channel = App.CL_CFG.GetDMByUName(DMChannel);
             App.CL_CFG.SelectedChannel = channel;
+            //mensagens do DM
             ServerController.ChannelMessages();
         } catch (Exception ex) {
             ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error", "Channel", ex.getMessage());
@@ -257,6 +272,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void InfoChannel(Object channel) {
+        //Info dos canais
         Platform.runLater(() -> {
             Label label_description = new Label();
             Label label_num_users = new Label();
@@ -270,6 +286,7 @@ public class PrimaryController implements Initializable {
                 if (channel == null) {
                     return;
                 }
+                //verifica se é um canal ou um DM
                 if (channel instanceof TChannel) {
                     int num_users = 0;
                     synchronized (App.CL_CFG.LockCU) {
@@ -286,8 +303,8 @@ public class PrimaryController implements Initializable {
                     Channel_DM_Info.getChildren().add(label_description);
                     label_num_users.setText("Number of users: " + String.valueOf(num_users));
                     Channel_DM_Info.getChildren().add(label_num_users);
-                }else{
-                    TUser aux = (TUser)channel;
+                } else {
+                    TUser aux = (TUser) channel;
                     label_name_channel.setText(aux.getUName());
                     Channel_DM_Info.getChildren().add(label_name_channel);
                 }
@@ -299,9 +316,9 @@ public class PrimaryController implements Initializable {
                 }
                 label_num_messages.setText("Number of messages: " + String.valueOf(array[0]));
                 label_num_files.setText("Number of files: " + String.valueOf(array[1]));
-                
                 Channel_DM_Info.getChildren().add(label_num_messages);
                 Channel_DM_Info.getChildren().add(label_num_files);
+                //verifica se é o owner para dar a permissao para editar e eliminar
                 if (App.CL_CFG.SelectedChannel instanceof TChannel && ((TChannel) App.CL_CFG.SelectedChannel).getCUID().equals(App.CL_CFG.MyUser)) {
                     Button EditChannel = new Button("Edit Channel");
                     EditChannel.setOnAction(new EventHandler<ActionEvent>() {
@@ -328,6 +345,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void EditChannel(Button button) {
+        //botao para editar o canal
         try {
             TChannel channel;
             channel = ClientDialog.ShowDialog3(false);
@@ -338,6 +356,7 @@ public class PrimaryController implements Initializable {
             Thread td = new Thread(() -> {
                 try {
                     TChannel c = (TChannel) App.CL_CFG.SelectedChannel;
+                    //envia ao servidor as alteraçoes
                     ServerController.EditChannel(new TChannelUser(new TChannel(c.getCID(), c.getCUID(), c.getCName(), channel.getCDescription(), channel.getCPassword(), c.getCDate()), App.CL_CFG.MyUser));
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -351,6 +370,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void DeleteChannel(Button button) {
+        //apagar o canal
         try {
             TChannel channel;
             boolean bool = ClientDialog.ShowDialog4();
@@ -358,6 +378,7 @@ public class PrimaryController implements Initializable {
                 Thread td = new Thread(() -> {
                     try {
                         TChannel c = (TChannel) App.CL_CFG.SelectedChannel;
+                        //diz ao servidor que o canal foi apagado
                         ServerController.DeleteChannel(new TChannelUser(c, App.CL_CFG.MyUser));
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -372,6 +393,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void Messages(boolean bool) {
+        //Mensagens dos canais e DM´s
         //TODO WRAPTEXT
         Platform.setImplicitExit(false);
         Platform.runLater(() -> {
@@ -398,9 +420,10 @@ public class PrimaryController implements Initializable {
                     Label label_text_message = new Label();
                     Label label_date = new Label();
                     Label label_space = new Label();
-                    label_text_message.setMinWidth(VBox_Mess_Files.getMaxWidth());
-                    label_text_message.setMaxWidth(VBox_Mess_Files.getMaxWidth());
                     label_text_message.setWrapText(true);
+                    label_text_message.setStyle("-fx-word-wrap: break-word");
+                    label_text_message.setPrefWidth(VBox_Mess_Files.getWidth()/2);
+                    label_text_message.setPrefHeight(100);
                     
                     label_name.setText(msg.getMUID().getUName());
                     label_name.setStyle("-fx-font-weight: bold; -fx-font-size: 14");
@@ -443,6 +466,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void FileDownload(Button button) {
+        //Download file quando clica no botao
         try {
             TMessage m = App.CL_CFG.GetMessageByID(Integer.parseInt(button.getId()));
             ServerController.GetFile(m);
@@ -453,16 +477,19 @@ public class PrimaryController implements Initializable {
 
     @FXML
     public void SendMessage(ActionEvent event) {
+        //verifica se está em algum canal para poder enviar a mensagem
         if (App.CL_CFG.SelectedChannel == null) {
             return;
         }
         String text_message = TFMessage.getText();
+        //verifica se a mensagem esta vazia
         if (!text_message.isEmpty()) {
             try {
                 final Object object = App.CL_CFG.SelectedChannel;
                 TMessage m = new TMessage(0, App.CL_CFG.MyUser, text_message, null, 0);
                 TChannelMessage cm = null;
                 TDirectMessage dm = null;
+                //verifica se é um canal ou DM
                 if (App.CL_CFG.SelectedChannel instanceof TChannel) {
                     cm = new TChannelMessage((TChannel) object, m);
                 } else if (App.CL_CFG.SelectedChannel instanceof TUser) {
@@ -472,6 +499,7 @@ public class PrimaryController implements Initializable {
                 TFMessage.setText("");
                 Thread td = new Thread(() -> {
                     try {
+                        //envia ao servidor a nova mensagem
                         ServerController.NewMessage(obj);
                     } catch (Exception ex) {
                         ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error File", "Can´t send message!");
@@ -487,6 +515,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     public void SendFile(ActionEvent event) {
+        //Envia o ficheiro para o servidor 
         if (App.CL_CFG.SelectedChannel == null) {
             ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Select Channel", "Select a channel to send a file!");
             return;
@@ -499,6 +528,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void OnDragFile_spmain(DragEvent event) {
+        //quando dropa um ficheiro ele irá ser transferido para o servidor
         Dragboard drag = event.getDragboard();
         if (drag.hasFiles()) {
             if (App.CL_CFG.SelectedChannel == null) {
@@ -512,6 +542,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void OnKeyPressed_tfmessage(KeyEvent event) {
+        //verifica se clicou no enter para enviar a mensagem
         if (event.getCode().equals(KeyCode.ENTER)) {
             btnSend.fire();
         }
@@ -519,6 +550,7 @@ public class PrimaryController implements Initializable {
     }
 
     private void SendFileToServer(File file) {
+        //enviar o ficheiro para o servidor
         if (file != null) {
             try {
                 final Object object = App.CL_CFG.SelectedChannel;
@@ -534,7 +566,9 @@ public class PrimaryController implements Initializable {
                 final Object obj = cm == null ? dm : cm;
                 Thread td = new Thread(() -> {
                     try {
+                        //envia os dados do ficheiro ao servidor (escrever o nome na base de dados)
                         ServerController.NewMessage(obj);
+                        //enviar o ficheiro para o servidor
                         ServerController.SendFile(file.getAbsolutePath(), App.CL_CFG.MyUser.getUUsername(), uuid);
                         ClientDialog.ShowDialog(Alert.AlertType.INFORMATION, "Info Dialog", "Info File", "File uploaded!");
                     } catch (Exception ex) {
@@ -551,6 +585,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void OnDragOverFile_spmain(DragEvent event) {
+        //aceitar o evento drag do ficheiro
         if (event.getGestureSource() != sp_main && event.getDragboard().hasFiles()) {
             event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
         }
@@ -559,6 +594,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void SendMessage_menuitem(ActionEvent event) {
+        //quando clica em enviar mensagem ou faz enter para enviar uma nova mensagem
         try {
             Pair<String, String> pair = ClientDialog.ShowDialog5();
             if (pair == null) {
@@ -569,6 +605,7 @@ public class PrimaryController implements Initializable {
             TUser user = new TUser(0, null, message_to, null, null, 0);
             TMessage message = new TMessage(0, App.CL_CFG.MyUser, message_text, null, 0);
             TDirectMessage dm = new TDirectMessage(message, user);
+            //envai a nova mensagem para o servidor
             ServerController.NewMessage(dm);
         } catch (Exception ex) {
             ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error Sending Message", "Can´t send the message!");
@@ -577,6 +614,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void SendFile_menuitem(ActionEvent event) {
+        //quando escolhe um ficheiro para enviar
         try {
             Pair<String, String> pair = ClientDialog.ShowDialog6();
             if (pair == null) {
@@ -589,7 +627,9 @@ public class PrimaryController implements Initializable {
             TDirectMessage dm = new TDirectMessage(new TMessage(0, App.CL_CFG.MyUser, file.getName(), uuid.toString(), 0), new TUser(0, null, message_to, null, null, 0));
             Thread td = new Thread(() -> {
                 try {
+                    //enviar o nome para ser colocado na base de dados
                     ServerController.NewMessage(dm);
+                    //Enviar ficheiro para o servidor
                     ServerController.SendFile(file_path, App.CL_CFG.MyUser.getUUsername(), uuid);
                     ClientDialog.ShowDialog(Alert.AlertType.INFORMATION, "Info Dialog", "Info File", "File uploaded!");
                 } catch (IOException ex) {
@@ -605,6 +645,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void AddChannel_menuitem(ActionEvent event) {
+        //menu item para adicionar o canal
         try {
             TChannel channel;
             channel = ClientDialog.ShowDialog3(true);
@@ -627,6 +668,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void SearchUsers_menuitem(ActionEvent event) {
+        //menu item para encontrar utilizadores
         try {
             String str = ClientDialog.ShowDialog7();
             if (str == null) {
@@ -653,7 +695,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void About_menuitem(ActionEvent event) {
-        ClientDialog.ShowDialog(Alert.AlertType.INFORMATION, "Credits", null, "Program made by:\n- Leandro Adão Fidalgo\n- "
-                + "Pedro dos Santos Alves\nFor Distributed Programming");
+        ClientDialog.ShowDialog(Alert.AlertType.INFORMATION, "Credits", null, "Program made by:\n- Leandro Adão Fidalgo - 2017017144\n- "
+                + "Pedro dos Santos Alves - 2019112789\nFor Distributed Programming");
     }
 }
