@@ -139,7 +139,7 @@ public class MulticastListener implements Runnable {
         Server sv = new Server(serverID, serverStart, iAdd, udpPort, tcpPort, 0);
         GenericPair<String, Server> svP = new GenericPair<>(SV_CFG.ServerID, sv);
         Command cmd = new Command(ECommand.CMD_HEARTBEAT, svP);
-        while (true) {
+        while (!mCS.isClosed()) {
             try {
                 synchronized (SV_CFG) {
                     svP.value.setUserCount(SV_CFG.Clients.size());

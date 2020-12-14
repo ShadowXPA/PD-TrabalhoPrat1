@@ -8,6 +8,8 @@ import java.io.IOException;
 
 public final class ExplorerController {
 
+    private static final Object Lock = new Object();
+
     private ExplorerController() {
     }
 
@@ -45,15 +47,31 @@ public final class ExplorerController {
     }
 
     private static void _WriteFile(String Path, byte[] Bytes, long Offset, int Length) throws FileNotFoundException, IOException, InterruptedException {
-        try ( FileOutputStream f = new FileOutputStream(Path, true)) {
+        int i = 0;
+        System.out.println("Path: " + Path + "\nOffset: " + Offset + "\nLength: " + Length);
+        File file = new File(Path);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        try {
             if (Length > 0) {
-                synchronized (f.getChannel()) {
+                synchronized (Lock) {
+                    FileOutputStream f = new FileOutputStream(file, true);
                     while (f.getChannel().position() < Offset) {
-                        f.getChannel().wait(10);
+                        f.close();
+                        Lock.wait(10);
+                        f = new FileOutputStream(file, true);
+                        System.out.println(f.getChannel().position() + "/" + Offset + " - " + i);
+                        i++;
                     }
+                    f.write(Bytes, 0, Length);
+                    System.out.println(f.getChannel().position() + "/" + Offset + " - " + i);
+                    f.flush();
+                    f.close();
                 }
-                f.write(Bytes, 0, Length);
             }
+        } catch (Exception ex) {
+
         }
     }
 

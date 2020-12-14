@@ -17,6 +17,7 @@ import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
+import pt.isec.deis.lei.pd.trabprat.server.db.Database;
 import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
 import pt.isec.deis.lei.pd.trabprat.server.model.SyncDBPackage;
 
@@ -121,7 +122,7 @@ public class UDPHandler implements Runnable {
         }
     }
 
-    private void HandleSync(Command cmd) throws IOException {
+    private void HandleSync(Command cmd) throws IOException, InterruptedException {
         GenericPair<String, Server> gp = (GenericPair<String, Server>) cmd.Body;
         Server sv = gp.value;
         synchronized (SV_CFG) {
@@ -152,7 +153,7 @@ public class UDPHandler implements Runnable {
         }
     }
 
-    private void HandleSync_SendFileHelper(Server sv, File[] files, boolean avatar) throws IOException {
+    private void HandleSync_SendFileHelper(Server sv, File[] files, boolean avatar) throws IOException, InterruptedException {
         for (var f : files) {
             FileChunk fc;
             Command sendCmd;
@@ -173,8 +174,11 @@ public class UDPHandler implements Runnable {
                 UDPHelper.SendUDPCommand(ServerSocket, sv.getAddress(), sv.getUDPPort(), sendCmd);
                 Offset += Length;
                 buffer = ExplorerController._ReadFile(path, Offset, Length);
+//                synchronized (this) {
+//                    this.wait(100);
+//                }
             }
-            fc = new FileChunk(buffer, Offset, buffer.length, fileName, guid, extension);
+            fc = new FileChunk(null, 0, 0, fileName, guid, extension);
             sendCmd = new Command(ECommand.CMD_SYNC_F, new GenericPair<>(SV_CFG.ServerID, fc));
             UDPHelper.SendUDPCommand(ServerSocket, sv.getAddress(), sv.getUDPPort(), sendCmd);
         }
@@ -207,19 +211,23 @@ public class UDPHandler implements Runnable {
         GenericPair<String, FileChunk> gp = (GenericPair<String, FileChunk>) cmd.Body;
         Server sv = new Server(gp.key);
         FileChunk fc = gp.value;
+        Database db;
+        boolean b;
         synchronized (SV_CFG) {
-            if (SV_CFG.ServerList.contains(sv)) {
-                // Write file
-                boolean hasGUID = (fc.getGUID() != null);
-                ExplorerController.WriteFile(SV_CFG.DBConnection.getSchema(),
-                        !hasGUID ? ExplorerController.AVATAR_SUBDIR : ExplorerController.FILES_SUBDIR,
-                        !hasGUID ? fc.getUsername() + fc.getExtension() : fc.getGUID().toString() + fc.getExtension(),
-                        fc.getFilePart(),
-                        fc.getOffset(),
-                        fc.getLength());
-            } else {
-                Main.Log("[Warning]", "Server '" + gp.key + "' not found");
-            }
+            db = SV_CFG.DBConnection;
+            b = SV_CFG.ServerList.contains(sv);
+        }
+        if (b) {
+            // Write file
+            boolean hasGUID = (fc.getGUID() != null);
+            ExplorerController.WriteFile(db.getSchema(),
+                    !hasGUID ? ExplorerController.AVATAR_SUBDIR : ExplorerController.FILES_SUBDIR,
+                    !hasGUID ? fc.getUsername() + fc.getExtension() : fc.getGUID().toString() + fc.getExtension(),
+                    fc.getFilePart(),
+                    fc.getOffset(),
+                    fc.getLength());
+        } else {
+            Main.Log("[Warning]", "Server '" + gp.key + "' not found");
         }
     }
 }
