@@ -101,21 +101,25 @@ public class MulticastListener implements Runnable {
             td2.start();
             // Listen for multicast packets
             while (true) {
-                DatagramPacket ReceivedPacket = new DatagramPacket(new byte[DefaultConfig.DEFAULT_UDP_PACKET_SIZE], DefaultConfig.DEFAULT_UDP_PACKET_SIZE);
-                mCS.receive(ReceivedPacket);
-                IP = ReceivedPacket.getAddress().getHostAddress() + ":" + ReceivedPacket.getPort();
-                Command cmd = UDPHelper.ReadMulticastCommand(ReceivedPacket);
-                String SvID = ((GenericPair<String, ?>) cmd.Body).key;
+                try {
+                    DatagramPacket ReceivedPacket = new DatagramPacket(new byte[DefaultConfig.DEFAULT_UDP_PACKET_SIZE * 16], DefaultConfig.DEFAULT_UDP_PACKET_SIZE * 16);
+                    mCS.receive(ReceivedPacket);
+                    IP = ReceivedPacket.getAddress().getHostAddress() + ":" + ReceivedPacket.getPort();
+                    Command cmd = UDPHelper.ReadMulticastCommand(ReceivedPacket);
+                    String SvID = ((GenericPair<String, ?>) cmd.Body).key;
 
-                if (!SvID.equals(SV_CFG.ServerID)) {
-                    try {
-                        // Create handler threads
-                        Thread td = new Thread(new MulticastHandler(SV_CFG, mCS, SvID, cmd));
-                        td.setDaemon(true);
-                        td.start();
-                    } catch (Exception ex) {
-                        ExceptionHandler.ShowException(ex);
+                    if (!SvID.equals(SV_CFG.ServerID)) {
+                        try {
+                            // Create handler threads
+                            Thread td = new Thread(new MulticastHandler(SV_CFG, mCS, SvID, cmd));
+                            td.setDaemon(true);
+                            td.start();
+                        } catch (Exception ex) {
+                            ExceptionHandler.ShowException(ex);
+                        }
                     }
+                } catch (Exception ex) {
+                    ExceptionHandler.ShowException(ex);
                 }
             }
         } catch (Exception ex) {

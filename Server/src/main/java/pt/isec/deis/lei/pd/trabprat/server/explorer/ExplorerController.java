@@ -47,8 +47,6 @@ public final class ExplorerController {
     }
 
     private static void _WriteFile(String Path, byte[] Bytes, long Offset, int Length) throws FileNotFoundException, IOException, InterruptedException {
-        int i = 0;
-        System.out.println("Path: " + Path + "\nOffset: " + Offset + "\nLength: " + Length);
         File file = new File(Path);
         if (!file.exists()) {
             file.createNewFile();
@@ -61,17 +59,13 @@ public final class ExplorerController {
                         f.close();
                         Lock.wait(10);
                         f = new FileOutputStream(file, true);
-                        System.out.println(f.getChannel().position() + "/" + Offset + " - " + i);
-                        i++;
                     }
                     f.write(Bytes, 0, Length);
-                    System.out.println(f.getChannel().position() + "/" + Offset + " - " + i);
                     f.flush();
                     f.close();
                 }
             }
         } catch (Exception ex) {
-
         }
     }
 
