@@ -9,8 +9,7 @@ import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 
 public class TCPListener implements Runnable {
-
-    private final Socket socket;
+    private final Socket socket; //socket para o TCP
     private final ObjectOutputStream oOS; //ObjectOutputStream para o TCP
     private final ObjectInputStream oIS;  //ObjectInputStream para o TCP
 
@@ -28,7 +27,6 @@ public class TCPListener implements Runnable {
             while (Continue) {
                 cmd = (Command) oIS.readUnshared();
                 System.out.println("Command from server: " + cmd);
-
                 try {
                     Thread td = new Thread(new TCPHandler(socket, oOS, oIS, cmd));
                     td.setDaemon(true);

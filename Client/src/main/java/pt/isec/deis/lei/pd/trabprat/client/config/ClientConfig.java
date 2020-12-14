@@ -24,16 +24,22 @@ public class ClientConfig {
     public ArrayList<TUser> DMUsers;
     //list of users connected to channels
     public ArrayList<TChannelUser> ChannelUsers;
+    //Lock channel users
     public final Object LockCU = new Object();
     //list of messages from the channel
     public volatile ArrayList<TChannelMessage> ChannelMessage;
+    //Lock channel messages
     public final Object LockCM = new Object();
     public volatile ArrayList<TDirectMessage> DirectMessages;
     //list for found users
-    public ArrayList<TUser>  FoundUsers;
+    public ArrayList<TUser> FoundUsers;
+    //Lock found users
     public final Object LockFo = new Object();
+    //Lock channel list
     public final Object LockCL = new Object();
+    //Lock DM users
     public final Object LockDMUsers = new Object();
+    //Lock online users
     public final Object LockOUsers = new Object();
     //selected channel
     public Object SelectedChannel;

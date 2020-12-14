@@ -45,6 +45,7 @@ public final class ServerController {
                 if (extIndex != -1) {
                     extension = Path.substring(extIndex);
                 }
+                //Enviar FIleChunk para o server com o comando upload
                 command = new Command(ECommand.CMD_UPLOAD, new FileChunk(temp, i, temp.length, Username, GUID, extension));
                 TCPHelper.SendTCPCommand(OOS, command);
             }

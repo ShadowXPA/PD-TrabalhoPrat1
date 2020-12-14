@@ -26,10 +26,10 @@ import pt.isec.deis.lei.pd.trabprat.model.TUser;
 
 public class TCPHandler implements Runnable {
 
-    private final Socket socket;
+    private final Socket socket; //Socket para o TCP
     private final ObjectOutputStream oOS; //ObjectOutputStream para o TCP
     private final ObjectInputStream oIS;  //ObjectInputStream para o TCP
-    private final Command command;
+    private final Command command;  //Comando proveniente do server
 
     public TCPHandler(Socket socket, ObjectOutputStream oOS, ObjectInputStream oIS, Command command) throws IOException {
         this.socket = socket;
@@ -58,38 +58,37 @@ public class TCPHandler implements Runnable {
                 }
                 case ECommand.CMD_CREATED: {
                     if (command.Body instanceof TUser) {
+                        //o utilizador foi criado com sucesso
                         TUser user = (TUser) command.Body;
                         System.out.println("Utilizador criado!");
-                        // Send File
+                        // Send File to server
                         ServerController.SendFile(user.getUPhoto(), user.getUUsername(), null);
                         ClientDialog.ShowDialog(Alert.AlertType.INFORMATION, "Information Dialog", "User", "The user has been successfully created!");
                     } else if (command.Body instanceof ArrayList<?>) {
                         if (((ArrayList<?>) command.Body).get(0) instanceof TChannelMessage
                                 && App.CL_CFG.SelectedChannel instanceof TChannel
                                 && ((TChannel) App.CL_CFG.SelectedChannel).equals(((ArrayList<TChannelMessage>) command.Body).get(0).getCID())) {
+                            //Mensagem do canal foi criada com sucesso
                             synchronized (App.CL_CFG.LockCM) {
                                 App.CL_CFG.ChannelMessage = (ArrayList<TChannelMessage>) command.Body;
                                 App.CL_CFG.DirectMessages = null;
                                 App.CL_CFG.LockCM.notifyAll();
                             }
-                        }/* else if (((ArrayList<?>) command.Body).get(0) instanceof TDirectMessage) {
-                            synchronized (App.CL_CFG.LockCM) {
-                                App.CL_CFG.DirectMessages = (ArrayList<TDirectMessage>) command.Body;
-                                App.CL_CFG.ChannelMessage = null;
-                                App.CL_CFG.LockCM.notifyAll();
-                            }
-                        }*/ else if (((ArrayList<?>) command.Body).get(0) instanceof TChannel) {
+                        } else if (((ArrayList<?>) command.Body).get(0) instanceof TChannel) {
+                            //Canal criado com sucesso
                             synchronized (App.CL_CFG.LockCL) {
                                 App.CL_CFG.ChannelsList = (ArrayList<TChannel>) command.Body;
                                 App.CL_CFG.LockCL.notifyAll();
                             }
                         } else if (((ArrayList<?>) command.Body).get(0) instanceof TUser) {
+                            //Atualizar os DM Users
                             synchronized (App.CL_CFG.LockDMUsers) {
                                 App.CL_CFG.DMUsers = (ArrayList<TUser>) command.Body;
                                 App.CL_CFG.LockDMUsers.notifyAll();
                             }
                         }
                     } else if (command.Body instanceof GenericPair<?, ?>) {
+                        //Criar mensagem DM
                         var body = (GenericPair<ArrayList<TDirectMessage>, ArrayList<TUser>>) command.Body;
                         if (App.CL_CFG.SelectedChannel instanceof TUser
                                 && (((TUser) App.CL_CFG.SelectedChannel).equals(body.key.get(0).getUID())
@@ -109,6 +108,7 @@ public class TCPHandler implements Runnable {
                     break;
                 }
                 case ECommand.CMD_BAD_REQUEST: {
+                    //Mostrar as mensagens de erro provenientes do servidor
                     if (command.Body instanceof String) {
                         ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error", (String) command.Body);
                     }
@@ -128,6 +128,7 @@ public class TCPHandler implements Runnable {
                     break;
                 }
                 case ECommand.CMD_UNAUTHORIZED: {
+                    //Não autorizado
                     if (command.Body instanceof String) {
                         ClientDialog.ShowDialog(Alert.AlertType.ERROR, "Error Dialog", "Error", (String) command.Body);
                     }
@@ -141,6 +142,7 @@ public class TCPHandler implements Runnable {
                     break;
                 }
                 case ECommand.CMD_GET_CHANNEL_MESSAGES: {
+                    //Mensagens de um canal
                     synchronized (App.CL_CFG.LockCM) {
                         App.CL_CFG.ChannelMessage = (ArrayList<TChannelMessage>) command.Body;
                         App.CL_CFG.DirectMessages = null;
@@ -149,6 +151,7 @@ public class TCPHandler implements Runnable {
                     break;
                 }
                 case ECommand.CMD_GET_DM_MESSAGES: {
+                    //Mensagens dos DM
                     synchronized (App.CL_CFG.LockCM) {
                         App.CL_CFG.DirectMessages = (ArrayList<TDirectMessage>) command.Body;
                         App.CL_CFG.ChannelMessage = null;
@@ -168,6 +171,7 @@ public class TCPHandler implements Runnable {
                         try {
                             // Write File
                             String home = System.getProperty("user.home");
+                            //Os downloads serão colocados na pasta de transferencias
                             try ( FileOutputStream f = new FileOutputStream(home + "/Downloads/" + fc.getUsername(), true)) {
                                 if (fc.getLength() > 0) {
                                     synchronized (f.getChannel()) {

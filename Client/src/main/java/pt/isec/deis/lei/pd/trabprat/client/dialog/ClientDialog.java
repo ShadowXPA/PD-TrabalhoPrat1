@@ -52,6 +52,7 @@ public final class ClientDialog {
     }
 
     public static boolean ShowDialog2(TChannel tchannel) throws Exception {
+        //Serve quando clicar num canal ao qual nao pertenca ou nao seja owner
         if (tchannel.getCUID().equals(App.CL_CFG.MyUser) || tchannel.getCPassword() == null) {
             return true;
         }
@@ -75,6 +76,7 @@ public final class ClientDialog {
     }
 
     public static TChannel ShowDialog3(boolean bool) throws Exception {
+        //serve para criar e editar os canais
         String str;
         Dialog<TChannel> dialog = new Dialog<>();
         if (bool) {
@@ -135,6 +137,7 @@ public final class ClientDialog {
     }
 
     public static boolean ShowDialog4() {
+        //quando um canal está a ser eliminado aparece o seguinte dialog
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Channel Dialog");
         alert.setContentText("Are you sure that want to delete the channel?");

@@ -12,9 +12,8 @@ public final class DefaultWindowSizes {
     //Register
     public static final double DEFAULT_REGISTER_WIDTH = 450;
     public static final double DEFAULT_REGISTER_HEIGHT = 600;
-    
+
     //MainPage
     public static final double DEFAULT_MAIN_WIDTH = 1300;
     public static final double DEFAULT_MAIN_HEIGHT = 760;
-
 }
