@@ -36,6 +36,11 @@ public class FileChunk implements Serializable {
         return Extension;
     }
 
+    @Override
+    public String toString() {
+        return "FileChunk{" + "Offset=" + Offset + ", Length=" + Length + ", Username=" + Username + ", GUID=" + GUID + ", Extension=" + Extension + '}';
+    }
+
     public FileChunk(byte[] FilePart, long Offset, int Length, String Username, UUID GUID, String Extension) {
         this.FilePart = FilePart;
         this.Offset = Offset;

@@ -3,7 +3,7 @@ package pt.isec.deis.lei.pd.trabprat.comparator;
 import java.util.Comparator;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 
-public class ServerComparator implements Comparator<Server> {
+public class ServerStartComparator implements Comparator<Server> {
 
     @Override
     public int compare(Server o1, Server o2) {
@@ -11,9 +11,9 @@ public class ServerComparator implements Comparator<Server> {
             return -1;
         }
 
-        int userCount1 = o1.getUserCount();
-        int userCount2 = o2.getUserCount();
+        long svStart1 = o1.ServerStart;
+        long svStart2 = o2.ServerStart;
 
-        return Integer.compare(userCount1, userCount2);
+        return Long.compare(svStart1, svStart2);
     }
 }

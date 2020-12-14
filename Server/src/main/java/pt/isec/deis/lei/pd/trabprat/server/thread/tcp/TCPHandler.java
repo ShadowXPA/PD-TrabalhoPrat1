@@ -1,20 +1,17 @@
 package pt.isec.deis.lei.pd.trabprat.server.thread.tcp;
 
 import java.io.EOFException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
+import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
-import pt.isec.deis.lei.pd.trabprat.server.model.Client;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
 public class TCPHandler implements Runnable {
@@ -33,7 +30,6 @@ public class TCPHandler implements Runnable {
             InputStream iS = ClientSocket.getInputStream();
             ObjectInputStream oIS = new ObjectInputStream(iS);
             while (Continue) {
-                // Wait for a read (while (true) keep reading)
                 Command cmd = (Command) oIS.readUnshared();
                 Main.Log(IP + " to [Server]", "" + cmd.CMD);
 
@@ -54,16 +50,13 @@ public class TCPHandler implements Runnable {
         }
         synchronized (SV_CFG) {
             // Removes client if they were logged in
-            //            Client client = SV_CFG.ClientList.remove(ClientSocket);
-            //            if (client != null) {
-            //                Main.Log("[User: (" + client.User.getUID() + ") "
-            //                        + client.User.getUUsername() + "]", "has disconnected.");
-            //            }
             var client = SV_CFG.Clients.remove(ClientSocket);
             if (client != null) {
                 Main.Log("[User: (" + client.key.getUID() + ") "
                         + client.key.getUUsername() + "]", "has disconnected.");
                 SV_CFG.BroadcastOnlineActivity();
+                SV_CFG.MulticastMessage(new Command(ECommand.CMD_LOGOUT,
+                        new GenericPair<>(SV_CFG.ServerID, client.key)));
             }
         }
         Main.Log("Closed connection with", IP);

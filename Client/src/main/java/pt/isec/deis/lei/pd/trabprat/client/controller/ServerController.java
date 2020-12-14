@@ -12,7 +12,6 @@ import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.FileChunk;
 import pt.isec.deis.lei.pd.trabprat.model.TChannel;
-import pt.isec.deis.lei.pd.trabprat.model.TChannelMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TChannelUser;
 import pt.isec.deis.lei.pd.trabprat.model.TMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
@@ -46,6 +45,7 @@ public final class ServerController {
                 if (extIndex != -1) {
                     extension = Path.substring(extIndex);
                 }
+                //Enviar FIleChunk para o server com o comando upload
                 command = new Command(ECommand.CMD_UPLOAD, new FileChunk(temp, i, temp.length, Username, GUID, extension));
                 TCPHelper.SendTCPCommand(OOS, command);
             }
@@ -91,6 +91,11 @@ public final class ServerController {
     
     public static void DeleteChannel(TChannelUser channel) throws Exception{
         Command command = new Command(ECommand.CMD_DELETE_CHANNEL, channel);
+        TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
+    }
+    
+    public static void SearchUser(String str) throws IOException{
+        Command command = new Command(ECommand.CMD_SEARCH_USERS, str);
         TCPHelper.SendTCPCommand(App.CL_CFG.getOOS(), command);
     }
 }

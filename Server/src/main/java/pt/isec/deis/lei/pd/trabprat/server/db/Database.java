@@ -221,8 +221,8 @@ public class Database {
         this.Schema = Schema;
         this.Username = Username;
         this.Password = Password;
-        this.ConnectionString = "jdbc:mysql://" + this.Host + ":" + this.Port + "/" + this.Schema +
-                "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" +
-                "&useSSL=false";
+        this.ConnectionString = "jdbc:mysql://" + this.Host + ":" + this.Port + "/" + this.Schema
+                + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC"
+                + "&useSSL=false&allowPublicKeyRetrieval=true";
     }
 }

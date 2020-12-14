@@ -38,12 +38,8 @@ public class RegisterController implements Initializable {
     @FXML
     private TextField TFPhoto;
 
-    /**
-     * Initializes the controller class.
-     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
     }
 
     @FXML
@@ -106,13 +102,11 @@ public class RegisterController implements Initializable {
             bool = false;
             ClientDialog.ShowDialog(AlertType.ERROR, "Error Dialog", "Photo Error", "The photo is incorrect!");
         }
-
+        //bool serve para verificar se as validaçoes estao corretas
         if (bool) {
-            //Thread
             Thread td = new Thread(() -> {
                 try {
-                    //UUID GUID = UUID.randomUUID();
-                    // Send TUser
+                    // enviar o novo utilizador
                     String PasswordEncripted = AES.Encrypt(Password);
                     ServerController.Register(new TUser(0, name, Username, PasswordEncripted, Path, 0));
                 } catch (Exception ex) {

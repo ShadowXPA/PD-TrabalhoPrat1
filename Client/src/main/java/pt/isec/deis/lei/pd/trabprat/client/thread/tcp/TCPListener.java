@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import pt.isec.deis.lei.pd.trabprat.client.App;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 
 public class TCPListener implements Runnable {
-
-    private final Socket socket;
+    private final Socket socket; //socket para o TCP
     private final ObjectOutputStream oOS; //ObjectOutputStream para o TCP
     private final ObjectInputStream oIS;  //ObjectInputStream para o TCP
 
@@ -25,10 +25,9 @@ public class TCPListener implements Runnable {
         try {
             boolean Continue = true;
             while (Continue) {
+                cmd = (Command) oIS.readUnshared();
+                System.out.println("Command from server: " + cmd);
                 try {
-                    cmd = (Command) oIS.readUnshared();
-                    System.out.println("Command from server: " + cmd.CMD);
-                    System.out.println("Data: " + cmd.Body);
                     Thread td = new Thread(new TCPHandler(socket, oOS, oIS, cmd));
                     td.setDaemon(true);
                     td.start();
@@ -37,8 +36,14 @@ public class TCPListener implements Runnable {
                 }
             }
         } catch (Exception ex) {
+            //Mecanismo Failover
             ExceptionHandler.ShowException(ex);
+            if (!App.CL_CFG.closing && !App.CL_CFG.ServerList.isEmpty()) {
+                App.CL_CFG.server = App.CL_CFG.ServerList.get(0);
+                App.connectionToServer(null);
+            }else{
+                System.exit(-1);
+            }
         }
     }
-
 }

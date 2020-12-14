@@ -8,12 +8,14 @@ import java.io.IOException;
 
 public final class ExplorerController {
 
+    private static final Object Lock = new Object();
+
     private ExplorerController() {
     }
 
-    public static final String BASE_DIR = "_files";
-    public static final String AVATAR_SUBDIR = "/avatar";
-    public static final String FILES_SUBDIR = "/files";
+    public static final String BASE_DIR = "_files/";
+    public static final String AVATAR_SUBDIR = "avatar";
+    public static final String FILES_SUBDIR = "files";
 
     public static void CreateBaseDirectories(String DBName) {
         String BaseDir = DBName + BASE_DIR;
@@ -45,15 +47,25 @@ public final class ExplorerController {
     }
 
     private static void _WriteFile(String Path, byte[] Bytes, long Offset, int Length) throws FileNotFoundException, IOException, InterruptedException {
-        try ( FileOutputStream f = new FileOutputStream(Path, true)) {
+        File file = new File(Path);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        try {
             if (Length > 0) {
-                synchronized (f.getChannel()) {
+                synchronized (Lock) {
+                    FileOutputStream f = new FileOutputStream(file, true);
                     while (f.getChannel().position() < Offset) {
-                        f.getChannel().wait(10);
+                        f.close();
+                        Lock.wait(10);
+                        f = new FileOutputStream(file, true);
                     }
+                    f.write(Bytes, 0, Length);
+                    f.flush();
+                    f.close();
                 }
-                f.write(Bytes, 0, Length);
             }
+        } catch (Exception ex) {
         }
     }
 

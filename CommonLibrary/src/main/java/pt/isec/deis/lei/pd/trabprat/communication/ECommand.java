@@ -59,6 +59,9 @@ public final class ECommand {
     // The client wants to login to an account
     public static final int CMD_LOGIN = 602;
 
+    // The client logged out
+    public static final int CMD_LOGOUT = 6021;
+
     // Updated online users list
     public static final int CMD_ONLINE_USERS = 603;
 
@@ -85,4 +88,29 @@ public final class ECommand {
 
     // The client wants to create a message
     public static final int CMD_CREATE_MESSAGE = 707;
+
+    // The client wants a list of users that fully or partially match a certain string
+    public static final int CMD_SEARCH_USERS = 708;
+
+    // The server sends an updated list of the channel users
+    public static final int CMD_UPDATE_CHANNEL_USERS = 709;
+
+    // The server updates the client's server list
+    public static final int CMD_UPDATE_SERVERS = 799;
+
+    // The server is telling other servers that it's closing
+    public static final int CMD_BYE = 899;
+
+    // The server is asking if other servers are awake
+    public static final int CMD_HELLO = 900;
+
+    // The server is asking the specific server for synchronization
+    public static final int CMD_SYNC = 901;
+
+    // The server is sending/recieving synchronization packets
+    public static final int CMD_SYNC_DB = 902;
+    public static final int CMD_SYNC_F = 903;
+
+    // The server wants to close and has requested the clients to close
+    public static final int CMD_SERVER_SHUTDOWN = 999;
 }

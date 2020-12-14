@@ -2,7 +2,6 @@ package pt.isec.deis.lei.pd.trabprat.server.thread.tcp;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
@@ -19,7 +18,7 @@ public class TCPListener implements Runnable {
     public void run() {
         String IP;
         while (true) {
-            try ( ServerSocket SvSocket = new ServerSocket(DefaultConfig.DEFAULT_TCP_PORT)) {
+            try ( ServerSocket SvSocket = new ServerSocket(SV_CFG.TCPPort)) {
                 Main.Log("Bound server TCP socket to", SvSocket.getLocalSocketAddress().toString() + ":" + SvSocket.getLocalPort());
 
                 while (true) {

@@ -8,10 +8,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import pt.isec.deis.lei.pd.trabprat.communication.Command;
+import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
+import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
-import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
 
 public class CommandLineHandler {
 
@@ -22,7 +24,6 @@ public class CommandLineHandler {
     public void Initialize() throws IOException {
         boolean Continue = true;
         String Command;
-        ExplorerController.CreateBaseDirectories(SV_CFG.DBConnection.getSchema());
 
         while (Continue) {
             Write("Admin: ");
@@ -33,6 +34,8 @@ public class CommandLineHandler {
                 HandleCommand(Command);
             }
         }
+        SV_CFG.BroadcastMessage(new Command(ECommand.CMD_SERVER_SHUTDOWN));
+        SV_CFG.MulticastMessage(new Command(ECommand.CMD_BYE, new GenericPair<>(SV_CFG.ServerID, new Server(SV_CFG.ServerID))));
     }
 
     private String ReadLine() throws IOException {
@@ -98,10 +101,8 @@ public class CommandLineHandler {
         StringBuilder str = new StringBuilder();
         str.append(cmd).append(":\n");
         synchronized (SV_CFG) {
-//            var info = SV_CFG.ClientList;
             var info = SV_CFG.Clients;
             if (info != null) {
-//                for (Client c : info.values()) {
                 for (var c : info.values()) {
                     str.append(c.toString());
                     str.append("\n");

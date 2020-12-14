@@ -32,8 +32,8 @@ public final class DefaultConfig {
     public static final String DEFAULT_MULTICAST_IP = "239.14.3.22";
 
     // Default Packet Sizes
-    public static final int DEFAULT_UDP_PACKET_SIZE = 65536;
-    public static final int DEFAULT_TCP_PACKET_SIZE = 65536;
+    public static final int DEFAULT_UDP_PACKET_SIZE = 5120;
+    public static final int DEFAULT_TCP_PACKET_SIZE = 5120;
 
     // Default Ports
     public static final int DEFAULT_MULTICAST_PORT = 5432;

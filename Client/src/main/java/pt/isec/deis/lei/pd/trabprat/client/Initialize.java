@@ -26,6 +26,7 @@ public final class Initialize {
         int port_server;
         InetAddress ip_server;
         try {
+            //IP server and port
             ip_server = InetAddress.getByName(args[0]);
             port_server = Integer.parseInt(args[1]);
         } catch (Exception ex) {
@@ -33,24 +34,23 @@ public final class Initialize {
             ip_server = InetAddress.getByName("127.0.0.1");
             port_server = DefaultConfig.DEFAULT_UDP_PORT;
         }
-        server = new Server(ip_server, port_server, 0, 0);
+        //create conection and return server
+        server = new Server(null, 0, ip_server, port_server, 0, 0);
         return server;
     }
 
     public static DatagramSocket SendPacketUDPToServer(Server server) {
         Command command = new Command();
         command.CMD = ECommand.CMD_CONNECT;
-
         try {
+            //create socket, byte array output and object output
             DatagramSocket socket = new DatagramSocket();
-            //UDPHelper.SendUDPCommand(socket, server.getAddress(), server.getUDPPort(), command);
             ByteArrayOutputStream bAOS = new ByteArrayOutputStream();
             ObjectOutputStream oOS = new ObjectOutputStream(bAOS);
             oOS.writeObject(command);
-
             byte[] buff = bAOS.toByteArray();
+            //Create a datagram packet for connection
             DatagramPacket packet = new DatagramPacket(buff, buff.length, server.getAddress(), server.getUDPPort());
-
             socket.send(packet);
             return socket;
         } catch (Exception ex) {
@@ -63,19 +63,14 @@ public final class Initialize {
         byte[] buff;
         Command command = new Command();
         ArrayList<Server> aux;
-
         try {
-            //DatagramSocket socket = new DatagramSocket();
-
             DatagramPacket packet = new DatagramPacket(new byte[DefaultConfig.DEFAULT_UDP_PACKET_SIZE], DefaultConfig.DEFAULT_UDP_PACKET_SIZE);
             socket.setSoTimeout(1000);
             socket.receive(packet);
-            //command = UDPHelper.ReadUDPCommand(packet);
             buff = packet.getData();
+            //bytearray input to receive things from server
             ByteArrayInputStream bAIS = new ByteArrayInputStream(buff);
-            //new ObjectOutputStream(new ByteArrayOutputStream());
             ObjectInputStream oIS = new ObjectInputStream(bAIS);
-
             command = (Command) oIS.readObject();
             System.out.println("Comando: " + command.CMD);
             switch (command.CMD) {
@@ -93,12 +88,11 @@ public final class Initialize {
                 }
                 case ECommand.CMD_MOVED_PERMANENTLY: {
                     Server server;
-                    aux = (ArrayList<Server>) command.Body;
-                    if (aux == null) {
+                    server = (Server) command.Body;
+                    if (server == null) {
                         System.out.println("Não existem mais servidores disponiveis para se conectar!\n");
                         System.exit(1);
                     }
-                    server = aux.get(0);
                     socket.close();
                     socket = SendPacketUDPToServer(server);
                     return ReceivePacketUDPFromServer(socket);
@@ -116,6 +110,7 @@ public final class Initialize {
 
     public static void ConnectToTCP() {
         try {
+            //create socket TCP to connect with server
             Socket socket = new Socket(CL_CFG.server.getAddress(), CL_CFG.server.getTCPPort());
             CL_CFG.setSocket(socket);
         } catch (Exception ex) {
