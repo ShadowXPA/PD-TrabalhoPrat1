@@ -39,20 +39,21 @@ public final class DatabaseWrapper {
         var info = db.Select("select * from tuser where uname like '%"
                 + str + "%' or uusername like '%" + str + "%'");
         ArrayList<TUser> Users = new ArrayList<>();
-        for (int i = 0; i < info.size(); i++) {
-            Users.add(parseUser(info.get(i)));
+        if (info != null) {
+            for (int i = 0; i < info.size(); i++) {
+                Users.add(parseUser(info.get(i)));
+            }
         }
         return Users;
     }
 
     public ArrayList<TUser> getAllUsers() {
         var info = db.Select("select * from tuser order by uid");
-        if (info == null || info.isEmpty()) {
-            return null;
-        }
         ArrayList<TUser> Users = new ArrayList<>();
-        for (int i = 0; i < info.size(); i++) {
-            Users.add(parseUser(info.get(i)));
+        if (info != null) {
+            for (int i = 0; i < info.size(); i++) {
+                Users.add(parseUser(info.get(i)));
+            }
         }
         return Users;
     }
@@ -89,12 +90,11 @@ public final class DatabaseWrapper {
 
     public ArrayList<TMessage> getAllMessages() {
         var info = db.Select("select * from tmessage order by mdate");
-        if (info == null || info.isEmpty()) {
-            return null;
-        }
         ArrayList<TMessage> Messages = new ArrayList<>();
-        for (int i = 0; i < info.size(); i++) {
-            Messages.add(parseMessage(info.get(i)));
+        if (info != null) {
+            for (int i = 0; i < info.size(); i++) {
+                Messages.add(parseMessage(info.get(i)));
+            }
         }
         return Messages;
     }
@@ -134,12 +134,11 @@ public final class DatabaseWrapper {
 
     public ArrayList<TChannel> getAllChannels() {
         var info = db.Select("select * from tchannel order by cid");
-        if (info == null || info.isEmpty()) {
-            return null;
-        }
         ArrayList<TChannel> Channels = new ArrayList<>();
-        for (int i = 0; i < info.size(); i++) {
-            Channels.add(parseChannel(info.get(i)));
+        if (info != null) {
+            for (int i = 0; i < info.size(); i++) {
+                Channels.add(parseChannel(info.get(i)));
+            }
         }
         return Channels;
     }
@@ -180,8 +179,10 @@ public final class DatabaseWrapper {
     public ArrayList<TChannelUser> getAllUsersFromChannelBy(String Select) {
         var info = db.Select(Select);
         ArrayList<TChannelUser> channelUsers = new ArrayList<>();
-        for (int i = 0; i < info.size(); i++) {
-            channelUsers.add(parseChannelUser(info.get(i)));
+        if (info != null) {
+            for (int i = 0; i < info.size(); i++) {
+                channelUsers.add(parseChannelUser(info.get(i)));
+            }
         }
         return channelUsers;
     }
@@ -207,8 +208,10 @@ public final class DatabaseWrapper {
                 + " tmessage m where cm.MID = m.MID and cm.CID = " + CID
                 + " order by m.MDate");
         ArrayList<TChannelMessage> messages = new ArrayList<>();
-        for (int i = 0; i < info.size(); i++) {
-            messages.add(parseChannelMessage(info.get(i)));
+        if (info != null) {
+            for (int i = 0; i < info.size(); i++) {
+                messages.add(parseChannelMessage(info.get(i)));
+            }
         }
         return messages;
     }
@@ -216,8 +219,10 @@ public final class DatabaseWrapper {
     public ArrayList<TChannelMessage> getAllChannelMessages() {
         var info = db.Select("select * from tchannelmessages");
         ArrayList<TChannelMessage> messages = new ArrayList<>();
-        for (int i = 0; i < info.size(); i++) {
-            messages.add(parseChannelMessage(info.get(i)));
+        if (info != null) {
+            for (int i = 0; i < info.size(); i++) {
+                messages.add(parseChannelMessage(info.get(i)));
+            }
         }
         return messages;
     }
@@ -244,30 +249,31 @@ public final class DatabaseWrapper {
 
     public ArrayList<TDirectMessage> getAllDMBy(String Select) {
         var info = db.Select(Select);
-        if (info == null || info.isEmpty()) {
-            return null;
-        }
         ArrayList<TDirectMessage> DMs = new ArrayList<>();
-        for (int i = 0; i < info.size(); i++) {
-            DMs.add(parseDirectMessage(info.get(i)));
+        if (info != null) {
+            for (int i = 0; i < info.size(); i++) {
+                DMs.add(parseDirectMessage(info.get(i)));
+            }
         }
         return DMs;
     }
 
     public ArrayList<TUser> getOtherUserFromDM(ArrayList<TDirectMessage> DMs, TUser user) {
         ArrayList<TUser> users = new ArrayList<>();
-        for (int i = 0; i < DMs.size(); i++) {
-            if (DMs.get(i).getUID().equals(user)) {
-                TUser u = DMs.get(i).getMID().getMUID();
-                u.setPassword();
-                if (!users.contains(u)) {
-                    users.add(u);
-                }
-            } else {
-                TUser u = DMs.get(i).getUID();
-                u.setPassword();
-                if (!users.contains(u)) {
-                    users.add(u);
+        if (DMs != null && user != null) {
+            for (int i = 0; i < DMs.size(); i++) {
+                if (DMs.get(i).getUID().equals(user)) {
+                    TUser u = DMs.get(i).getMID().getMUID();
+                    u.setPassword();
+                    if (!users.contains(u)) {
+                        users.add(u);
+                    }
+                } else {
+                    TUser u = DMs.get(i).getUID();
+                    u.setPassword();
+                    if (!users.contains(u)) {
+                        users.add(u);
+                    }
                 }
             }
         }
@@ -277,8 +283,10 @@ public final class DatabaseWrapper {
     public ArrayList<TDirectMessage> getAllDirectMessages() {
         var info = db.Select("select * from tdirectmessage");
         ArrayList<TDirectMessage> DMs = new ArrayList<>();
-        for (int i = 0; i < info.size(); i++) {
-            DMs.add(parseDirectMessage(info.get(i)));
+        if (info != null) {
+            for (int i = 0; i < info.size(); i++) {
+                DMs.add(parseDirectMessage(info.get(i)));
+            }
         }
         return DMs;
     }

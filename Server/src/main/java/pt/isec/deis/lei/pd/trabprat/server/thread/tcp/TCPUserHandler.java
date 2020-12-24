@@ -130,9 +130,9 @@ public class TCPUserHandler implements Runnable {
                 if (extIndex != -1) {
                     extension = user.getUPhoto().substring(extIndex);
                 }
-                ExplorerController.CreateUserDirectory(DBName, user.getUUsername());
+//                ExplorerController.CreateUserDirectory(DBName, user.getUUsername());
                 ExplorerController.Touch(DBName, ExplorerController.AVATAR_SUBDIR, user.getUUsername() + extension);
-                String fullDir = DBName + ExplorerController.BASE_DIR + ExplorerController.AVATAR_SUBDIR + "/"
+                String fullDir = /*DBName + ExplorerController.BASE_DIR +*/ ExplorerController.AVATAR_SUBDIR + "/"
                         + user.getUUsername() + extension;
                 TUser insUser = new TUser(0, user.getUName(), user.getUUsername(), user.getUPassword(), fullDir, 0);
                 TUser lastUser;
@@ -178,7 +178,7 @@ public class TCPUserHandler implements Runnable {
             if (user.getUPassword().equals(info.getUPassword())) {
                 // OK
                 boolean LoggedIn;
-                info.setPassword();
+//                info.setPassword();
                 var c = new GenericPair<TUser, ObjectOutputStream>(info, oOS);
                 synchronized (SV_CFG) {
                     LoggedIn = SV_CFG.ClientListContains(c);

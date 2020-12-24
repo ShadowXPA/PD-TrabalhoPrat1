@@ -35,6 +35,9 @@ public class CommandLineHandler {
             }
         }
         SV_CFG.BroadcastMessage(new Command(ECommand.CMD_SERVER_SHUTDOWN));
+        SV_CFG.Clients.values().forEach(u -> {
+            SV_CFG.MulticastMessage(new Command(ECommand.CMD_LOGOUT, new GenericPair<>(SV_CFG.ServerID, u.key)));
+        });
         SV_CFG.MulticastMessage(new Command(ECommand.CMD_BYE, new GenericPair<>(SV_CFG.ServerID, new Server(SV_CFG.ServerID))));
     }
 
