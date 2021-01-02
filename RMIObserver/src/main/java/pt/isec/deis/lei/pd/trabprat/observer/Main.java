@@ -1,10 +1,13 @@
 package pt.isec.deis.lei.pd.trabprat.observer;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
@@ -31,7 +34,22 @@ public class Main {
                     + RemoteServerRMI.SERVICE_NAME);
             server.addObserver(obs);
             // Fazer cenas aqui
-
+            boolean Continue = true;
+            String Command;
+            Scanner scaner = new Scanner(System.in);
+            while (Continue) {
+                System.out.println("Admin: ");
+                Command = scaner.nextLine();
+                if (Command.equals("exit")) {
+                    Continue = false;
+                } else {
+                    try {
+                        HandleCommand(Command);
+                    } catch (IOException ex) {
+                        ExceptionHandler.ShowException(ex);
+                    }
+                }
+            }
         } catch (NotBoundException ex) {
             System.out.println("Server is not running a service...");
         } catch (AccessException ex) {
@@ -48,4 +66,21 @@ public class Main {
             }
         }
     }
+
+    private static void HandleCommand(String Command) throws IOException {
+        String cmd = Command.toLowerCase();
+        //TODO: verificar pois sao 2 coisas na string
+        switch (cmd) {
+            case "register": {
+                break;
+            }
+            case "send": {
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+
 }
