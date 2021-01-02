@@ -21,14 +21,15 @@ public class Main {
             System.exit(-1);
         }
         RemoteServerRMI server = null;
-        ObserverObject obj = new ObserverObject(System.out);
+        ObserverObject obs = null;
         try {
+            obs = new ObserverObject(System.out);
             String host = args[0];
             String serverID = args[1];
             Registry reg = LocateRegistry.getRegistry(host);
             server = (RemoteServerRMI) reg.lookup(serverID + "_"
                     + RemoteServerRMI.SERVICE_NAME);
-            server.addObserver(obj);
+            server.addObserver(obs);
             // Fazer cenas aqui
 
         } catch (NotBoundException ex) {
@@ -40,7 +41,7 @@ public class Main {
         } finally {
             if (server != null) {
                 try {
-                    server.removeObserver(obj);
+                    server.removeObserver(obs);
                 } catch (RemoteException ex) {
                     System.out.println("Whoops....");
                 }

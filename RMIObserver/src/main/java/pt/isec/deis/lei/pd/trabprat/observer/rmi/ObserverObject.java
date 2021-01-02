@@ -24,7 +24,7 @@ public class ObserverObject extends UnicastRemoteObject implements RemoteObserve
         }
     }
 
-    public ObserverObject(OutputStream stream) {
+    public ObserverObject(OutputStream stream) throws RemoteException {
         this.out = new BufferedWriter(new OutputStreamWriter(stream));
     }
 }
