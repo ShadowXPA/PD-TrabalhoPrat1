@@ -26,6 +26,9 @@ import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
 import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
+// TODO: Notify all observers of:
+// - User Login
+// - New message
 public class TCPUserHandler implements Runnable {
 
     private final Socket UserSocket;

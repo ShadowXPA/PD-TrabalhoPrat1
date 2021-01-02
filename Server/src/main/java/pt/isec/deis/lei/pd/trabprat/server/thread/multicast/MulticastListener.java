@@ -60,6 +60,9 @@ public class MulticastListener implements Runnable {
                     Main.Log("[Server]", "Seems like no other server is running...");
                 }
 
+                // TODO: Verify if there are more servers
+                // create registry or get registry
+                // rebind to registry service name: ServerID + "_" + RMIName
                 if (!SV_CFG.ServerList.isEmpty()) {
                     SV_CFG.ServerList.sort(new ServerStartComparator());
                     SV_CFG.SortServerList();

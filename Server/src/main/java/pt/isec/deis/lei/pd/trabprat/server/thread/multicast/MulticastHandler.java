@@ -136,7 +136,7 @@ public class MulticastHandler implements Runnable {
                 var c = SV_CFG.DB.getAllChannels();
                 SV_CFG.BroadcastMessage(new Command(ECommand.CMD_CREATED, c));
             }
-        } else if (gp.value instanceof TChannelMessage) {
+        } else if (gp.value instanceof TChannelMessage) {                                                               // TODO: RMIObserver Message Received
             TChannelMessage cM = (TChannelMessage) gp.value;
             synchronized (SV_CFG) {
                 SV_CFG.DB.devInsertMessage(cM.getMID());
@@ -145,7 +145,7 @@ public class MulticastHandler implements Runnable {
                 SV_CFG.BroadcastMessage(new Command(ECommand.CMD_CREATED,
                         SV_CFG.DB.getAllMessagesFromChannelID(cM.getCID().getCID())));
             }
-        } else if (gp.value instanceof TDirectMessage) {
+        } else if (gp.value instanceof TDirectMessage) {                                                                // TODO: RMIObserver Message Received
             TDirectMessage dM = (TDirectMessage) gp.value;
             synchronized (SV_CFG) {
                 SV_CFG.DB.devInsertMessage(dM.getMID());
