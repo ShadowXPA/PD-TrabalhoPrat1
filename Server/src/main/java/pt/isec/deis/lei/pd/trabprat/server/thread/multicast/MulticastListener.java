@@ -96,7 +96,7 @@ public class MulticastListener implements Runnable {
                     }
                     Main.Log("[Server]", "Synchronization finished...");
                     try {
-                        SV_CFG.registry = LocateRegistry.getRegistry(SV_CFG.ServerList.get(0).getAddress().getHostAddress(), DefaultConfig.DEFAULT_RMI_PORT);
+                        SV_CFG.registry = LocateRegistry.getRegistry(SV_CFG.InternalIP.getHostAddress(), DefaultConfig.DEFAULT_RMI_PORT);
                     } catch (RemoteException ex) {
                         SV_CFG.registry = LocateRegistry.createRegistry(DefaultConfig.DEFAULT_RMI_PORT);
                     }

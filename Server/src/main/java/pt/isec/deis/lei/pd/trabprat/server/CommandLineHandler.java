@@ -29,7 +29,7 @@ public class CommandLineHandler {
             Write("Admin: ");
             Command = ReadLine();
             if (Command.equals("exit")) {
-                Continue = false;
+                System.exit(0);
             } else {
                 HandleCommand(Command);
             }
