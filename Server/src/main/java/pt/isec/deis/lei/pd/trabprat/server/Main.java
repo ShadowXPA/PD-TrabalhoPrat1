@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
+import pt.isec.deis.lei.pd.trabprat.rmi.RemoteServerRMI;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.db.Database;
 import pt.isec.deis.lei.pd.trabprat.server.thread.multicast.MulticastListener;
@@ -52,6 +53,9 @@ public class Main {
             try {
                 // Handle Admin Commands
                 new CommandLineHandler(System.in, System.out, SV_CFG).Initialize();
+                if (SV_CFG.registry != null) {
+                    SV_CFG.registry.unbind(SV_CFG.ServerID + "_" + RemoteServerRMI.SERVICE_NAME);
+                }
             } catch (Exception ex) {
                 ExceptionHandler.ShowException(ex);
             }

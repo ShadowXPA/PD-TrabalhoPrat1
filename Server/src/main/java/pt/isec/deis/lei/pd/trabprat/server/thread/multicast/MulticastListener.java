@@ -6,6 +6,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.comparator.ServerStartComparator;
@@ -13,6 +16,7 @@ import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
+import pt.isec.deis.lei.pd.trabprat.rmi.RemoteServerRMI;
 import pt.isec.deis.lei.pd.trabprat.server.Main;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
@@ -91,7 +95,15 @@ public class MulticastListener implements Runnable {
                         SV_CFG.DB.wait(ServerDBSyncTimeout);
                     }
                     Main.Log("[Server]", "Synchronization finished...");
+                    try {
+                        SV_CFG.registry = LocateRegistry.getRegistry(SV_CFG.ServerList.get(0).getAddress().getHostAddress(), DefaultConfig.DEFAULT_RMI_PORT);
+                    } catch (RemoteException ex) {
+                        SV_CFG.registry = LocateRegistry.createRegistry(DefaultConfig.DEFAULT_RMI_PORT);
+                    }
+                } else {
+                    SV_CFG.registry = LocateRegistry.createRegistry(DefaultConfig.DEFAULT_RMI_PORT);
                 }
+                SV_CFG.registry.rebind(SV_CFG.ServerID + "_" + RemoteServerRMI.SERVICE_NAME, SV_CFG.serverRMI);
 
                 SV_CFG.notifyAll();
             }

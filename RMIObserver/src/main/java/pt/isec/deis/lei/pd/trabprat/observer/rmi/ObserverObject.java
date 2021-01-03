@@ -19,8 +19,6 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -43,17 +41,19 @@ public class ObserverObject extends UnicastRemoteObject implements RemoteObserve
     public void initialize() throws IOException {
         boolean reading = true;
         StringBuilder sb = new StringBuilder();
+        sb.append("Services: ----------------------------------------\n");
         for (int i = 0; i < services.size(); i++) {
             sb.append("[").append(i).append("] - ");
             sb.append(services.get(i));
             sb.append("\n");
         }
+        sb.append("----------------------------------------\n");
         while (reading) {
             writeLine(sb.toString());
             writeLine("Command:");
             String command = in.readLine();
             if (command.equals("exit")) {
-                reading = false;
+                System.exit(0);
             } else {
                 handleCommand(command);
             }
@@ -76,7 +76,7 @@ public class ObserverObject extends UnicastRemoteObject implements RemoteObserve
                 break;
             }
             case "login": {
-                if (this.loggedService != -1) {
+                if (this.loggedService == -1) {
                     handleLogin(Integer.parseInt(cmd[1]), cmd[2]);
                 } else {
                     writeLine("User is already logged in.");
@@ -148,7 +148,7 @@ public class ObserverObject extends UnicastRemoteObject implements RemoteObserve
 
     private void handleLogout() throws RemoteException {
         RemoteServerRMI server = services.get(this.loggedService);
-        server.removeObserver(this, this.user);
+        server.removeObserver(this);
         this.user = null;
         this.loggedService = -1;
     }

@@ -10,5 +10,5 @@ public interface RemoteServerRMI extends Remote {
     void registerUser(TUser user) throws RemoteException;
     void sendMessage(TMessage message) throws RemoteException;
     void addObserver(RemoteObserverRMI observer, TUser user) throws RemoteException;
-    void removeObserver(RemoteObserverRMI observer, TUser user) throws RemoteException;
+    void removeObserver(RemoteObserverRMI observer) throws RemoteException;
 }

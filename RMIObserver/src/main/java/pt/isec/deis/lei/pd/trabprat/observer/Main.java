@@ -1,8 +1,6 @@
 package pt.isec.deis.lei.pd.trabprat.observer;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.observer.rmi.ObserverObject;
 
 public class Main {

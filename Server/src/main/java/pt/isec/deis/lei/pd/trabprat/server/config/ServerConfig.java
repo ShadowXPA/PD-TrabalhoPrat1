@@ -6,6 +6,8 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,9 +20,12 @@ import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
+import pt.isec.deis.lei.pd.trabprat.rmi.RemoteObserverRMI;
+import pt.isec.deis.lei.pd.trabprat.rmi.RemoteServerRMI;
 import pt.isec.deis.lei.pd.trabprat.server.db.Database;
 import pt.isec.deis.lei.pd.trabprat.server.db.DatabaseWrapper;
 import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
+import pt.isec.deis.lei.pd.trabprat.server.rmi.ServerRMI;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 import pt.isec.deis.lei.pd.trabprat.thread.udp.UDPHelper;
 
@@ -34,6 +39,7 @@ public class ServerConfig {
     public final ArrayList<Server> ServerList;
     public final HashMap<Socket, GenericPair<TUser, ObjectOutputStream>> Clients;
     public final ArrayList<TUser> OtherSvClients;
+    public final HashMap<RemoteObserverRMI, TUser> RMIClients;
     public final InetAddress ExternalIP;
     public final InetAddress InternalIP;
     public final int MulticastPort;
@@ -41,9 +47,11 @@ public class ServerConfig {
     public final int TCPPort;
     public MulticastSocket MCSocket;
     public InetAddress MCAddress;
+    public final RemoteServerRMI serverRMI;
+    public Registry registry;
 
     public boolean ClientListContains(GenericPair<TUser, ObjectOutputStream> user) {
-        return (Clients.containsValue(user) || OtherSvClients.contains(user.key));
+        return (Clients.containsValue(user) || OtherSvClients.contains(user.key) || RMIClients.containsValue(user.key));
     }
 
     public ArrayList<TUser> GetAllOnlineUsers() {
@@ -53,6 +61,11 @@ public class ServerConfig {
             var cl = users.next().key;//User;
             temp.add(cl);
         }
+//        var rmiusers = RMIClients.values().iterator();
+//        while (rmiusers.hasNext()) {
+//            var cl = rmiusers.next();
+//            temp.add(cl);
+//        }
         temp.addAll(OtherSvClients);
         return temp;
     }
@@ -130,7 +143,7 @@ public class ServerConfig {
         }
     }
 
-    public ServerConfig(Database DBConnection, String ExternalIP, String InternalIP, int MulticastPort, int UDPPort, int TCPPort) throws UnknownHostException {
+    public ServerConfig(Database DBConnection, String ExternalIP, String InternalIP, int MulticastPort, int UDPPort, int TCPPort) throws UnknownHostException, RemoteException {
         this.DBConnection = DBConnection;
         this.DB = new DatabaseWrapper(this.DBConnection);
         this.SvComp = new ServerComparator();
@@ -139,11 +152,14 @@ public class ServerConfig {
         this.ServerList = new ArrayList<>();
         this.Clients = new HashMap<>();
         this.OtherSvClients = new ArrayList<>();
+        this.RMIClients = new HashMap<>();
         this.MulticastPort = (MulticastPort == 0) ? DefaultConfig.DEFAULT_MULTICAST_PORT : MulticastPort;
         this.UDPPort = (UDPPort == 0) ? DefaultConfig.DEFAULT_UDP_PORT : UDPPort;
         this.TCPPort = (TCPPort == 0) ? DefaultConfig.DEFAULT_TCP_PORT : TCPPort;
         this.ServerID = UUID.randomUUID().toString();
         this.ServerStart = (new Date()).getTime();
         ExplorerController.CreateBaseDirectories(this.DBConnection.getSchema());
+        this.serverRMI = new ServerRMI(this);
+        this.registry = null;
     }
 }
