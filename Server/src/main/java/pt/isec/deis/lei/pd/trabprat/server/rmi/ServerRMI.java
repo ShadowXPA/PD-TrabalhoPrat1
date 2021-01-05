@@ -34,6 +34,7 @@ public class ServerRMI extends UnicastRemoteObject implements RemoteServerRMI {
                     observer.notifyObserver("Client is already logged in!");
                 } else {
                     dbUser.setPassword();
+                    SV_CFG.broadcastToRMI("User " + dbUser.getUUsername() + " has logged in!");
                     SV_CFG.RMIClients.put(observer, dbUser);
                     observer.notifyAuthentication(dbUser);
                     Main.Log("[RMIClient]", "User " + user.getUUsername() + " has logged in!");
