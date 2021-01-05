@@ -1,16 +1,17 @@
 package pt.isec.deis.lei.pd.trabprat.server.springboot.filter;
 
 import java.io.IOException;
+import java.util.HashMap;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.filter.OncePerRequestFilter;
-import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
+import pt.isec.deis.lei.pd.trabprat.model.TUser;
 
 public class AuthorizationFilter extends OncePerRequestFilter {
 
-    private final ServerConfig SV_CFG;
+    private final HashMap<TUser, String> tokens;
 
     @Override
     protected void doFilterInternal(HttpServletRequest hsr, HttpServletResponse hsr1, FilterChain fc) throws ServletException, IOException {
@@ -23,7 +24,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         fc.doFilter(hsr, hsr1);
     }
 
-    public AuthorizationFilter(ServerConfig SV_CFG) {
-        this.SV_CFG = SV_CFG;
+    public AuthorizationFilter(HashMap<TUser, String> tokens) {
+        this.tokens = tokens;
     }
 }

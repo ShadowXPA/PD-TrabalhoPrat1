@@ -8,6 +8,7 @@ import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
 import pt.isec.deis.lei.pd.trabprat.rmi.RemoteServerRMI;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.db.Database;
+import pt.isec.deis.lei.pd.trabprat.server.springboot.MainRestAPI;
 import pt.isec.deis.lei.pd.trabprat.server.thread.multicast.MulticastListener;
 import pt.isec.deis.lei.pd.trabprat.server.thread.tcp.TCPListener;
 import pt.isec.deis.lei.pd.trabprat.server.thread.udp.UDPListener;
@@ -50,6 +51,10 @@ public class Main {
             Thread tdTCP = new Thread(new TCPListener(SV_CFG), "TCPListener");
             tdTCP.setDaemon(true);
             tdTCP.start();
+            // Thread Springboot
+            Thread tdSpring = new Thread(new MainRestAPI(), "Springboot");
+            tdSpring.setDaemon(true);
+            tdSpring.start();
             try {
                 // Handle Admin Commands
                 new CommandLineHandler(System.in, System.out, SV_CFG).Initialize();

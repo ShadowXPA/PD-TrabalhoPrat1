@@ -1,5 +1,8 @@
 package pt.isec.deis.lei.pd.trabprat.server.springboot;
 
+import java.util.HashMap;
+import javax.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -12,22 +15,22 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
+import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.server.springboot.filter.AuthorizationFilter;
 
 @ComponentScan(basePackages = {"pt.isec.deis.lei.pd.trabprat.server.springboot.controllers"})
 @SpringBootApplication
 public class MainRestAPI implements Runnable {
 
-    private final ServerConfig SV_CFG;
+    public final HashMap<TUser, String> tokens;
 
     @Override
     public void run() {
-        SpringApplication.run(MainRestAPI.class, "");
+        SpringApplication.run(MainRestAPI.class, "--server.port=8080");
     }
 
-    public MainRestAPI(ServerConfig SV_CFG) {
-        this.SV_CFG = SV_CFG;
+    public MainRestAPI() {
+        tokens = new HashMap<>();
     }
 
     @EnableWebSecurity
@@ -37,7 +40,7 @@ public class MainRestAPI implements Runnable {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.csrf().disable()
-                    .addFilterAfter(new AuthorizationFilter(SV_CFG),
+                    .addFilterAfter(new AuthorizationFilter(tokens),
                             UsernamePasswordAuthenticationFilter.class)
                     .authorizeRequests()
                     .antMatchers(HttpMethod.POST, "/user/login").permitAll()
