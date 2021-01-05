@@ -112,6 +112,12 @@ public class ServerConfig {
         }
     }
 
+    public void broadcastToRMI(String message) throws RemoteException {
+        for (var o : this.RMIClients.keySet()) {
+            o.notifyObserver(message);
+        }
+    }
+
     public void AddOrUpdateServer(Server s) {
         int Index = ServerList.indexOf(s);
         if (Index == -1) {

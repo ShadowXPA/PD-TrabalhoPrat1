@@ -211,6 +211,8 @@ public class TCPUserHandler implements Runnable {
                         // Announce to other servers via multicast
                         SV_CFG.MulticastMessage(new Command(ECommand.CMD_LOGIN,
                                 new GenericPair<>(SV_CFG.ServerID, info)));
+                        // Broadcast to all RMI clients
+                        SV_CFG.broadcastToRMI("User " + info.getUUsername() + " has logged in!");
                     }
                 } else {
                     // User already logged in
