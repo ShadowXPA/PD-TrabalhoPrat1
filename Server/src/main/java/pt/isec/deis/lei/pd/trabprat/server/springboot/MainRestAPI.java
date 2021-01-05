@@ -3,6 +3,7 @@ package pt.isec.deis.lei.pd.trabprat.server.springboot;
 import java.util.HashMap;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,22 +14,28 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.server.springboot.filter.AuthorizationFilter;
+import pt.isec.deis.lei.pd.trabprat.server.springboot.model.TokenService;
+import pt.isec.deis.lei.pd.trabprat.server.springboot.model.User;
 
-@ComponentScan(basePackages = {"pt.isec.deis.lei.pd.trabprat.server.springboot.controllers"})
+@ComponentScan(basePackages = {"pt.isec.deis.lei.pd.trabprat.server.springboot"})
 @SpringBootApplication
 public class MainRestAPI implements Runnable {
 
-    public final HashMap<TUser, String> tokens;
+    public final HashMap<User, String> tokens;
+    private final AuthorizationFilter authFilter;
 
     @Override
     public void run() {
-        SpringApplication.run(MainRestAPI.class, "--server.port=8080");
+        ConfigurableApplicationContext context = SpringApplication.run(MainRestAPI.class, "--server.port=8080");
+        TokenService bean = context.getBean(TokenService.class);
+        bean.setTokens(tokens);
+        authFilter.setTokens(bean);
     }
 
     public MainRestAPI() {
         tokens = new HashMap<>();
+        authFilter = new AuthorizationFilter();
     }
 
     @EnableWebSecurity
@@ -38,7 +45,7 @@ public class MainRestAPI implements Runnable {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.csrf().disable()
-                    .addFilterAfter(new AuthorizationFilter(tokens),
+                    .addFilterAfter(authFilter,
                             UsernamePasswordAuthenticationFilter.class)
                     .authorizeRequests()
                     .antMatchers(HttpMethod.POST, "/user/login").permitAll()
