@@ -1,8 +1,6 @@
 package pt.isec.deis.lei.pd.trabprat.server.springboot;
 
 import java.util.HashMap;
-import javax.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
