@@ -22,7 +22,7 @@ import pt.isec.deis.lei.pd.trabprat.server.springboot.model.User;
 @SpringBootApplication
 public class MainRestAPI implements Runnable {
 
-    public final HashMap<User, String> tokens;
+    private final HashMap<User, String> tokens;
     private final AuthorizationFilter authFilter;
 
     @Override

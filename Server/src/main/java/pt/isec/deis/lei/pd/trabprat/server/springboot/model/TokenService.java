@@ -19,6 +19,5 @@ public class TokenService implements ITokenService {
     }
 
     public TokenService() {
-        System.out.println("Object...");
     }
 }
