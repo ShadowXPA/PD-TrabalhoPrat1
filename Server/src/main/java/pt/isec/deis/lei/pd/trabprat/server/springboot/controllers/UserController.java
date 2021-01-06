@@ -1,7 +1,15 @@
 package pt.isec.deis.lei.pd.trabprat.server.springboot.controllers;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import java.security.Key;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
+import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,17 +42,25 @@ public class UserController {
             System.out.println("[RestAPI] Body is null!");
             return null;
         }
-        // TODO: Fix User class.equals
-        HashMap<User, String> tokenList = (HashMap<User, String>) tokens.getAll();
+        HashMap<User, String> tokenList = tokens.getAll();
         // Check if user already logged in
         if (tokenList.containsKey(user)) {
             System.out.println("[RestAPI] Already contains user!");
             return null;
         }
-        // Create a token
-        String token = "Haihsebiwad";
         String secret = UUID.randomUUID().toString();
-        // Generate token
+        Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode(secret),
+                SignatureAlgorithm.HS256.getJcaName());
+        Instant now = Instant.now();
+        // Create a token && Generate token
+        String token = Jwts.builder()
+                .claim("username", user.getUsername())
+                .claim("password", user.getPassword())
+                .setId(UUID.randomUUID().toString())
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(now/*.plus(5l, ChronoUnit.HOURS)*/))
+                .signWith(hmacKey)
+                .compact();
         user.setPassword("");
         user.setToken(token);
         tokenList.put(user, secret);

@@ -1,11 +1,11 @@
 package pt.isec.deis.lei.pd.trabprat.server.springboot.interfaces;
 
-import java.util.Map;
+import java.util.HashMap;
 import pt.isec.deis.lei.pd.trabprat.server.springboot.model.User;
 
 public interface ITokenService {
 
-    Map<User, String> getAll();
+    HashMap<User, String> getAll();
 
-    void setTokens(Map<User, String> tokens);
+    void setTokens(HashMap<User, String> tokens);
 }

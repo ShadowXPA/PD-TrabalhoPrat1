@@ -35,9 +35,7 @@ public class User {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 73 * hash + Objects.hashCode(this.username);
-        hash = 73 * hash + Objects.hashCode(this.password);
-        hash = 73 * hash + Objects.hashCode(this.token);
+        hash = 47 * hash + Objects.hashCode(this.username);
         return hash;
     }
 
@@ -53,13 +51,6 @@ public class User {
             return false;
         }
         final User other = (User) obj;
-        if (!Objects.equals(this.username, other.username)) {
-            return false;
-        }
-        if (!Objects.equals(this.password, other.password)) {
-            return false;
-        }
-        return Objects.equals(this.token, other.token);
+        return Objects.equals(this.username, other.username);
     }
-
 }
