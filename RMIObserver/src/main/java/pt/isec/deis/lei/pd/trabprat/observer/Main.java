@@ -1,6 +1,5 @@
 package pt.isec.deis.lei.pd.trabprat.observer;
 
-import java.io.IOException;
 import pt.isec.deis.lei.pd.trabprat.observer.rmi.ObserverObject;
 
 public class Main {
@@ -16,7 +15,7 @@ public class Main {
         try {
             ObserverObject obs = new ObserverObject(args[0], System.in, System.out);
             obs.initialize();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }

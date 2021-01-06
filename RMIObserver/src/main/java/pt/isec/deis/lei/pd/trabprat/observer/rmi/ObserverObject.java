@@ -56,6 +56,9 @@ public class ObserverObject extends UnicastRemoteObject implements RemoteObserve
                 writeLine("Command:");
                 String command = in.readLine();
                 if (command.equals("exit")) {
+                    if (this.loggedService != -1) {
+                        handleLogout();
+                    }
                     System.exit(0);
                 } else {
                     handleCommand(command);

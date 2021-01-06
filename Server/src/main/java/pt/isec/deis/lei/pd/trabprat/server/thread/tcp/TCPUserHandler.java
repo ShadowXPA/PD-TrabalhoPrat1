@@ -494,6 +494,18 @@ public class TCPUserHandler implements Runnable {
                         // Send through multicast
                         SV_CFG.MulticastMessage(new Command(ECommand.CMD_CREATED,
                                 new GenericPair<>(SV_CFG.ServerID, lastCM)));
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("[Channel Message] ");
+                        sb.append(cm.getMID().getMUID().getUName());
+                        sb.append(" to ");
+                        sb.append(cm.getCID().getCName());
+                        sb.append(": ");
+                        sb.append(cm.getMID().getMText());
+                        for (var entry : SV_CFG.RMIClients.entrySet()) {
+                            if (db.doesUserBelongToChannel(cm.getCID(), entry.getValue())) {
+                                SV_CFG.sendToRMI(entry.getKey(), sb.toString());
+                            }
+                        }
                     } else {
                         sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
                     }
@@ -541,8 +553,14 @@ public class TCPUserHandler implements Runnable {
                         SV_CFG.MulticastMessage(new Command(ECommand.CMD_CREATED,
                                 new GenericPair<>(SV_CFG.ServerID, lastDM)));
                         var rmiClient = SV_CFG.getRMIClient(dm.getUID());
-                        SV_CFG.sendToRMI(rmiClient, "[Direct Message] " + dm.getMID().getMUID().getUName());
-
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("[Direct Message] ");
+                        sb.append(dm.getMID().getMUID().getUName());
+                        sb.append(" to ");
+                        sb.append(dm.getUID().getUName());
+                        sb.append(": ");
+                        sb.append(dm.getMID().getMText());
+                        SV_CFG.sendToRMI(rmiClient, sb.toString());
                     } else {
                         sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
                     }
