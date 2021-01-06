@@ -27,7 +27,6 @@ import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
 // TODO: Notify all observers of:
-// - User Login
 // - New message
 public class TCPUserHandler implements Runnable {
 
@@ -541,6 +540,9 @@ public class TCPUserHandler implements Runnable {
                         // Send through multicast
                         SV_CFG.MulticastMessage(new Command(ECommand.CMD_CREATED,
                                 new GenericPair<>(SV_CFG.ServerID, lastDM)));
+                        var rmiClient = SV_CFG.getRMIClient(dm.getUID());
+                        SV_CFG.sendToRMI(rmiClient, "[Direct Message] " + dm.getMID().getMUID().getUName());
+
                     } else {
                         sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
                     }

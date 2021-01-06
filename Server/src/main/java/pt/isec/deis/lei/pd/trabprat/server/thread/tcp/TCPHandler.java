@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
@@ -57,6 +58,11 @@ public class TCPHandler implements Runnable {
                 SV_CFG.BroadcastOnlineActivity();
                 SV_CFG.MulticastMessage(new Command(ECommand.CMD_LOGOUT,
                         new GenericPair<>(SV_CFG.ServerID, client.key)));
+                try {
+                    SV_CFG.broadcastToRMI("User '" + client.key.getUUsername() + "' has logged in!");
+                } catch (RemoteException ex) {
+                    ExceptionHandler.ShowException(ex);
+                }
             }
         }
         Main.Log("Closed connection with", IP);

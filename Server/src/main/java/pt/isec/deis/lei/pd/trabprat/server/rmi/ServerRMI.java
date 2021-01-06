@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.communication.ECommand;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
@@ -86,8 +84,8 @@ public class ServerRMI extends UnicastRemoteObject implements RemoteServerRMI {
                     // Send through multicast
                     SV_CFG.MulticastMessage(new Command(ECommand.CMD_CREATED,
                             new GenericPair<>(SV_CFG.ServerID, lastDM)));
-                    observer.notifyObserver("The message has been sent!");
-                    Main.Log("[RMIClient]", "Message has been inserted!");
+                    observer.notifyObserver("The message has been sent to '" + user.getUUsername()+ "'!");
+                    Main.Log("[RMIClient]", "The message has been sent to '" + user.getUUsername()+ "'!");
                 } else {
                     observer.notifyObserver("Couldn´t insert message!");
                     Main.Log("[RMIClient]", "Message couldn´t be inserted!");
@@ -123,6 +121,7 @@ public class ServerRMI extends UnicastRemoteObject implements RemoteServerRMI {
     public void removeObserver(RemoteObserverRMI observer) throws RemoteException {
         synchronized (SV_CFG.RMIClients) {
             TUser user = SV_CFG.RMIClients.remove(observer);
+            SV_CFG.broadcastToRMI("User '" + user.getUUsername() + "' has logged out!");
             Main.Log("[RMIClient]", "User '" + user.getUUsername() + "' has logged out!");
         }
     }

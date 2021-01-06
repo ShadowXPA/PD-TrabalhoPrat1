@@ -114,8 +114,23 @@ public class ServerConfig {
 
     public void broadcastToRMI(String message) throws RemoteException {
         for (var o : this.RMIClients.keySet()) {
-            o.notifyObserver(message);
+            sendToRMI(o, message);
         }
+    }
+
+    public void sendToRMI(RemoteObserverRMI observer, String message) throws RemoteException {
+        if (observer != null) {
+            observer.notifyObserver(message);
+        }        
+    }
+
+    public RemoteObserverRMI getRMIClient(TUser user) {
+        for (var entry : this.RMIClients.entrySet()) {
+            if (entry.getValue().equals(user)) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 
     public void AddOrUpdateServer(Server s) {
