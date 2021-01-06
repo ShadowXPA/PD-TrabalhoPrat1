@@ -40,7 +40,7 @@ public class ObserverObject extends UnicastRemoteObject implements RemoteObserve
     private TUser user;
     private ArrayList<RemoteServerRMI> services;
 
-    public void initialize() {
+    public void initialize() throws RemoteException {
         boolean reading = true;
         StringBuilder sb = new StringBuilder();
         sb.append("Services: ----------------------------------------\n");
@@ -63,6 +63,9 @@ public class ObserverObject extends UnicastRemoteObject implements RemoteObserve
             } catch (IOException ex) {
                 ExceptionHandler.ShowException(ex);
             }
+        }
+        if (this.loggedService != -1) {
+            handleLogout();
         }
     }
 

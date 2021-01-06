@@ -13,6 +13,7 @@ public class TokenService implements ITokenService {
         return tokens;
     }
 
+    @Override
     public void setTokens(Map<User, String> tokens) {
         this.tokens = tokens;
     }

@@ -16,7 +16,7 @@ public class Main {
         try {
             ObserverObject obs = new ObserverObject(args[0], System.in, System.out);
             obs.initialize();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
