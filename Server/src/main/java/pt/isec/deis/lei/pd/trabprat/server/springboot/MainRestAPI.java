@@ -48,6 +48,7 @@ public class MainRestAPI implements Runnable {
                     .addFilterAfter(authFilter,
                             UsernamePasswordAuthenticationFilter.class)
                     .authorizeRequests()
+                    .antMatchers(HttpMethod.GET, "/user/login").permitAll()
                     .antMatchers(HttpMethod.POST, "/user/login").permitAll()
                     .anyRequest().authenticated().and()
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
