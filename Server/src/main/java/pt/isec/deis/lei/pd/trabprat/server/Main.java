@@ -52,9 +52,11 @@ public class Main {
             tdTCP.setDaemon(true);
             tdTCP.start();
             // Thread Springboot
-            Thread tdSpring = new Thread(new MainRestAPI(), "Springboot");
+            var mainRestAPI = new MainRestAPI();
+            Thread tdSpring = new Thread(mainRestAPI, "Springboot");
             tdSpring.setDaemon(true);
             tdSpring.start();
+            mainRestAPI.setServerConfig(SV_CFG);
             try {
                 // Handle Admin Commands
                 new CommandLineHandler(System.in, System.out, SV_CFG).Initialize();

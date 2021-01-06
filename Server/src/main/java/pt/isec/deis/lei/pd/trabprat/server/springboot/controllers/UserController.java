@@ -2,13 +2,19 @@ package pt.isec.deis.lei.pd.trabprat.server.springboot.controllers;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +22,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pt.isec.deis.lei.pd.trabprat.encryption.AES;
+import pt.isec.deis.lei.pd.trabprat.model.TUser;
+import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
+import pt.isec.deis.lei.pd.trabprat.server.db.DatabaseWrapper;
+import pt.isec.deis.lei.pd.trabprat.server.springboot.interfaces.IServerService;
 import pt.isec.deis.lei.pd.trabprat.server.springboot.interfaces.ITokenService;
 import pt.isec.deis.lei.pd.trabprat.server.springboot.model.User;
 
@@ -23,6 +34,8 @@ import pt.isec.deis.lei.pd.trabprat.server.springboot.model.User;
 @RequestMapping("user")
 public class UserController {
 
+    @Autowired
+    private IServerService SV_CFG;
     @Autowired
     private ITokenService tokens;
 
@@ -38,32 +51,54 @@ public class UserController {
 
     @PostMapping("login")
     public User login(@RequestBody User user) {
-        if (user == null) {
-            System.out.println("[RestAPI] Body is null!");
-            return null;
+        try {
+            if (user == null) {
+                System.out.println("[RestAPI] Body is null!");
+                return null;
+            }
+            ServerConfig svCfg = SV_CFG.getServer();
+            synchronized (svCfg) {
+                DatabaseWrapper db = svCfg.DB;
+                TUser userByUsername = db.getUserByUsername(user.getUsername());
+                if (userByUsername == null) {
+                    System.out.println("[RestAPI] Username doesn't exist!");
+                    user.setUsername("Username doesn't exist!");
+                    user.setPassword("");
+                    return user;
+                }
+                user.setPassword(AES.Encrypt(user.getPassword()));
+                if (!userByUsername.getUPassword().equals(user.getPassword())) {
+                    System.out.println("[RestAPI] Password does not match!");
+                    user.setUsername("");
+                    user.setPassword("Password does not match!");
+                    return user;
+                }
+            }
+            HashMap<User, String> tokenList = tokens.getAll();
+            // Check if user already logged in
+            if (tokenList.containsKey(user)) {
+                System.out.println("[RestAPI] Already contains user!");
+                return null;
+            }
+            String secret = UUID.randomUUID().toString().replace("-", "+") + UUID.randomUUID().toString().replace("-", "+");
+            Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode(secret),
+                    SignatureAlgorithm.HS256.getJcaName());
+            Instant now = Instant.now();
+            // Create a token && Generate token
+            String token = Jwts.builder()
+                    .claim("username", user.getUsername())
+                    .claim("password", user.getPassword())
+                    .setId(UUID.randomUUID().toString())
+                    .setIssuedAt(Date.from(now))
+                    .setExpiration(Date.from(now/*.plus(5l, ChronoUnit.HOURS)*/))
+                    .signWith(hmacKey)
+                    .compact();
+            user.setPassword("");
+            user.setToken(token);
+            tokenList.put(user, secret);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex) {
+            ex.printStackTrace();
         }
-        HashMap<User, String> tokenList = tokens.getAll();
-        // Check if user already logged in
-        if (tokenList.containsKey(user)) {
-            System.out.println("[RestAPI] Already contains user!");
-            return null;
-        }
-        String secret = UUID.randomUUID().toString();
-        Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode(secret),
-                SignatureAlgorithm.HS256.getJcaName());
-        Instant now = Instant.now();
-        // Create a token && Generate token
-        String token = Jwts.builder()
-                .claim("username", user.getUsername())
-                .claim("password", user.getPassword())
-                .setId(UUID.randomUUID().toString())
-                .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(now/*.plus(5l, ChronoUnit.HOURS)*/))
-                .signWith(hmacKey)
-                .compact();
-        user.setPassword("");
-        user.setToken(token);
-        tokenList.put(user, secret);
         // Send to user
         return user;
     }
