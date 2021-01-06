@@ -19,14 +19,18 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import pt.isec.deis.lei.pd.trabprat.encryption.AES;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
+import pt.isec.deis.lei.pd.trabprat.model.TMessage;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.rmi.RemoteObserverRMI;
 import pt.isec.deis.lei.pd.trabprat.rmi.RemoteServerRMI;
+import pt.isec.deis.lei.pd.trabprat.validation.Validator;
 
 public class ObserverObject extends UnicastRemoteObject implements RemoteObserverRMI {
 
@@ -38,7 +42,7 @@ public class ObserverObject extends UnicastRemoteObject implements RemoteObserve
     private TUser user;
     private ArrayList<RemoteServerRMI> services;
 
-    public void initialize() throws IOException {
+    public void initialize() {
         boolean reading = true;
         StringBuilder sb = new StringBuilder();
         sb.append("Services: ----------------------------------------\n");
@@ -49,13 +53,17 @@ public class ObserverObject extends UnicastRemoteObject implements RemoteObserve
         }
         sb.append("----------------------------------------\n");
         while (reading) {
-            writeLine(sb.toString());
-            writeLine("Command:");
-            String command = in.readLine();
-            if (command.equals("exit")) {
-                System.exit(0);
-            } else {
-                handleCommand(command);
+            try {
+                writeLine(sb.toString());
+                writeLine("Command:");
+                String command = in.readLine();
+                if (command.equals("exit")) {
+                    System.exit(0);
+                } else {
+                    handleCommand(command);
+                }
+            } catch (IOException ex) {
+                ExceptionHandler.ShowException(ex);
             }
         }
     }
@@ -68,6 +76,10 @@ public class ObserverObject extends UnicastRemoteObject implements RemoteObserve
                 break;
             }
             case "register": {
+                if (cmd.length < 3) {
+                    writeLine("register [service] [Username] [Name]");
+                    break;
+                }
                 if (this.loggedService == -1) {
                     handleRegister(Integer.parseInt(cmd[1]), cmd[2]);
                 } else {
@@ -76,6 +88,10 @@ public class ObserverObject extends UnicastRemoteObject implements RemoteObserve
                 break;
             }
             case "login": {
+                if (cmd.length < 3) {
+                    writeLine("login [service] [Username] [Password]");
+                    break;
+                }
                 if (this.loggedService == -1) {
                     handleLogin(Integer.parseInt(cmd[1]), cmd[2]);
                 } else {
@@ -92,10 +108,11 @@ public class ObserverObject extends UnicastRemoteObject implements RemoteObserve
                 break;
             }
             case "message": {
+                if (cmd.length < 3) {
+                    writeLine("message [service] [Message]");
+                }
                 if (this.loggedService != -1) {
-                    // TODO: Send message to service?
-                    // Send DM to everybody logged in?
-//                    handleMessage(cmd[1], cmd[2]);
+                    handleMessage(Integer.parseInt(cmd[1]), cmd[2]);
                 } else {
                     writeLine("User is not logged in.");
                 }
@@ -114,7 +131,7 @@ public class ObserverObject extends UnicastRemoteObject implements RemoteObserve
         sb.append("register [service] [Username] [Name] - Registers a user.\n");
         sb.append("login [service] [Username] [Password] - Logins into a server.\n");
         sb.append("logout - Logs out of a server.\n");
-        sb.append("message [service] [Message] - Sends a message to a server.\n");
+        sb.append("message [service] [Message] - Sends a message to all users connected to a server.\n");
 //        sb.append("file [service] [Path] - Sends a file to a server.\n");
         writeLine(sb.toString());
     }
@@ -122,26 +139,63 @@ public class ObserverObject extends UnicastRemoteObject implements RemoteObserve
     private void handleRegister(int service, String command) throws IOException {
         RemoteServerRMI server = services.get(service);
         String[] usernameName = command.split(" ", 2);
+        if (usernameName.length < 2) {
+            writeLine("register [service] [Username] [Name]");
+            return;
+        }
         writeLine("Password:");
         String password = in.readLine();
         try {
+            String username = usernameName[0];
+            String name = usernameName[1];
+            boolean usernameRules = Validator.Username(username);
+            if (!usernameRules) {
+                writeLine("The username doesn´t follow the rules (minimum of 4 characters and can´t contain special characters)!");
+                return;
+            }
+            boolean nameRules = Validator.Name(name);
+            if (!nameRules) {
+                writeLine("The name doesn´t follow the rules (minimum of 2 characters)!");
+                return;
+            }
+            boolean passwordRules = Validator.Password(password);
+            if (!passwordRules) {
+                writeLine("The password doesn´t follow the rules (1 upper letter, 1 lower letter, 1 number and minimum of 6 characters)!");
+                return;
+            }
             password = AES.Encrypt(password);
-            TUser registeredUser = new TUser(0, usernameName[1], usernameName[0], password, null, 0);
-            server.registerUser(registeredUser);
+            TUser registeredUser = new TUser(0, name, username, password, null, 0);
+            server.registerUser(this, registeredUser);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex) {
             ExceptionHandler.ShowException(ex);
         }
     }
 
-    private void handleLogin(int service, String command) throws RemoteException {
+    private void handleLogin(int service, String command) throws RemoteException, IOException {
         RemoteServerRMI server = services.get(service);
         String[] usernamePassword = command.split(" ", 2);
+        if (usernamePassword.length < 2) {
+            writeLine("login [service] [Username] [Password]");
+            return;
+        }
         try {
+            String username = usernamePassword[0];
+            boolean usernameRules = Validator.Username(username);
+            if (!usernameRules) {
+                writeLine("The username doesn´t follow the rules (minimum of 4 characters and can´t contain special characters)!");
+                return;
+            }
+            String password = usernamePassword[1];
+            boolean passwordRules = Validator.Password(password);
+            if (!passwordRules) {
+                writeLine("The password doesn´t follow the rules (1 upper letter, 1 lower letter, 1 number and minimum of 6 characters)!");
+                return;
+            }
             usernamePassword[1] = AES.Encrypt(usernamePassword[1]);
             TUser loggedUser = new TUser(0, null, usernamePassword[0], usernamePassword[1], null, 0);
             this.loggedService = service;
             server.addObserver(this, loggedUser);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | IOException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex) {
             ExceptionHandler.ShowException(ex);
         }
     }
@@ -151,6 +205,20 @@ public class ObserverObject extends UnicastRemoteObject implements RemoteObserve
         server.removeObserver(this);
         this.user = null;
         this.loggedService = -1;
+    }
+
+    private void handleMessage(int service, String message) throws RemoteException, IOException {
+        if (message.isEmpty()) {
+            writeLine("Message is empty!");
+            return;
+        }
+        if (message.length() > 1023) {
+            writeLine("Message too big!");
+            return;
+        }
+        RemoteServerRMI server = services.get(service);
+        TMessage newMessage = new TMessage(0, this.user, message, null, 0);
+        server.sendMessage(this, newMessage);
     }
 
     @Override
