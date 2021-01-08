@@ -26,6 +26,7 @@ import pt.isec.deis.lei.pd.trabprat.encryption.AES;
 import pt.isec.deis.lei.pd.trabprat.model.TUser;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.db.DatabaseWrapper;
+import pt.isec.deis.lei.pd.trabprat.server.springboot.MainRestAPI;
 import pt.isec.deis.lei.pd.trabprat.server.springboot.interfaces.IServerService;
 import pt.isec.deis.lei.pd.trabprat.server.springboot.interfaces.ITokenService;
 import pt.isec.deis.lei.pd.trabprat.server.springboot.model.User;
@@ -34,11 +35,10 @@ import pt.isec.deis.lei.pd.trabprat.server.springboot.model.User;
 @RequestMapping("user")
 public class UserController {
 
-    @Autowired
-    private IServerService SV_CFG;
-    @Autowired
-    private ITokenService tokens;
-
+//    @Autowired
+//    private IServerService SV_CFG;
+//    @Autowired
+//    private ITokenService tokens;
     @GetMapping("hello")
     public String hello() {
         return "Hello world!";
@@ -56,7 +56,7 @@ public class UserController {
                 System.out.println("[RestAPI] Body is null!");
                 return null;
             }
-            ServerConfig svCfg = SV_CFG.getServer();
+            ServerConfig svCfg = MainRestAPI.SV_CFG/*.getServer()*/;
             synchronized (svCfg) {
                 DatabaseWrapper db = svCfg.DB;
                 TUser userByUsername = db.getUserByUsername(user.getUsername());
@@ -74,28 +74,30 @@ public class UserController {
                     return user;
                 }
             }
-            HashMap<User, String> tokenList = tokens.getAll();
-            // Check if user already logged in
-            if (tokenList.containsKey(user)) {
-                System.out.println("[RestAPI] Already contains user!");
-                return null;
+            synchronized (MainRestAPI.LockTokens) {
+                HashMap<User, String> tokenList = MainRestAPI.tokens/*.getAll()*/;
+                // Check if user already logged in
+                if (tokenList.containsKey(user)) {
+                    System.out.println("[RestAPI] Already contains user!");
+                    return null;
+                }
+                String secret = UUID.randomUUID().toString().replace("-", "+") + UUID.randomUUID().toString().replace("-", "+");
+                Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode(secret),
+                        SignatureAlgorithm.HS256.getJcaName());
+                Instant now = Instant.now();
+                // Create a token && Generate token
+                String token = Jwts.builder()
+                        .claim("username", user.getUsername())
+                        .claim("password", user.getPassword())
+                        .setId(UUID.randomUUID().toString())
+                        .setIssuedAt(Date.from(now))
+                        .setExpiration(Date.from(now.plus(5l, ChronoUnit.MINUTES/*ChronoUnit.HOURS*/)))
+                        .signWith(hmacKey)
+                        .compact();
+                user.setPassword("");
+                user.setToken(token);
+                tokenList.put(user, secret);
             }
-            String secret = UUID.randomUUID().toString().replace("-", "+") + UUID.randomUUID().toString().replace("-", "+");
-            Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode(secret),
-                    SignatureAlgorithm.HS256.getJcaName());
-            Instant now = Instant.now();
-            // Create a token && Generate token
-            String token = Jwts.builder()
-                    .claim("username", user.getUsername())
-                    .claim("password", user.getPassword())
-                    .setId(UUID.randomUUID().toString())
-                    .setIssuedAt(Date.from(now))
-                    .setExpiration(Date.from(now/*.plus(5l, ChronoUnit.HOURS)*/))
-                    .signWith(hmacKey)
-                    .compact();
-            user.setPassword("");
-            user.setToken(token);
-            tokenList.put(user, secret);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex) {
             ex.printStackTrace();
         }

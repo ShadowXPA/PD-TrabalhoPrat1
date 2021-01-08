@@ -1,6 +1,15 @@
 package pt.isec.deis.lei.pd.trabprat.server.springboot;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import java.security.Key;
+import java.util.Base64;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import javax.crypto.spec.SecretKeySpec;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -24,16 +33,29 @@ import pt.isec.deis.lei.pd.trabprat.server.springboot.model.User;
 @SpringBootApplication
 public class MainRestAPI implements Runnable {
 
-    private final HashMap<User, String> tokens;
+    public static final Object LockTokens = new Object();
+    public static final HashMap<User, String> tokens = new HashMap<>();
+    public static ServerConfig SV_CFG;
 //    private final AuthorizationFilter authFilter;
-    private ServerConfig SV_CFG;
+
+    public static Entry<User, String> getToken(String token) {
+        synchronized (LockTokens) {
+//        System.out.println("TOKENS: " + this.tokens/*.getAll()*/ + " SIZE:" + this.tokens/*.getAll()*/.size());
+            for (var entry : tokens/*.getAll()*/.entrySet()) {
+                if (entry.getKey().getToken().equals(token)) {
+                    return entry;
+                }
+            }
+            return null;
+        }
+    }
 
     @Override
     public void run() {
         ConfigurableApplicationContext context = SpringApplication.run(MainRestAPI.class, "--server.port=8080");
-        TokenService tokenBean = context.getBean(TokenService.class);
-        ServerService svBean = context.getBean(ServerService.class);
-        tokenBean.setTokens(tokens);
+//        TokenService tokenBean = context.getBean(TokenService.class);
+//        ServerService svBean = context.getBean(ServerService.class);
+//        tokenBean.setTokens(tokens);
         synchronized (this) {
             try {
                 while (SV_CFG == null) {
@@ -43,21 +65,45 @@ public class MainRestAPI implements Runnable {
                 ex.printStackTrace();
             }
         }
-        svBean.setServerConfig(SV_CFG);
+//        svBean.setServerConfig(SV_CFG);
 //        authFilter.setTokens(tokenBean);
+        Thread timeOutTokens = new Thread(() -> {
+            try {
+                for (var set : tokens.entrySet()) {
+                    User user = set.getKey();
+                    String secret = set.getValue();
+                    Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode(secret),
+                            SignatureAlgorithm.HS256.getJcaName());
+
+                    try {
+                        Jws<Claims> jwt = Jwts.parserBuilder()
+                                .setSigningKey(hmacKey)
+                                .build()
+                                .parseClaimsJws(user.getToken());
+                    } catch (ExpiredJwtException ex) {
+                        tokens.remove(user);
+                        System.out.println("Token '" + user.getToken() + "' has expired!");
+                    }
+                }
+                Thread.sleep(120000);
+            } catch (InterruptedException ex) {
+            }
+
+        }, "TokenExpiredThread");
+        timeOutTokens.setDaemon(true);
+        timeOutTokens.start();
+        System.out.println("RestAPI Running...");
+    }
+
+    public void setServerConfig(ServerConfig sv) {
+        synchronized (this) {
+            SV_CFG = sv;
+            this.notifyAll();
+        }
     }
 
     public MainRestAPI() {
-        this.tokens = new HashMap<>();
 //        this.authFilter = new AuthorizationFilter();
-        this.SV_CFG = null;
-    }
-
-    public void setServerConfig(ServerConfig SV_CFG) {
-        synchronized (this) {
-            this.SV_CFG = SV_CFG;
-            this.notifyAll();
-        }
     }
 
     @EnableWebSecurity
@@ -77,6 +123,5 @@ public class MainRestAPI implements Runnable {
                     .and().exceptionHandling().authenticationEntryPoint(
                             new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
         }
-
     }
 }
