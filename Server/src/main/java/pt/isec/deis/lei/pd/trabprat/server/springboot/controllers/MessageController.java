@@ -125,10 +125,10 @@ public class MessageController {
                 MainRestAPI.SV_CFG.MulticastMessage(new Command(ECommand.CMD_CREATED,
                         new GenericPair<>(MainRestAPI.SV_CFG.ServerID, lastDM)));
                 Main.Log("[RestAPI]", "The message has been sent to '" + userToSend.getUUsername() + "'!");
-                sb.append("Message sent to: '").append(userToSend.getUName()).append("'");
+                sb.append("Message sent to: '").append(userToSend.getUName()).append("'\n");
             } else {
                 Main.Log("[RestAPI]", "Message couldn´t be sent to '" + userToSend.getUUsername() + "'!");
-                sb.append("Message couldn´t be sent to: '").append(userToSend.getUName()).append("'");
+                sb.append("Message couldn´t be sent to: '").append(userToSend.getUName()).append("'\n");
             }
         }
         return sb.toString();
