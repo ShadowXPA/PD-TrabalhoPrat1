@@ -124,10 +124,10 @@ public class MessageController {
                 // Send through multicast
                 MainRestAPI.SV_CFG.MulticastMessage(new Command(ECommand.CMD_CREATED,
                         new GenericPair<>(MainRestAPI.SV_CFG.ServerID, lastDM)));
-                Main.Log("[RMIClient]", "The message has been sent to '" + userToSend.getUUsername() + "'!");
+                Main.Log("[RestAPI]", "The message has been sent to '" + userToSend.getUUsername() + "'!");
                 sb.append("Message sent to: '").append(userToSend.getUName()).append("'");
             } else {
-                Main.Log("[RMIClient]", "Message couldn´t be inserted!");
+                Main.Log("[RestAPI]", "Message couldn´t be sent to '" + userToSend.getUUsername() + "'!");
                 sb.append("Message couldn´t be sent to: '").append(userToSend.getUName()).append("'");
             }
         }
