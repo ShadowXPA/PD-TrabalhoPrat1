@@ -216,6 +216,20 @@ public final class DatabaseWrapper {
         return messages;
     }
 
+    public ArrayList<TMessage> getAllMessagesFromChannelID(int CID, int n) {
+        var info = db.Select("select cm.MID, cm.CID from tchannelmessages cm,"
+                + " tmessage m where cm.MID = m.MID and cm.CID = " + CID
+                + " order by m.MDate DESC LIMIT " + n);
+        ArrayList<TMessage> messages = new ArrayList<>();
+        if (info != null) {
+            for (int i = 0; i < info.size(); i++) {
+                TChannelMessage cm = parseChannelMessage(info.get(i));
+                messages.add(cm.getMID());
+            }
+        }
+        return messages;
+    }
+
     public ArrayList<TChannelMessage> getAllChannelMessages() {
         var info = db.Select("select * from tchannelmessages");
         ArrayList<TChannelMessage> messages = new ArrayList<>();
@@ -245,6 +259,21 @@ public final class DatabaseWrapper {
                 + " tmessage m where d.MID = m.MID and"
                 + " ((d.UID = " + UID + " and m.MUID = " + OUID + ") or"
                 + " (d.UID = " + OUID + " and m.MUID = " + UID + ")) order by m.MDate");
+    }
+
+    public ArrayList<TMessage> getAllDMByUserIDAndOtherID(int UID, int OUID, int n) {
+        var info = db.Select("select d.UID, d.MID from tdirectmessage d,"
+                + " tmessage m where d.MID = m.MID and"
+                + " ((d.UID = " + UID + " and m.MUID = " + OUID + ") or"
+                + " (d.UID = " + OUID + " and m.MUID = " + UID + ")) order by m.MDate DESC LIMIT " + n);
+        ArrayList<TMessage> messages = new ArrayList<>();
+        if (info != null) {
+            for (int i = 0; i < info.size(); i++) {
+                TDirectMessage dm = parseDirectMessage(info.get(i));
+                messages.add(dm.getMID());
+            }
+        }
+        return messages;
     }
 
     public ArrayList<TDirectMessage> getAllDMBy(String Select) {

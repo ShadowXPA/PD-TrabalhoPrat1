@@ -15,7 +15,7 @@ import pt.isec.deis.lei.pd.trabprat.server.thread.udp.UDPListener;
 
 public class Main {
 
-    private static final SimpleDateFormat sDF = new SimpleDateFormat("EEEEE, MMMMM d, yyyy H:mm");
+    public static final SimpleDateFormat sDF = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     public static void main(String[] args) {
         ServerConfig SV_CFG;

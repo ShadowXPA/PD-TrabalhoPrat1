@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -68,27 +69,33 @@ public class MainRestAPI implements Runnable {
 //        svBean.setServerConfig(SV_CFG);
 //        authFilter.setTokens(tokenBean);
         Thread timeOutTokens = new Thread(() -> {
-            try {
-                for (var set : tokens.entrySet()) {
-                    User user = set.getKey();
-                    String secret = set.getValue();
-                    Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode(secret),
-                            SignatureAlgorithm.HS256.getJcaName());
+            ArrayList<User> toRemove = new ArrayList<>();
+            while (true) {
+                try {
+                    synchronized (LockTokens) {
+                        tokens.entrySet().forEach(set -> {
+                            User user = set.getKey();
+                            String secret = set.getValue();
+                            Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode(secret),
+                                    SignatureAlgorithm.HS256.getJcaName());
 
-                    try {
-                        Jws<Claims> jwt = Jwts.parserBuilder()
-                                .setSigningKey(hmacKey)
-                                .build()
-                                .parseClaimsJws(user.getToken());
-                    } catch (ExpiredJwtException ex) {
-                        tokens.remove(user);
-                        System.out.println("Token '" + user.getToken() + "' has expired!");
+                            try {
+                                Jws<Claims> jwt = Jwts.parserBuilder()
+                                        .setSigningKey(hmacKey)
+                                        .build()
+                                        .parseClaimsJws(user.getToken());
+                            } catch (ExpiredJwtException ex) {
+                                toRemove.add(user);
+                                System.out.println("Token '" + user.getToken() + "' has expired!");
+                            }
+                        });
+                        toRemove.forEach(r -> tokens.remove(r));
                     }
+                    toRemove.clear();
+                    Thread.sleep(120000);
+                } catch (InterruptedException ex) {
                 }
-                Thread.sleep(120000);
-            } catch (InterruptedException ex) {
             }
-
         }, "TokenExpiredThread");
         timeOutTokens.setDaemon(true);
         timeOutTokens.start();

@@ -79,7 +79,13 @@ public class UserController {
                 // Check if user already logged in
                 if (tokenList.containsKey(user)) {
                     System.out.println("[RestAPI] Already contains user!");
-                    return null;
+                    for (var e : tokenList.entrySet()) {
+                        if (user.equals(e.getKey())) {
+                            user.setPassword("");
+                            user.setToken(e.getKey().getToken());
+                            return user;
+                        }
+                    }
                 }
                 String secret = UUID.randomUUID().toString().replace("-", "+") + UUID.randomUUID().toString().replace("-", "+");
                 Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode(secret),
