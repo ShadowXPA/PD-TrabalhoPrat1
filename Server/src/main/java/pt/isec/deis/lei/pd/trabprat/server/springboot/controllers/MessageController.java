@@ -52,25 +52,34 @@ public class MessageController {
         User user = tokenSet.getKey();
         DatabaseWrapper db = MainRestAPI.SV_CFG.DB;
         TUser dbUser = db.getUserByUsername(user.getUsername());
-        TChannel dbChannel = null;
-        TUser otherUser = null;
-        ArrayList<TMessage> messages = null;
-        String name = null;
+        TChannel dbChannel;
+        TUser otherUser;
+        ArrayList<TMessage> messages;
+        String name;
         if (channel != null) {
             dbChannel = db.getChannelByName(channel);
             if (dbChannel == null) {
-                return null;
+                return "Channel doesn't exist!";
             }
-            name = dbChannel.getCName();
-            messages = db.getAllMessagesFromChannelID(dbChannel.getCID(), num);
-        }
-        if (dmUser != null) {
+            if (db.doesUserBelongToChannel(dbChannel, dbUser)) {
+                name = dbChannel.getCName();
+                messages = db.getAllMessagesFromChannelID(dbChannel.getCID(), num);
+            } else {
+                return "User does not belong to the channel!";
+            }
+        } else if (dmUser != null) {
             otherUser = db.getUserByUsername(dmUser);
             if (otherUser == null) {
-                return null;
+                return "User doesn't exist!";
             }
-            name = otherUser.getUUsername();
-            messages = db.getAllDMByUserIDAndOtherID(dbUser.getUID(), otherUser.getUID(), num);
+            if (!dbUser.equals(otherUser)) {
+                name = otherUser.getUUsername();
+                messages = db.getAllDMByUserIDAndOtherID(dbUser.getUID(), otherUser.getUID(), num);
+            } else {
+                return "You can't have direct messages with yourself...";
+            }
+        } else {
+            return "You need to input a channel or user!";
         }
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html><html><head></head><body><h1>");

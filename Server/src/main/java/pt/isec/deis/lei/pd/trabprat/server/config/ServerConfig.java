@@ -49,6 +49,7 @@ public class ServerConfig {
     public InetAddress MCAddress;
     public final RemoteServerRMI serverRMI;
     public Registry registry;
+    public final String SpringBootPort;
 
     public boolean ClientListContains(GenericPair<TUser, ObjectOutputStream> user) {
         return (Clients.containsValue(user) || OtherSvClients.contains(user.key) || RMIClients.containsValue(user.key));
@@ -164,7 +165,7 @@ public class ServerConfig {
         }
     }
 
-    public ServerConfig(Database DBConnection, String ExternalIP, String InternalIP, int MulticastPort, int UDPPort, int TCPPort) throws UnknownHostException, RemoteException {
+    public ServerConfig(Database DBConnection, String ExternalIP, String InternalIP, int MulticastPort, int UDPPort, int TCPPort, String SpringBootPort) throws UnknownHostException, RemoteException {
         this.DBConnection = DBConnection;
         this.DB = new DatabaseWrapper(this.DBConnection);
         this.SvComp = new ServerComparator();
@@ -182,5 +183,6 @@ public class ServerConfig {
         ExplorerController.CreateBaseDirectories(this.DBConnection.getSchema());
         this.serverRMI = new ServerRMI(this);
         this.registry = null;
+        this.SpringBootPort = SpringBootPort;
     }
 }

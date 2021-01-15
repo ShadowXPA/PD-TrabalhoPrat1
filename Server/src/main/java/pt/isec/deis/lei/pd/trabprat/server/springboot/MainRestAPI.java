@@ -53,10 +53,6 @@ public class MainRestAPI implements Runnable {
 
     @Override
     public void run() {
-        ConfigurableApplicationContext context = SpringApplication.run(MainRestAPI.class, "--server.port=8080");
-//        TokenService tokenBean = context.getBean(TokenService.class);
-//        ServerService svBean = context.getBean(ServerService.class);
-//        tokenBean.setTokens(tokens);
         synchronized (this) {
             try {
                 while (SV_CFG == null) {
@@ -66,6 +62,10 @@ public class MainRestAPI implements Runnable {
                 ex.printStackTrace();
             }
         }
+        ConfigurableApplicationContext context = SpringApplication.run(MainRestAPI.class, "--server.port=" + SV_CFG.SpringBootPort);
+//        TokenService tokenBean = context.getBean(TokenService.class);
+//        ServerService svBean = context.getBean(ServerService.class);
+//        tokenBean.setTokens(tokens);
 //        svBean.setServerConfig(SV_CFG);
 //        authFilter.setTokens(tokenBean);
         Thread timeOutTokens = new Thread(() -> {

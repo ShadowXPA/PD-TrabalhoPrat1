@@ -22,16 +22,16 @@ public class Main {
         // Catch arguments
         // Initialize database connection
         try {
-            if (args.length <= 8) {
+            if (args.length <= 9) {
                 System.out.println("Wrong number of arguments!\nPlease use "
                         + "'java -jar Server.jar [InternalIP] [MulticastPort] "
                         + "[UDPPort] [TCPPort] [DBHost] [DBPort] [DBSchema] "
-                        + "[DBUser] [DBPassword]'");
+                        + "[DBUser] [DBPassword] [SpringBootPort]'");
                 System.exit(-1);
             }
 
             SV_CFG = new ServerConfig(InitDatabase(args), DefaultConfig.getExternalIP(), args[0],
-                    Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+                    Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), args[9]);
             System.out.println("External IP: " + SV_CFG.ExternalIP.getHostAddress());
             System.out.println("Server ID: " + SV_CFG.ServerID);
             // Create threads
