@@ -1,1 +1,1 @@
-java -jar target/Server-1.0.0.jar 192.168.1.70 5432 5433 5434 localhost 3306 pd_trab pdtrab PDTrabPrat123 8080
+java -jar target/Server-1.0.0.jar [ServerIP] 5432 5433 5434 [DatabaseIP] 3306 pd_trab pdtrab PDTrabPrat123 8080
