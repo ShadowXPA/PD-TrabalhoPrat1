@@ -39,4 +39,5 @@ public final class DefaultConfig {
     public static final int DEFAULT_MULTICAST_PORT = 5432;
     public static final int DEFAULT_UDP_PORT = 5433;
     public static final int DEFAULT_TCP_PORT = 5434;
+    public static final int DEFAULT_RMI_PORT = 1099;
 }

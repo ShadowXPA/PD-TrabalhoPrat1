@@ -26,6 +26,8 @@ import pt.isec.deis.lei.pd.trabprat.server.explorer.ExplorerController;
 import pt.isec.deis.lei.pd.trabprat.model.GenericPair;
 import pt.isec.deis.lei.pd.trabprat.thread.tcp.TCPHelper;
 
+// TODO: Notify all observers of:
+// - New message
 public class TCPUserHandler implements Runnable {
 
     private final Socket UserSocket;
@@ -130,9 +132,9 @@ public class TCPUserHandler implements Runnable {
                 if (extIndex != -1) {
                     extension = user.getUPhoto().substring(extIndex);
                 }
-                ExplorerController.CreateUserDirectory(DBName, user.getUUsername());
+//                ExplorerController.CreateUserDirectory(DBName, user.getUUsername());
                 ExplorerController.Touch(DBName, ExplorerController.AVATAR_SUBDIR, user.getUUsername() + extension);
-                String fullDir = DBName + ExplorerController.BASE_DIR + ExplorerController.AVATAR_SUBDIR + "/"
+                String fullDir = /*DBName + ExplorerController.BASE_DIR +*/ ExplorerController.AVATAR_SUBDIR + "/"
                         + user.getUUsername() + extension;
                 TUser insUser = new TUser(0, user.getUName(), user.getUUsername(), user.getUPassword(), fullDir, 0);
                 TUser lastUser;
@@ -178,7 +180,7 @@ public class TCPUserHandler implements Runnable {
             if (user.getUPassword().equals(info.getUPassword())) {
                 // OK
                 boolean LoggedIn;
-                info.setPassword();
+//                info.setPassword();
                 var c = new GenericPair<TUser, ObjectOutputStream>(info, oOS);
                 synchronized (SV_CFG) {
                     LoggedIn = SV_CFG.ClientListContains(c);
@@ -208,6 +210,8 @@ public class TCPUserHandler implements Runnable {
                         // Announce to other servers via multicast
                         SV_CFG.MulticastMessage(new Command(ECommand.CMD_LOGIN,
                                 new GenericPair<>(SV_CFG.ServerID, info)));
+                        // Broadcast to all RMI clients
+                        SV_CFG.broadcastToRMI("User " + info.getUUsername() + " has logged in!");
                     }
                 } else {
                     // User already logged in
@@ -490,6 +494,18 @@ public class TCPUserHandler implements Runnable {
                         // Send through multicast
                         SV_CFG.MulticastMessage(new Command(ECommand.CMD_CREATED,
                                 new GenericPair<>(SV_CFG.ServerID, lastCM)));
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("[Channel Message] ");
+                        sb.append(cm.getMID().getMUID().getUName());
+                        sb.append(" to ");
+                        sb.append(cm.getCID().getCName());
+                        sb.append(": ");
+                        sb.append(cm.getMID().getMText());
+                        for (var entry : SV_CFG.RMIClients.entrySet()) {
+                            if (db.doesUserBelongToChannel(cm.getCID(), entry.getValue())) {
+                                SV_CFG.sendToRMI(entry.getKey(), sb.toString());
+                            }
+                        }
                     } else {
                         sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
                     }
@@ -536,6 +552,15 @@ public class TCPUserHandler implements Runnable {
                         // Send through multicast
                         SV_CFG.MulticastMessage(new Command(ECommand.CMD_CREATED,
                                 new GenericPair<>(SV_CFG.ServerID, lastDM)));
+                        var rmiClient = SV_CFG.getRMIClient(dm.getUID());
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("[Direct Message] ");
+                        sb.append(dm.getMID().getMUID().getUName());
+                        sb.append(" to ");
+                        sb.append(dm.getUID().getUName());
+                        sb.append(": ");
+                        sb.append(dm.getMID().getMText());
+                        SV_CFG.sendToRMI(rmiClient, sb.toString());
                     } else {
                         sendCmd = new Command(ECommand.CMD_BAD_REQUEST, DefaultSvMsg.SV_MESSAGE_FAIL);
                     }

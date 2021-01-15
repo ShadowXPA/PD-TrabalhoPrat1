@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import pt.isec.deis.lei.pd.trabprat.client.config.ClientConfig;
 import pt.isec.deis.lei.pd.trabprat.client.config.DefaultWindowSizes;
+import pt.isec.deis.lei.pd.trabprat.client.controller.ServerController;
 import pt.isec.deis.lei.pd.trabprat.client.thread.tcp.TCPListener;
 import pt.isec.deis.lei.pd.trabprat.communication.Command;
 import pt.isec.deis.lei.pd.trabprat.model.Server;
@@ -85,6 +86,13 @@ public class App extends Application {
             System.exit(1);
         }
         Initialize.ConnectToTCP();
+//        if (args == null) {
+//            try {
+//                ServerController.Login(CL_CFG.MyUser);
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//            }
+//        }
         try {
             //Thread for TCP listener
             Thread thread = new Thread(new TCPListener(CL_CFG.getSocket(), CL_CFG.getOOS(), CL_CFG.getOIS()));

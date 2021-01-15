@@ -123,6 +123,5 @@ public class RegisterController implements Initializable {
                 ex.getMessage();
             }
         }
-
     }
 }

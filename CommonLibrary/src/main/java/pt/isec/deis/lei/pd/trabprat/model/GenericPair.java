@@ -27,10 +27,7 @@ public class GenericPair<K, V> implements Serializable {
             return false;
         }
         final GenericPair<?, ?> other = (GenericPair<?, ?>) obj;
-        if (!Objects.equals(this.key, other.key)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.key, other.key);
     }
 
     @Override

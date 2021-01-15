@@ -1,0 +1,1 @@
+java -jar target/RMIObserver-1.0.0.jar 37.189.85.44

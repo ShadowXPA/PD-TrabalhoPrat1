@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS TDirectMessage (
 /*
     TUser Dummy Data
     https://mockaroo.com/
-*/
+
 insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (1, 'Junina Winter', 'jwinter0', 'HvwT6osnO0M/pyh4SFp3hA==', 'avatar/default.png', 1447607218000);
 insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (2, 'Desi Strongman', 'dstrongman1', 'HvwT6osnO0M/pyh4SFp3hA==', 'avatar/default.png', 1447607218000);
 insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (3, 'Giffard Bernlin', 'gbernlin2', 'HvwT6osnO0M/pyh4SFp3hA==', 'avatar/default.png', 1447607218000);
@@ -138,7 +138,7 @@ insert into TUser (UID, UName, UUsername, UPassword, UPhoto, UDate) values (10, 
 /*
     TChannel Dummy Data
     https://mockaroo.com/
-*/
+
 insert into TChannel (CID, CUID, CName, CDescription, CPassword, CDate) values (1, 5, 'Voyatouch', 'Morbi a ipsum.', 'HvwT6osnO0M/pyh4SFp3hA==', 1447607218000);
 insert into TChannel (CID, CUID, CName, CDescription, CPassword, CDate) values (2, 6, 'Cardify', 'In eleifend quam a odio. In hac habitasse platea dictumst.', 'HvwT6osnO0M/pyh4SFp3hA==', 1447607218000);
 insert into TChannel (CID, CUID, CName, CDescription, CPassword, CDate) values (3, 7, 'Y-Solowarm', 'Nunc nisl.', null, 1447607218000);
@@ -148,7 +148,7 @@ insert into TChannel (CID, CUID, CName, CDescription, CPassword, CDate) values (
 /*
     TMessage Dummy Data
     https://mockaroo.com/
-*/
+
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (1, 3, 'Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo.', null, 1533897033920);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (2, 4, 'helloworld.txt', 'files/9fbe699b-8f1c-490b-b08b-06a4a156be13.txt', 1508689424151);
 insert into TMessage (MID, MUID, MText, MPath, MDate) values (3, 4, 'In hac habitasse platea dictumst. Morbi vestibulum, velit id pretium iaculis, diam erat fermentum justo, nec condimentum neque sapien placerat ante.', null, 1596150225823);
@@ -253,7 +253,7 @@ insert into TMessage (MID, MUID, MText, MPath, MDate) values (100, 5, 'Donec ut 
 /*
     TChannelUsers Dummy Data
     https://mockaroo.com/
-*/
+
 insert into TChannelUsers (CID, UID) values (1, 2);
 insert into TChannelUsers (CID, UID) values (2, 5);
 insert into TChannelUsers (CID, UID) values (3, 2);
@@ -267,7 +267,7 @@ insert into TChannelUsers (CID, UID) values (5, 4);
 /*
     TChannelMessages Dummy Data
     https://mockaroo.com/
-*/
+
 insert into TChannelMessages (MID, CID) values (1, 4);
 insert into TChannelMessages (MID, CID) values (2, 3);
 insert into TChannelMessages (MID, CID) values (3, 3);
@@ -347,7 +347,7 @@ insert into TChannelMessages (MID, CID) values (75, 5);
 /*
     TDirectMessage Dummy Data
     https://mockaroo.com/
-*/
+
 insert into TDirectMessage (MID, UID) values (76, 8);
 insert into TDirectMessage (MID, UID) values (77, 6);
 insert into TDirectMessage (MID, UID) values (78, 7);
@@ -373,6 +373,10 @@ insert into TDirectMessage (MID, UID) values (97, 7);
 insert into TDirectMessage (MID, UID) values (98, 4);
 insert into TDirectMessage (MID, UID) values (99, 6);
 insert into TDirectMessage (MID, UID) values (100, 2);
+
+/*
+    Database 2 and 3 creation script
+*/
 
 use pd_trab2;
 

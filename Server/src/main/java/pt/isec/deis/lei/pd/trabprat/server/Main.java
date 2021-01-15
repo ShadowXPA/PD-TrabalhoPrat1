@@ -5,31 +5,33 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import pt.isec.deis.lei.pd.trabprat.config.DefaultConfig;
 import pt.isec.deis.lei.pd.trabprat.exception.ExceptionHandler;
+import pt.isec.deis.lei.pd.trabprat.rmi.RemoteServerRMI;
 import pt.isec.deis.lei.pd.trabprat.server.config.ServerConfig;
 import pt.isec.deis.lei.pd.trabprat.server.db.Database;
+import pt.isec.deis.lei.pd.trabprat.server.springboot.MainRestAPI;
 import pt.isec.deis.lei.pd.trabprat.server.thread.multicast.MulticastListener;
 import pt.isec.deis.lei.pd.trabprat.server.thread.tcp.TCPListener;
 import pt.isec.deis.lei.pd.trabprat.server.thread.udp.UDPListener;
 
 public class Main {
 
-    private static final SimpleDateFormat sDF = new SimpleDateFormat("EEEEE, MMMMM d, yyyy H:mm");
+    public static final SimpleDateFormat sDF = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     public static void main(String[] args) {
         ServerConfig SV_CFG;
         // Catch arguments
         // Initialize database connection
         try {
-            if (args.length <= 8) {
+            if (args.length <= 9) {
                 System.out.println("Wrong number of arguments!\nPlease use "
                         + "'java -jar Server.jar [InternalIP] [MulticastPort] "
                         + "[UDPPort] [TCPPort] [DBHost] [DBPort] [DBSchema] "
-                        + "[DBUser] [DBPassword]'");
+                        + "[DBUser] [DBPassword] [SpringBootPort]'");
                 System.exit(-1);
             }
 
             SV_CFG = new ServerConfig(InitDatabase(args), DefaultConfig.getExternalIP(), args[0],
-                    Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+                    Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), args[9]);
             System.out.println("External IP: " + SV_CFG.ExternalIP.getHostAddress());
             System.out.println("Server ID: " + SV_CFG.ServerID);
             // Create threads
@@ -49,9 +51,18 @@ public class Main {
             Thread tdTCP = new Thread(new TCPListener(SV_CFG), "TCPListener");
             tdTCP.setDaemon(true);
             tdTCP.start();
+            // Thread Springboot
+            var mainRestAPI = new MainRestAPI();
+            Thread tdSpring = new Thread(mainRestAPI, "Springboot");
+            tdSpring.setDaemon(true);
+            tdSpring.start();
+            mainRestAPI.setServerConfig(SV_CFG);
             try {
                 // Handle Admin Commands
                 new CommandLineHandler(System.in, System.out, SV_CFG).Initialize();
+                if (SV_CFG.registry != null) {
+                    SV_CFG.registry.unbind(SV_CFG.ServerID + "_" + RemoteServerRMI.SERVICE_NAME);
+                }
             } catch (Exception ex) {
                 ExceptionHandler.ShowException(ex);
             }
