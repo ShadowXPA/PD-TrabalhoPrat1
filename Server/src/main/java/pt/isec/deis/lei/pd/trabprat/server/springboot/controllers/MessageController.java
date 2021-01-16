@@ -44,7 +44,7 @@ public class MessageController {
         }
         if ((channel == null && dmUser == null)
                 || (channel != null && dmUser != null)) {
-            return null;
+            return "You need to input a channel or user!";
         }
         if (num == null) {
             num = 10;
